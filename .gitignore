@@ -2,6 +2,10 @@
 bin
 parts
 coverage
+eggs
+sources
+.installed.cfg
+develop-eggs
 var/*
 *.egg-info
 *.pyc

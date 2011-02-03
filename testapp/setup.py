@@ -23,7 +23,7 @@ requires = [
 
 setup(name='testapp',
       version='0.0',
-      description='dstest',
+      description='testapp',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
         "Programming Language :: Python",
@@ -35,15 +35,16 @@ setup(name='testapp',
       author_email='',
       url='',
       keywords='web pylons pyramid',
-      packages=find_packages(),
+      packages=find_packages('src'),
+      package_dir = {'':'src'},
       include_package_data=True,
       zip_safe=False,
       install_requires = requires,
       tests_require= requires,
-      test_suite="dstest",
+      test_suite="testapp",
       entry_points = """\
       [paste.app_factory]
-      main = dstest:main
+      main = testapp:main
       """,
       paster_plugins=['pyramid'],
       )
