@@ -1,0 +1,24 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:meta="http://namespaces.zope.org/meta">
+
+  <meta:directives namespace="http://pylonshq.com/memphis">
+
+    <meta:directive
+       name="schema"
+       schema=".zcml.ISchemaDirective"
+       handler=".zcml.schemaDirectiveHandler" />
+
+    <meta:directive
+       name="relation"
+       schema=".zcml.IRelationDirective"
+       handler=".zcml.relationDirectiveHandler" />
+
+    <meta:directive
+       name="behavior"
+       schema=".zcml.IBehaviorDirective"
+       handler=".zcml.behaviorDirectiveHandler" />
+
+  </meta:directives>
+
+</configure>

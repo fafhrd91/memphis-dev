@@ -1,0 +1,9 @@
+<div class="z-cp-frame">
+  <h2>Add fields</h2>
+  <ul>
+    <li tal:repeat="term view.factories">
+      <a href="${view.url}+/${term.token}/">${term.title}</a>
+      <div>${term.value.description}</div>
+    </li>
+  </ul>
+</div>

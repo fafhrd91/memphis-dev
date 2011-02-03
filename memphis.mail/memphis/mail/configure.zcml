@@ -1,0 +1,18 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:i18n="http://namespaces.zope.org/i18n"
+   xmlns:z3ext="http://namespaces.zope.org/z3ext"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="z3ext.mail">
+
+  <z3ext:configlet
+     name="system.mail.debug"
+     schema=".interfaces.IMailDebugSettings"
+     title="Debug settings"
+     description="Configure portal mail debug settings.">
+    <require
+       permission="zope.Public"
+       interface=".interfaces.IMailDebugSettings" />
+  </z3ext:configlet>
+
+</configure>

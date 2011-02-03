@@ -1,0 +1,23 @@
+<br /><br /><br />
+<div tal:define="data view/data" i18n:domain="memphis.contenttype">
+  <h1>Portal</h1> 
+
+  <hr />
+  Actions: <a href="add.html">Add</a>, <a href="edit.html">Edit</a>
+
+  <hr />
+
+  <h3>Folder listing</h3>
+
+  <div tal:condition="not:data">
+    Folder doesn't contain any data.
+  </div>
+
+  <ul tal:condition="data">
+    <li tal:repeat="content data">
+      <div> <a tal:content="content/title" 
+	       tal:attributes="href python:'/%s'%content.__name__" /></div>
+      <div tal:content="content/description" />
+    </li>
+  </ul>
+</div>

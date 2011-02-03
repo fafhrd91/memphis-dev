@@ -1,0 +1,23 @@
+<tal:block tal:condition="context.keys()">
+  <div class="z-cp-frame">
+    <h1>Fields</h1>
+    <br />
+    <table class="z-table">
+      <thead>
+	<tr>
+	  <th>Name</th>
+	  <th>Title</th>
+	  <th>Description</th>
+	</tr>
+      </thead>
+      <tr tal:repeat="field context.values()">
+	<td><a href="${view.url}${field.__name__}/">${field.__name__}</a></td>
+	<td><a href="${view.url}${field.__name__}/">${field.title}</a></td>
+	<td>${field.description}</td>
+      </tr>
+    </table>
+  </div>
+<br />
+</tal:block>
+
+<tal:block content="structure pagelet:container:addingmenu" />

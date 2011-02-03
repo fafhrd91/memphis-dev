@@ -1,0 +1,277 @@
+=========
+Behaviors
+=========
+
+Behavior is stateless, it can get item's datasheet to do any persistent
+tasks.
+
+    >>> from zope import interface, schema
+    >>> from zope.component.eventtesting import getEvents
+    >>> from memphis import storage
+    >>> from memphis.storage import interfaces
+
+
+Define behavior
+---------------
+
+It requiers behavior interface::
+
+    >>> class IBase(interface.Interface):
+    ...     pass
+
+    >>> class IBehavior(IBase):
+    ...     """ test behavior """
+    ...     
+    ...     title = schema.TextLine(
+    ...         title = u'Title')
+    ...     
+    ...     description = schema.TextLine(
+    ...         title = u'Description')
+
+
+Now behavior itself. There are two ways of defining behavior.
+Simple bahavior has to accept one parameter. This parameter is item instance::
+
+    >>> class Behavior(object):
+    ...     interface.implements(IBehavior)
+    ...     
+    ...     def __init__(self, item):
+    ...         self.item = item
+
+
+If behavior requires ``relation``, in this case class constructor
+has to accept two parameters, first is item instance and second
+is IRelation object::
+
+    >>> class BehaviorWithRelation(object):
+    ...     interface.implements(IBehavior)
+    ...     
+    ...     def __init__(self, item, relation):
+    ...         self.item = item
+    ...         self.relation = relation
+
+
+To make this bahavior availble for `Items` you have to register
+it with `registerBehavior` method::
+
+    >>> storage.getBehavior(IBehavior)
+    Traceback (most recent call last):
+    ...
+    BehaviorNotFound: (<InterfaceClass memphis.storage.TESTS.IBehavior>, None)
+
+let's also create schema::
+
+    >>> storage.registerSchema(u'behavior', IBehavior)
+
+    >>> bh = storage.registerBehavior(
+    ...     u'behavior', IBehavior, Behavior, schema=IBehavior)
+
+First parameter is behavior name, second is behavior interface and
+third parameter is behavior factory.
+
+    >>> bh is storage.getBehavior(IBehavior)
+    True
+
+    >>> bh is storage.queryBehavior(IBehavior)
+    True
+
+
+Apply behavior to item
+----------------------
+
+It's possible to apply behavior during ``item`` creation time.
+In this case behavior acts like primary behavior and can't be removed::
+
+    >>> item = storage.insertItem(IBehavior)
+
+    >>> IBehavior.providedBy(item)
+    True
+
+    >>> isinstance(IBehavior(item), Behavior)
+    True
+   
+    >>> list(item.behaviors)
+    [u'behavior']
+
+If there is schema assign to behavior, it has to be applied as well::
+
+    >>> list(item.schemas)
+    [u'behavior']
+
+    >>> item.getDatasheet(IBehavior)
+    <memphis.storage...Datasheet<behavior> ...>
+
+    >>> item.removeBehavior(u'behavior')
+    Traceback (most recent call last):
+    ...
+    BehaviorException: Can't remove primary behavior.
+
+Also it's possible apply behavior during instance lifetime::
+
+    >>> item = storage.insertItem()
+
+    >>> IBehavior.providedBy(item)
+    False
+
+    >>> item.applyBehavior('behavior')
+
+    >>> IBehavior.providedBy(item)
+    True
+
+Argument of `applyBehavior` could be behavior spec::
+
+    >>> item = storage.insertItem()
+    >>> item.applyBehavior(IBehavior)
+
+    >>> IBehavior.providedBy(item)
+    True
+
+You can't apply behavior several times::
+
+    >>> item.applyBehavior(IBehavior)
+    Traceback (most recent call last):
+    ...
+    StorageException: Behavior already applied: behavior
+
+Also you get `IBehaviorAppliedEvent` event::
+
+    >>> ev = getEvents()[-1]
+    >>> ev
+    <memphis.storage.interfaces.BehaviorAppliedEvent ...>
+    >>> ev.object == item
+    True
+
+If behavior factory has `applyBehavior` method, it is been called::
+
+    >>> class ISimpleBehavior(interface.Interface):
+    ...     pass
+
+    >>> class SimpleBehavior(storage.BehaviorBase):
+    ...     interface.implements(ISimpleBehavior)
+    ...     storage.behavior('simple')
+    ...     
+    ...     @classmethod
+    ...     def applyBehavior(self, item, behavior):
+    ...         print "Simple behavior has been applied."
+    ...         
+    ...     @classmethod
+    ...     def removeBehavior(self, item, behavior):
+    ...         print "Simple behavior has been removed."
+
+    >>> class SimpleBehavior2(storage.BehaviorBase):
+    ...     """ just test """
+
+    >>> reGrok()
+
+    >>> item.applyBehavior(ISimpleBehavior)
+    Simple behavior has been applied.
+
+
+Remove behavior
+---------------
+
+To remove behavior call `remove` method on behavior object with
+item as first parameter::
+
+    >>> item.removeBehavior('behavior')
+
+    >>> IBehavior.providedBy(item)
+    False
+
+You can remove not applied behavior::
+
+    >>> item.removeBehavior('behavior')
+    Traceback (most recent call last):
+    ...
+    StorageException: Behavior is not applied: behavior
+
+If behavior factory has `removedBehavior` method, it is been called
+during removing::
+
+    >>> item.removeBehavior(ISimpleBehavior)
+    Simple behavior has been removed.
+
+And event::
+
+    >>> ev = getEvents()[-1]
+    >>> ev
+    <memphis.storage.interfaces.BehaviorRemovedEvent ...>
+    >>> ev.object == item
+    True
+
+
+Behavior inheritance
+--------------------
+
+Behavior interface should inherit from base behavior::
+
+    >>> class IBehavior1(IBehavior):
+    ...     pass
+
+    >>> class Behavior1(object):
+    ...     def __init__(self, item):
+    ...         self.item = item
+
+    >>> _ = storage.registerBehavior(u'behavior1', IBehavior1, Behavior1)
+    >>> item = storage.insertItem(IBehavior1)
+
+Item provided both interfaces because IBehavior1 inherited from IBehavior::
+
+    >>> IBehavior1.providedBy(item)
+    True
+
+    >>> IBehavior.providedBy(item)
+    True
+
+    >>> IBase.providedBy(item)
+    True
+
+And adapter is Behavior1, because it is more specific::
+
+    >>> isinstance(IBehavior1(item), Behavior1)
+    True
+
+    >>> isinstance(IBehavior(item), Behavior1)
+    True
+
+    >>> isinstance(IBase(item), Behavior1)
+    True
+
+
+But if `item` implements both behaviors directly, adapting to to
+`IBehavior` should return `Behavior` adapter::
+
+    >>> item.applyBehavior(IBehavior)
+    >>> isinstance(IBehavior(item), Behavior)
+    True
+
+
+More specific behavior still available::
+
+    >>> isinstance(IBehavior1(item), Behavior1)
+    True
+
+
+Quering for behavior info
+-------------------------
+
+It is possible can get all oids for particular behavior::
+
+    >>> len(list(bh.getBehaviorOIDs()))
+    3
+
+    >>> [str(o) for o in bh.getBehaviorOIDs()]
+    ['...', '...', '...']
+
+
+Also it's possible to get all behaviors for particular item::
+
+    >>> tuple(item.behaviors)
+    (u'behavior', u'behavior1')
+
+or
+
+    >>> from memphis.storage.behavior import Behavior
+
+    >>> tuple(Behavior.getItemBehaviors(item.oid))
+    (u'behavior', u'behavior1')

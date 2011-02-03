@@ -1,0 +1,176 @@
+============================
+Container/Contained behavior
+============================
+
+Register behavior with zcml directive.
+
+   >>> from zope import interface, component
+   >>> from zope.component.eventtesting import getEvents, clearEvents
+
+   >>> from memphis.storage import api, container, interfaces
+   >>> from memphis.storage.interfaces import IContained, IContainer
+
+
+Create container
+----------------
+
+   >>> itemCont = api.insertItem()
+   >>> itemCont.applyBehavior('base.container', 'base.contained')
+
+   >>> IContainer.providedBy(itemCont)
+   True
+
+   >>> container = itemCont.getBehavior('base.container')
+   >>> container
+   <memphis.storage.container.Container object at ...>
+
+   >>> container = IContainer(itemCont)
+   >>> container
+   <memphis.storage.container.Container object at ...>
+
+   >>> len(container)
+   0
+
+# fixme: need to use martian for adapter registration probably
+   >>> interfaces.IItem(container) is itemCont
+   True
+
+   >>> container['item1']
+   Traceback (most recent call last):
+   ...
+   KeyError: 'item1'
+
+   >>> 'item1' in container
+   False
+
+
+Let's add contained item
+
+   >>> item = api.insertItem()
+   >>> container[u'item1'] = item
+   Traceback (most recent call last):
+   ...
+   InvalidItemType: Item has to implement IContained interface
+
+   >>> item.applyBehavior('base.contained')
+
+   >>> print IContained(item).__name__
+   None
+
+   >>> print IContained(item).__parent__
+   None
+
+   >>> container[''] = item
+   Traceback (most recent call last):
+   ...
+   ValueError: empty names are not allowed
+
+   >>> container['item1'] = item
+
+   >>> ev = getEvents()[-1]
+   >>> ev
+   <zope.lifecycleevent.ObjectAddedEvent object at ...>
+
+   >>> ev.newParent is itemCont
+   True
+   
+   >>> ev.newName
+   u'item1'
+
+   >>> IContained(item).__parent__.oid == itemCont.oid
+   True
+
+   >>> IContained(item).__name__
+   u'item1'
+
+   >>> list(container.keys())
+   [u'item1']
+
+   >>> list(container.values())
+   [<memphis.storage...>]
+
+   >>> container['item1'].oid == item.oid
+   True
+
+   >>> container['item2']
+   Traceback (most recent call last):
+   ...
+   KeyError: 'item2'
+
+   >>> container.get('item1').oid == item.oid
+   True
+
+   >>> print container.get('unknown')
+   None
+
+   >>> len(container)
+   1
+
+   >>> list(container.items())
+   [(u'item1', <memphis.storage...>)]
+   
+   >>> 'item1' in container
+   True
+
+   >>> 'item2' in container
+   False
+
+   >>> clearEvents()
+
+   >>> container['item1'] = item
+   >>> getEvents()
+   []
+
+   >>> item2 = api.insertItem('base.contained')
+   >>> container[u'item1'] = item2
+   Traceback (most recent call last):
+   ...
+   KeyError: u'item1'
+
+   >>> container[u'item2'] = item2
+   >>> list(container.keys())
+   [u'item1', u'item2']
+
+   >>> list(api.getItemBRelations(item.oid))[0].__source__.oid == itemCont.oid
+   True
+
+   >>> list(api.getItemBRelations(item2.oid))[0].__source__.oid == itemCont.oid
+   True
+
+   >>> for rel in api.getItemRelations(itemCont.oid):
+   ...     print rel.type, rel.__destination__
+   base.container <memphis.storage...>
+   base.container <memphis.storage...>
+
+
+Delete item
+
+   >>> clearEvents()
+   >>> del container['item1']
+
+   >>> ev = getEvents()[-1]
+   >>> ev
+   <zope.lifecycleevent.ObjectRemovedEvent ...>
+
+   >>> ev.object.oid == item.oid
+   True
+   >>> ev.oldParent.oid == itemCont.oid
+   True
+
+   >>> list(api.getItemRelations(item.oid))
+   []
+
+   >>> list(container.keys())
+   [u'item2']
+
+   >>> 'item1' in container
+   False
+
+   >>> for rel in api.getItemRelations(itemCont.oid):
+   ...     print rel.type, rel.__destination__
+   base.container <memphis.storage...>
+
+   >>> del container['item1']
+   Traceback (most recent call last):
+   ...
+   KeyError: 'item1'

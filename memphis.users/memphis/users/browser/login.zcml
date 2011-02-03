@@ -1,0 +1,41 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:z3ext="http://namespaces.zope.org/z3ext"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="z3ext.authentication">
+
+  <!-- login form -->
+  <z3ext:pagelet
+     name="login.html"
+     for="zope.component.interfaces.ISite"
+     provides=".interfaces.ILoginForm"
+     template="login.pt"
+     class=".login.LoginForm"
+     permission="zope.Public"
+     layout="auth" />
+
+  <!-- login item for personal bar -->
+  <browser:viewlet
+     name="z3ext.authentication-login"
+     template="loginitem.pt"
+     class=".loginitem.LoginMenuItem"
+     manager="z3ext.personal.bar.interfaces.IPersonalBar"
+     permission="zope.Public"
+     zcml:condition="installed z3ext.personal.bar" />
+
+  <browser:page
+     for="*"
+     name="loginAuth"
+     class=".loginitem.LoginPagelet"
+     permission="zope.Public"
+     zcml:condition="installed z3ext.personal.bar" />
+
+  <!-- login success page -->
+  <z3ext:pagelet
+     name="login-success.html"
+     for="zope.component.interfaces.ISite"
+     template="login-success.pt"
+     permission="zope.View" />
+
+</configure>

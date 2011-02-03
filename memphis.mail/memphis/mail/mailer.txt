@@ -1,0 +1,29 @@
+======
+Mailer
+======
+
+We can send IMessage objects through IMailer.sendmail method. All
+mailer configuration available in controlpanel's configlet 'settings.system.mail'
+
+
+  >>> from zope import interface, component
+  >>> from zope.interface import verify
+
+  >>> from memphis.mail.mailer import Mailer
+  >>> from memphis.mail.interfaces import IMailer
+  >>> from memphis.mail.tests import getEMails
+
+  >>> verify.verifyClass(IMailer, Mailer)
+  True
+
+  >>> mailer = component.getUtility(IMailer)
+  >>> verify.verifyObject(IMailer, mailer)
+  True
+
+
+We can use IMailDelivery.send method
+
+  >>> mailer.send('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')
+
+  >>> getEMails(True)
+  [('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')]

@@ -1,0 +1,14 @@
+<div class="z-controlpanel-wrapper" style="font-size:75%">
+  <div id="z-controlpanel" style="margin-left: 0;margin-right: 0;"
+       tal:define="nav string:test;
+		   noNav python: False; rendered view.render()">
+    <table class="z-cp-layout" tal:omit-tag="noNav">
+      <tr tal:omit-tag="noNav">
+	<td class="z-cp-nav-wrapper"
+	    tal:condition="nav" tal:content="structure nav"></td>
+	<td id="z-portal-workspace"
+	    tal:omit-tag="noNav" tal:content="structure rendered"></td>
+      </tr>
+    </table>
+  </div>
+</div>

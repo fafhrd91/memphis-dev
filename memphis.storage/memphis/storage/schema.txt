@@ -1,0 +1,208 @@
+==================
+Schema & Datasheet
+==================
+
+Schema is just schema definition, it doesn't contain bahavior.
+
+    >>> from zope import interface, schema
+    >>> from memphis import storage
+    >>> from memphis.storage import interfaces
+
+
+Define schema
+-------------
+
+Let's create schema
+
+    >>> class IBase(interface.Interface):
+    ...     name = schema.TextLine(
+    ...         title = u'Name',
+    ...         required = False)
+
+    >>> class IMySchema(IBase):
+    ...     """ test schema """
+    ...     
+    ...     title = schema.TextLine(
+    ...         title = u'Title',
+    ...         default = u'No value')
+    ...     
+    ...     description = schema.TextLine(
+    ...         title = u'Description',
+    ...         required = False)
+    ...     
+    ...     number = schema.Decimal(
+    ...         title = u'Number')
+
+
+If system doesn't know how represent schema field with table column, it
+uses `PickleType` columne.
+
+Now we have to create new `Schema` object and register schema::
+
+    >>> storage.registerSchema(u'schema', IMySchema)
+
+First parameter is schema name, second is schema spec. To get schema
+object use `memphis.storage.getSchema` function::
+
+    >>> sch = storage.getSchema(IMySchema)
+
+or
+
+    >>> sch is storage.querySchema(IMySchema)
+    True
+
+We can query for less specific schema interface::
+
+    >>> sch is storage.querySchema(IBase)
+    True
+
+    >>> class IUnknown(IBase):
+    ...     pass
+    >>> storage.getSchema(IUnknown)
+    Traceback (most recent call last):
+    ...
+    SchemaNotFound: <InterfaceClass memphis.storage.TESTS.IUnknown>
+    
+
+Apply schema
+------------
+
+    >>> item = storage.insertItem()
+
+Apply schema with `applyBehavior` method::
+
+    >>> item.applySchema(IMySchema)
+
+    >>> item.applySchema(IMySchema)
+    Traceback (most recent call last):
+    ...
+    StorageException: Schema already applied: schema
+
+    >>> list(item.schemas)
+    [u'schema']
+
+
+Datasheet
+---------
+
+Use `getDatasheet` method to get datasheet::
+
+    >>> item.getDatasheet(IMySchema).__schema__ is IMySchema
+    True
+
+Also it's possible to use less specific interface::
+
+    >>> item.getDatasheet(IBase).__schema__ is IMySchema
+    True
+
+Attribute moification
+
+    >>> ds = item.getDatasheet(IMySchema)
+    
+    >>> ds.title = u'New title'
+    >>> ds.title
+    u'New title'
+
+    >>> item = storage.getItem(item.oid)
+    >>> ds = item.getDatasheet(IMySchema)
+    >>> ds.title
+    u'New title'
+
+
+Datasheet can be constructed as stadalone object. So it's possible to
+create datasheet use it in `UI` to modify values and then construct item
+with prepopulated data::
+
+    >>> ds = sch.Type('')
+    >>> ds.title = u'test'
+
+    >>> ds1 = sch.Type('')
+    >>> ds1.__load__(ds)
+    >>> ds.title
+    u'test'
+
+If schema is not applied or is not registered, you can't get datasheet
+for it::
+
+    >>> item.getDatasheet(IUnknown)
+    Traceback (most recent call last):
+    ...
+    SchemaNotFound: <InterfaceClass memphis.storage.TESTS.IUnknown>
+
+    >>> class IMySchema2(IMySchema):
+    ...     """ test schema """
+
+    >>> storage.registerSchema('schema2', IMySchema2)
+    >>> item.getDatasheet(IMySchema2)
+    Traceback (most recent call last):
+    ...
+    KeyError: <InterfaceClass memphis.storage.TESTS.IMySchema2>
+
+
+Reserved name
+-------------
+
+`oid` is reserved for internal use, so it not possible to register schema
+with `oid` field::
+
+    >>> class IWrongSchema(interface.Interface):
+    ...     oid = schema.TextLine(title = u'OID')
+
+    >>> storage.registerSchema(u'wrongSchema', IWrongSchema)
+    Traceback (most recent call last):
+    ...
+    StorageException: Field name 'oid' is reserved for internal use
+
+
+Query
+-----
+
+It's possible to find out all items that have particula schema::
+
+    >>> sch = storage.getSchema(IMySchema)
+
+    >>> len(list(sch.getSchemaOIDs()))
+    1
+
+    >>> item.oid in sch.getSchemaOIDs()
+    True
+
+You can use `query` method to build custom queries to relation. `query`
+accept `sqlalchemy.query().filter` parameters. Schema object has
+`Type` attribute, it is `sqlalchemy` table instance::
+
+   >>> [s.title for s in sch.query(sch.Type.title == 'New title')]
+   [u'New title']
+
+   >>> item.getDatasheet(IMySchema).title = u'changedTitle'
+   >>> storage.getSession().flush()
+
+   >>> [s.title for s in sch.query(sch.Type.title == 'changedTitle')]
+   [u'changedTitle']
+
+
+Remove schema
+-------------
+
+    >>> item = storage.insertItem()
+    >>> item.applySchema(IMySchema)
+
+    >>> item.getDatasheet(IMySchema)
+    <memphis.storage.datasheet.Datasheet<schema> ...>
+
+    >>> item.removeSchema(IMySchema)
+
+    >>> item.removeSchema(IMySchema)
+    Traceback (most recent call last):
+    ...
+    KeyError: '...'
+
+    >>> item.getDatasheet(IMySchema)
+    Traceback (most recent call last):
+    ...
+    KeyError: <InterfaceClass memphis.storage.TESTS.IMySchema>
+
+
+    >>> item.schemas
+    []
+

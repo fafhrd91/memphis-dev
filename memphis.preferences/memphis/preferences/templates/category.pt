@@ -1,0 +1,16 @@
+<div class="z-cp-frame" tal:define="data view.data" 
+     i18n:domain="memphis.preferences">
+  <ul class="z-cp-listing" tal:condition="data">
+    <li tal:repeat="category data">
+      <h2 class="z-cp-title" tal:content="category['title']" />      
+      <div class="z-cp-details" tal:content="category['description']" />
+      <ul>
+	<li tal:repeat="pref category['prefs']">
+	  <a tal:attributes="href pref['url']"
+	     tal:content="pref['title']"></a>
+	  <div>${pref['description']}</div>
+	</li>
+      </ul>
+    </li>
+  </ul>
+</div>

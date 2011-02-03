@@ -1,0 +1,150 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:z3ext="http://namespaces.zope.org/z3ext"
+   i18n_domain="z3ext.persistent.fields">
+
+  <!-- Date -->
+  <z3ext:content
+     title="Date"
+     name="persistent.field.date"
+     schema=".interfaces.IDate"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a date."
+     class=".fields.Date"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Datetime -->
+  <z3ext:content
+     title="Datetime"
+     name="persistent.field.datetime"
+     schema=".interfaces.IDatetime"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a date and time."
+     class=".fields.Datetime"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Time -->
+  <z3ext:content
+     title="Time"
+     name="persistent.field.time"
+     schema=".interfaces.ITime"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a time."
+     class=".fields.Time"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Select -->
+  <z3ext:content
+     title="Select"
+     name="persistent.field.select"
+     schema=".interfaces.ISelect"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing list of items, member can select only one item."
+     class=".fields.Select"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Radio select -->
+  <!--z3ext:content
+     title="Radio Select"
+     name="persistent.field.radio"
+     schema=".interfaces.IRadioSelect"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing list of items, member can select only one item."
+     class=".fields.RadioSelect"
+     permission="z3ext.AddPersistentField" /-->
+
+
+  <!-- Multi Select -->
+  <z3ext:content
+     title="Multi select"
+     name="persistent.field.multiselect"
+     schema=".interfaces.IMultiSelect"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing list of values, member can select multple items."
+     class=".fields.MultiSelect"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Multi checkbox -->
+  <z3ext:content
+     title="Multi checkbox"
+     name="persistent.field.multicheckbox"
+     schema=".interfaces.IMultiCheckbox"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing list of values, member can select multple items but with checkboxs."
+     class=".fields.MultiCheckbox"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- EMail field -->
+  <z3ext:content
+     title="EMail"
+     name="persistent.field.email"
+     schema=".interfaces.IEmailField"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing an email address."
+     class=".fields.EMail"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- URL field -->
+  <z3ext:content
+     title="URL"
+     name="persistent.field.url"
+     schema=".interfaces.IURLField"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a web url address."
+     class=".fields.URL"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Rich Text Field -->
+  <!--z3ext:content
+     title="RichText"
+     name="persistent.field.richtext"
+     schema=".interfaces.IRichText"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a rich text. Allow edit text with editor."
+     class=".fields.RichText"
+     permission="z3ext.AddPersistentField" /-->
+
+  <!-- Country field -->
+  <z3ext:content
+     title="Country"
+     name="persistent.field.country"
+     schema=".interfaces.ICountry"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a country name."
+     class=".fields.Country"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- State field -->
+  <z3ext:content
+     title="US State"
+     name="persistent.field.state"
+     schema=".interfaces.IState"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a us state name."
+     class=".fields.State"
+     permission="z3ext.AddPersistentField" />
+
+  <!-- Lines field -->
+  <z3ext:content
+     title="Lines"
+     name="persistent.field.lines"
+     schema=".interfaces.ILines"
+     type=".interfaces.IFieldType"
+     containers=".interfaces.IFieldsContainer"
+     description="Field containing a list of text lines."
+     class=".fields.Lines"
+     permission="z3ext.AddPersistentField" />
+
+</configure>

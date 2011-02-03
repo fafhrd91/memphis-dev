@@ -1,0 +1,170 @@
+==============
+Item relations
+==============
+
+   >>> from zope import interface, component, schema
+   >>> from memphis import storage
+   >>> from memphis.storage import interfaces
+   >>> from memphis.storage.relation import Relation
+
+   >>> sm = component.getSiteManager()
+
+To use relation, relation should be registered::
+
+   >>> class IMyRelation(interface.Interface):
+   ...     """ relation marker interface """
+
+   >>> storage.getRelation(IMyRelation)
+   Traceback (most recent call last):
+   ...
+   KeyError: <InterfaceClass memphis.storage.TESTS.IMyRelation>
+
+   >>> storage.registerRelation('test', IMyRelation)
+   >>> relation = storage.getRelation(IMyRelation)
+
+Now we can create new items and create relation
+
+   >>> item1 = storage.insertItem()
+   >>> item2 = storage.insertItem()
+
+   >>> relItem = relation.insert(item1.oid, item2.oid)
+   
+   >>> relItem.__source__.oid == item1.oid
+   True
+   >>> relItem.__destination__.oid == item2.oid
+   True
+
+   >>> rels = list(relation.getReferences(item1.oid))
+   >>> len(rels)
+   1
+
+   >>> rels[0].oid == relItem.oid
+   True
+
+   >>> rels = list(relation.getReferences(None, item2.oid))
+   >>> len(rels)
+   1
+
+   >>> rels[0].oid == relItem.oid
+   True
+
+   >>> rels = list(relation.getReferences(item1.oid, item2.oid))
+   >>> len(rels)
+   1
+
+   >>> rels[0].oid == relItem.oid
+   True
+
+   >>> rels[0].__destination__.oid == item2.oid
+   True
+
+   >>> relation[relItem.oid].oid == relItem.oid
+   True
+
+   >>> relation.get(relItem.oid).oid == relItem.oid
+   True
+
+   >>> print relation.get('unknown')
+   None
+
+Reference should be in item1 direct links and
+in item2's backward links::
+
+   >>> relItem.oid in [r.oid for r in Relation.getItemReferences(item1.oid)]
+   True
+
+   >>> relItem.oid in [r.oid for r in Relation.getItemBackReferences(item2.oid)]
+   True
+
+   >>> item3 = storage.insertItem()
+   >>> relItem3 = relation.insert(item1.oid, item3.oid, name='name1')
+
+   >>> len(list(Relation.getItemReferences(item1.oid)))
+   2
+
+   >>> list(relation.getReferences())
+   [<memphis.storage...Reference...>, <memphis.storage...Reference...>]
+
+   >>> oid = relItem.oid
+   >>> relation.remove(oid)
+
+   >>> relation.remove(oid)
+   Traceback (most recent call last):
+   ...
+   KeyError: '...'
+
+   >>> len(list(Relation.getItemReferences(item1.oid)))
+   1
+
+   >>> list(Relation.getItemReferences(
+   ...     item1.oid))[0].__destination__.oid == item3.oid
+   True
+
+   >>> list(Relation.getItemReferences(
+   ...     item1.oid, 'test'))[0].__destination__.oid == item3.oid
+   True
+
+   >>> list(Relation.getItemReferences(item1.oid, 'unknown'))
+   []
+
+   >>> list(Relation.getItemBackReferences(
+   ...     item3.oid, 'test'))[0].__source__.oid == item1.oid
+   True
+
+   >>> list(Relation.getItemBackReferences(item3.oid, 'unknown'))
+   []
+
+   >>> list(relation.getReferences())
+   [<memphis.storage...Reference...>]
+
+
+Relation schema
+---------------
+
+It's possible to extend `relation` with additional attribute::
+
+   >>> class IRelSchema(interface.Interface):
+   ...     
+   ...     name = schema.TextLine(
+   ...         title = u'Name',
+   ...         default = u'Unset')
+
+   >>> storage.registerRelation('test1', IRelSchema)
+   >>> relation = storage.getRelation(IRelSchema)
+
+   >>> item1 = storage.insertItem()
+   >>> item2 = storage.insertItem()
+
+   >>> relItem = relation.insert(item1.oid, item2.oid, name=u'name')
+
+   >>> relItem = relation.get(relItem.oid)
+   >>> relItem.name
+   u'name'
+
+You can use `query` method to build custom queries to relation. `query`
+accept `sqlalchemy.query().filter` parameters. Relation object has
+`Type` attribute, it is `sqlalchemy` table instance::
+
+   >>> [r.name for r in relation.query(relation.Type.name == 'name')]
+   [u'name']
+
+   >>> relItem.name = u'changedName'
+   >>> storage.getSession().flush()
+
+   >>> [r.name for r in relation.query(relation.Type.name == 'changedName')]
+   [u'changedName']
+
+
+Reserved names
+--------------
+
+`oid`, `source` and 'destination` are reserved for internal use,
+so it not possible to register relation with this fields::
+
+    >>> class IWrongSchema(interface.Interface):
+    ...     oid = schema.TextLine(title = u'OID')
+
+    >>> storage.registerRelation(u'wrongSchema', IWrongSchema)
+    Traceback (most recent call last):
+    ...
+    StorageException: Field name 'oid' is reserved for internal use
