@@ -43,7 +43,7 @@
       </div>
       <div id="z-portal-logo"> 
 	<a href="${request.application_url}/" name="top"> 
-	  <img alt="" src="${request.static_url('testapp:static/logo.gif')}" /> 
+	  <img alt="" src="${request.static_url('testapp:static/pyramid.png')}" /> 
 	</a> 
       </div>
       <div class="z-portal-divider"></div>
