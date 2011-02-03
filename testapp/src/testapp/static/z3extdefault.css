@@ -1,0 +1,89 @@
+@media all {  /* http://z3ext.net/@@/z3extdefault/base.css */
+body {background-color: white;color: #252525;margin: 0;padding: 0;font: 70% Lucida Grande,Verdana,Tahoma,Helvetica,Sans-Serif;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,cite,pre,form,fieldset,input,textarea,p,blockquote,th,td{margin:0;padding:0;}
+table {border: 0;border-spacing: 0;border-collapse: collapse;font-size: inherit;font: 100%;}
+fieldset,img {border: 0;}
+address,caption,cite,code,dfn,th,var {font-style: normal;font-weight: normal;}
+cite {font-style: italic;}
+caption,th {text-align: left;}
+q:before,q:after {content: '';}
+a {color: #003C75;background-color: transparent;}
+.a {color: #003C75;text-decoration: underline;cursor: pointer;}
+img {border: none;vertical-align: middle;}
+p {margin: 0 0 0.75em 0;line-height: 1.5em;}
+p img {border: none;margin: 0;}
+hr {border: 0;height: 1px;color: #B0C7DD;background-color: #B0C7DD;margin: 0.5em 0 1em 0;}
+h1,h2,h3,h4,h5,h6 {font-size: 100%;font-weight: normal;color: #252525;background-color: transparent;font-family: Lucida Grande,Verdana,Tahoma,Helvetica,Sans-Serif;margin: 0 0 0.25em 0;border-bottom: 1px solid #B0C7DD;}
+h1 a,h2 a,h3 a,h4 a,h5 a,h6 a {text-decoration: none;}
+h1 {font-size: 150%;}
+h2 {font-size: 140%;}
+h3 {font-size: 125%;font-weight: bold;}
+h4 {font-size: 110%;border-bottom: none;font-weight: bold;}
+h5 {font-size: 100%;border-bottom: none;font-weight: bold;}
+h6 {font-size: 90%;border-bottom: none;font-weight: bold;}
+ul {padding: 0;margin: 0.5em 0 0 1.5em;line-height: 1.5em;}
+ol {line-height: 1.5em;padding: 0;margin: 0.5em 0 0 1.8em;}
+li {margin-bottom: 0.5em;}
+dt {font-weight: bold;}
+dd {margin-bottom: 1em;}
+fieldset {border: 1px solid #B0C7DD;margin: 1em 0 1em 0;padding: 0 1em 0 1em;font-size: 110%;}
+legend {background: #E2EFFC;padding: 0.3em;font-size: 90%;}
+form {border: none;margin: 0;}
+label {font-weight: bold;}
+textarea {font-size: 99%;font-family: Monaco,Courier New,Courier,monospace;border: 1px solid #B0C7DD;color: #252525;background: White url(z3extdefault/input_background.gif) repeat-x;width: 80%;}
+input {font-size: 99%;font-family: Lucida Grande,Verdana,Tahoma,Helvetica,Sans-Serif;visibility: visible;border: 1px solid #B0C7DD;color: #252525;vertical-align: middle;background: white url(z3extdefault/input_background.gif) repeat-x;}
+select {font-size: 99%;border: 1px solid #B0C7DD;color: #252525;background-color: white;vertical-align: top;}
+abbr,acronym,.explain {border: 0;border-bottom: 1px dotted #252525;color: #252525;background-color: transparent;cursor: help;}
+q {font-family: Baskerville,Georgia,serif;font-style: italic;font-size: 120%;}
+blockquote {padding-left: 0.5em;margin-left: 0;border-left: 4px solid #B0C7DD;color: #76797C;}
+code {font-size: 120%;font-family: Monaco,Courier New,Courier,monospace;color: #252525;background-color: #E2EFFC;padding: 0 0.1em;}
+pre {font-size: 100%;font-family: Monaco,Courier New,Courier,monospace;padding: 1em;border: 1px solid #B0C7DD;color: #252525;background-color: #E2EFFC;overflow: auto;margin-bottom: 0.5em;}
+ins {color: green;text-decoration: none;}
+del {color: red;text-decoration: line-through;}
+}
+
+@media all {  /* http://z3ext.net/@@/z3extdefault/portal.css */
+#z-portal-workspace {padding: 0 1.5em;}
+#z-space #z-portal-workspace {padding: 0;}
+/* */
+#z-portal-logo {border: 0;padding: 0.5em 0em 0.75em 1.5em;}
+/* */
+#z-portal-footer {text-align: center;color: #76797C;font-size: 90%;padding: 2em 2em 1em 2em;margin-top: 3em;}
+#z-portal-footer a {color: #76797C;}
+/* */
+#z-portal-header {background-color: white;padding-bottom: 2em;}
+#z-portal-header table {width: 100%;}
+#z-portal-header tr {vertical-align: top;}
+#z-portal-header .z-portal-header-right {padding: 0.5em 1.5em 1em 1em;}
+#z-portal-header .z-portal-header-right div {text-align: right;padding-bottom: 1em;}
+.z-portal-divider {border-top: 1px solid #B0C7DD;border-bottom: 1px solid #B0C7DD;background-color: #E2EFFC;padding-bottom: 5px;clear: both;}
+#z-portal-header .z-space-views-wrapper {margin-bottom: 0;border-bottom: 0px;}
+#z-portal-header .z-space-views {border-bottom: 0px;}
+/* */
+.z-portal-space {padding-top: 1em;}
+/* */
+#z-portal-quicksearch {float: right;background-color: transparent;margin-top: 0.5em;padding-right: 1em;text-align: right;text-transform: lowercase;white-space: nowrap;z-index: 2;}
+/* */
+div.section h3 {padding-top: 1.25em;}
+div.section h4 {padding-top: 0.5em;}
+}
+
+@media print {  /* http://z3ext.net/@@/z3extdefault/print.css */
+body {font-family: Baskerville,Georgia,Garamond,Times,serif;font-size: 11pt !important;}
+h1,h2,h3,h4,h5,h6 {border: none;font-family: Baskerville,Georgia,Garamond,Times,serif;}
+div,p,ul,dl,ol {width: auto;}
+ul,ol,dl {padding-right: 0.5em;}
+ul {list-style-type: square;}
+.documentDescription {font-weight: bold;}
+.pageDescription {font-weight: normal;}
+pre {border: 1pt dotted black;white-space: pre;font-size: 8pt;overflow: auto;padding: 1em 0;}
+table.listing,table.listing td,table.z-listing,table.z-listing td {border: 1pt solid black;border-collapse: collapse;}
+a {color: Black !important;padding: 0 !important;text-decoration: none !important;}
+a:link,a:visited {color: #520;background: transparent;}
+/* */
+div.pageBreak {page-break-before: always;}
+/* */
+#z-portal-header,#z-portal-actions,#z-portal-quicksearch,#z-portal-tabs,#z-portal-divider,#z-portal-statusmessage,#z-column-one,#z-column-two,.z-content-byline,.z-context-view,.z-context-views,.z-context-actions
+{display: none;}
+}
+

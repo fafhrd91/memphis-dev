@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+	<title>The Pyramid Web Application Development Framework</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+	<meta name="keywords" content="python web application" />
+	<meta name="description" content="pyramid web application" />
+	<link rel="shortcut icon" href="${request.static_url('testapp:static/favicon.ico')}" />
+	<link rel="stylesheet" href="${request.static_url('testapp:static/z3ext.css')}" type="text/css"  charset="utf-8" />
+	<link rel="stylesheet" href="${request.static_url('testapp:static/z3extdefault.css')}" type="text/css" charset="utf-8" />
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+	<!--[if lte IE 6]>
+	<link rel="stylesheet" href="${request.static_url('testapp:static/ie6.css')}" type="text/css" media="screen" charset="utf-8" />
+	<![endif]-->
+</head>
+<body class="section-z3ext-portal">
+  <div id="z-portal"> 
+    <div id="z-portal-header"> 
+      <div class="z-personalbar"> 
+	<div class="z-personalbar-menu"> 
+	  <ul> 
+	    <tal:block condition="not layout.isAnon">
+	      <li class="z-personalbar-principal" tal:condition="layout.user"> 
+		${layout.user.fullname}:
+	      </li> 
+	      <li><a href="${request.application_url}/settings/" title="Control panel">Settings</a></li> 
+	      <li><a href="${request.application_url}/preferences/" title="Personal preferences">Preferences</a></li>
+	      <li><a href="${request.application_url}/logout.html">Logout</a></li>
+	    </tal:block>
+	    <tal:block tal:condition="layout.isAnon">
+	      <li class="z-personalbar-principal"> 
+		<span class="z-personalbar-principal-not-logged-in">Not logged in &#8212;</span> 
+	      </li> 
+	      <li><a href="${request.application_url}/login.html" title="Login to portal">Login</a> 
+	      </li> 
+	      <li><a href="${request.application_url}/join.html">Join portal</a> 
+	      </li>
+	    </tal:block>
+	    
+	  </ul> 
+	</div> 
+      </div>
+      <div id="z-portal-logo"> 
+	<a href="${request.application_url}/" name="top"> 
+	  <img alt="" src="${request.static_url('testapp:static/logo.gif')}" /> 
+	</a> 
+      </div>
+      <div class="z-portal-divider"></div>
+    </div>
+    <div id="z-portal-workspace"> 
+      <!--memphis-message-->
+      <div style="font-size: 120%">
+	<tal:block tal:content="structure view.render()" />
+      </div>
+    </div>
+  </div>
+</body>
+</html>

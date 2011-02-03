@@ -1,0 +1,10 @@
+*~
+bin
+parts
+coverage
+var/*
+*.egg-info
+*.pyc
+*.pt.py
+*.pt.pyc
+.DS_Store
