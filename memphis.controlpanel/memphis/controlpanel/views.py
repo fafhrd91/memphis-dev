@@ -2,6 +2,7 @@
 
 $Id: views.py 11810 2011-01-31 06:56:01Z fafhrd91 $
 """
+from pyramid import url
 from pyramid.config import Configurator
 from memphis import view, config
 from memphis.form import form, field
@@ -12,7 +13,7 @@ from memphis.controlpanel.interfaces import IConfiglet, IControlPanel
 # layout
 config.action(
     view.registerLayout,
-    '', IControlPanel, parent='page',
+    '', IControlPanel, parent='page', skipParent=True,
     template=view.template("memphis.controlpanel:templates/layout.pt"))
 
 
@@ -34,12 +35,12 @@ class ControlPanelView(object):
 
         request = self.request
         cp = getControlPanel(request)
+        base_url = url.resource_url(cp, request)
 
         data = []
 
         for category in cp.values():
             configlets = []
-            base_url = request.resource_url(cp)
             for configlet in category.values():
                 info = {'title': configlet.__title__,
                         'description': configlet.__description__,

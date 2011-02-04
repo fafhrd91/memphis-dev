@@ -14,12 +14,16 @@ def getControlPanel(*args):
     return getUtility(IControlPanel)
 
 
-def registerCategory(name, title='', description='', configContext=None):
+def registerCategory(
+    name, marker=None, title='', description='', configContext=None):
 
     def _register(category):
         getUtility(IControlPanel).addCategory(category)
 
     category = configlet.ConfigletCategory(name, title, description)
+
+    if marker is not None:
+        interface.directlyProvides(category, marker)
 
     config.addAction(
         configContext,
@@ -34,7 +38,7 @@ def registerConfiglet(name=None, schema=None, klass=None,
     if '.' in name:
         category, name = name.split('.', 1)
     else:
-        category = ''
+        raise ValueError("Category name is required.")
 
     ConfigletClass = configlettype.ConfigletType(
         str(name), schema, klass, title, description)

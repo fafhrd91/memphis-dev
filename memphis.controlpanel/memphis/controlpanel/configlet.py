@@ -14,7 +14,7 @@ class BehaviorFactory(object):
         self.bid = bid
 
     def __call__(self, item):
-        return getUtility(IConfiglet).getConfiglet(self.id)
+        raise RuntimeError("Configlet behavior can't be called directly.")
 
     def applyBehavior(self, item, behavior):
         try:
@@ -64,3 +64,6 @@ class ConfigletCategory(dict):
         configlet.__parent__ = self
 
         self[configlet.__id__] = configlet
+
+    def __repr__(self):
+        return "Category <%s>"%self.__name__

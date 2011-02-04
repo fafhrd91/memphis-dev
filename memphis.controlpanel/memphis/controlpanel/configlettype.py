@@ -27,7 +27,8 @@ class ConfigletType(type):
     >>> ConfigletClass = configlettype.ConfigletType(
     ...    'myconfiglet', IMyConfiglet, MyConfiglet, 'MyConfiglet', '')
 
-    New class avilable by it's cname in memphis.controlpanel.configlettype module
+    New class avilable by it's cname in
+    memphis.controlpanel.configlettype module
 
     >>> getattr(configlettype, 'Configlet<myconfiglet>') is ConfigletClass
     True
@@ -55,6 +56,26 @@ class ConfigletType(type):
     >>> ConfigletClass = configlettype.ConfigletType(
     ...    'myconfiglet', IMyConfiglet,
     ...    (MyConfiglet, MyConfiglet2), 'MyConfiglet', '')
+
+    ConfigletClass without base class, so just for data
+
+    >>> ConfigletClass = configlettype.ConfigletType(
+    ...    'myconfiglet2', IMyConfiglet, None, 'MyConfiglet2', '')
+
+    >>> ConfigletClass
+    <class 'memphis.controlpanel.configlettype.Configlet<myconfiglet2>'>
+
+    __schema__ attribute is immutable
+
+    >>> configlet = ConfigletClass()
+
+    >>> configlet.__schema__
+    <InterfaceClass memphis.controlpanel.configlettype.IMyConfiglet>
+
+    >>> configlet.__schema__ = IMyConfiglet
+    Traceback (most recent call last):
+    ...
+    AttributeError: Can't set __schema__
 
     """
 
@@ -110,16 +131,18 @@ class ConfigletProperty(object):
 
     Now we need content class
 
-    >>> from memphis.controlpanel.storage import ConfigletData
-    >>> from memphis.controlpanel.configlettype import ConfigletProperty
     >>> class Content(object):
     ...
     ...    attr1 = ConfigletProperty(field)
 
+    >>> class Datasheet(object):
+    ...     def __init__(self):
+    ...         self.data = {}
+
     Lets create class instance and add field values storage
 
     >>> ob = Content()
-    >>> ob.data = ConfigletData()
+    >>> ob.datasheet = Datasheet()
 
     By default we should get field default value
 
@@ -137,12 +160,12 @@ class ConfigletProperty(object):
     >>> ob.attr1
     u'value1'
 
-    >>> ob.data['attr1']
+    >>> ob.datasheet.data['attr1']
     u'value1'
 
     If storage contains field value we shuld get it
 
-    >>> ob.data['attr1'] = u'value2'
+    >>> ob.datasheet.data['attr1'] = u'value2'
     >>> ob.attr1
     u'value2'
 
@@ -153,6 +176,10 @@ class ConfigletProperty(object):
     Traceback (most recent call last):
     ...
     ValueError: ('attr1', u'Field is readonly')
+
+    >>> del ob.attr1
+    >>> ob.datasheet.data
+    {}
 
     """
 
@@ -189,5 +216,5 @@ class ConfigletProperty(object):
     def __delete__(self, inst):
         datasheet = inst.datasheet
         if self.__name in datasheet.data:
-            datasheet.data[self.__name]
+            del datasheet.data[self.__name]
             datasheet.data = datasheet.data

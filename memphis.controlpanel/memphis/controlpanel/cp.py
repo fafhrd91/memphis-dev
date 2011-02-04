@@ -4,12 +4,14 @@ $Id: cp.py 11791 2011-01-31 02:57:54Z fafhrd91 $
 """
 from zope import interface
 from memphis import storage, config, view
+from memphis.controlpanel import interfaces
 from memphis.controlpanel.api import registerCategory, registerConfiglet
-from memphis.controlpanel.interfaces import _, IControlPanel
+
+_ = interfaces._
 
 
 class ControlPanel(dict):
-    interface.implements(IControlPanel)
+    interface.implements(interfaces.IControlPanel)
 
     __name__ = 'settings'
     __parent__ = view.Root
@@ -28,40 +30,33 @@ class ControlPanel(dict):
 
         self[category.__name__] = category
 
+    def __repr__(self):
+        return "ControlPanel"
+
 
 config.action(
     config.registerUtility,
-    ControlPanel(), IControlPanel, '')
-
-
-config.action(
-    registerCategory,
-    "default", _(u"Basic configuration"))
+    ControlPanel(), interfaces.IControlPanel, '')
 
 config.action(
     registerCategory,
-    "system", _(u"System configuration"),
+    "default", interfaces.IDefaultCategory,
+    _(u"Basic configuration"))
+
+config.action(
+    registerCategory,
+    "system", interfaces.ISystemCategory,
+    _(u"System configuration"),
     _(u"This area allows you to configure system."))
 
 config.action(
     registerCategory,
-    "ui", _(u"User interface configuration"),
+    "ui", interfaces.IUICategory,
+    _(u"User interface configuration"),
     _(u"This area allows you to configure portal look&amp;feel."))
 
 config.action(
     registerCategory,
-    "content", _(u"Content types"),
-    _(u"This area allows you to configure portal content types."))
-
-config.action(
-    registerCategory,
-    "principals", _("Principals management"),
+    "principals", interfaces.IPrincipalsCategory,
+    _("Principals management"),
      _("Portal principals management panel."))
-
-
-#api.registerRelation(
-#    u"memphis.controlpanel", title=u'Control panel configlet')
-#
-#api.registerBehavior(
-#    u'memphis.controlpanel', IControlPanel, ControlPanel,
-#    title = u'Control Panel')

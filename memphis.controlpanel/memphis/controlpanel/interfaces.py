@@ -76,3 +76,19 @@ class IConfigletData(interface.Interface):
         title = u'Configlet data',
         default = {},
         required = True)
+
+
+class IDefaultCategory(interface.Interface):
+    """ default """
+
+
+class ISystemCategory(interface.Interface):
+    """ system category """
+
+
+class IUICategory(interface.Interface):
+    """ ui category """
+
+
+class IPrincipalsCategory(interface.Interface):
+    """ principals category """
