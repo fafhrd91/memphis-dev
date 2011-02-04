@@ -55,7 +55,6 @@ from memphis.storage.directives import schema, relation, behavior
 
 _marker = object()
 
-
 schemaExecuted = []
 relationExecuted = []
 

@@ -8,14 +8,18 @@ from memphis.container import pagelets, interfaces
 from memphis.container.location import LocationWrapper
 
 
-class AddingMenu(object):
+class AddingMenu(view.Pagelet):
+    view.pagelet(
+        pagelets.IAddingMenuView,
+        template = view.template('memphis.container:templates/addingmenu.pt'))
 
     def update(self):
         self.url = self.request.resource_url(self.context)
         self.factories = interfaces.IFactoryVocabulary(self.context)
 
 
-class AddingForm(object):
+class AddingForm(view.View):
+    view.pyramidView('+', interfaces.IManageableContainer)
 
     def __call__(self):
         request = self.request
@@ -32,19 +36,5 @@ class AddingForm(object):
 
 config.action(
     view.registerPagelet,
-    pagelets.IAddingMenuView,
-    klass = AddingMenu,
-    template = view.template('memphis.container:templates/addingmenu.pt'))
-
-
-config.action(
-    view.registerView,
-    '+', interfaces.IManageableContainer,
-    klass = AddingForm)
-
-
-config.action(
-    view.registerPagelet,
     form.IFormActionsView, interfaces.IAddContentForm,
     template = view.template('memphis.container:templates/addformactions.pt'))
-
