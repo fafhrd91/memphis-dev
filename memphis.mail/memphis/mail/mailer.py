@@ -15,10 +15,6 @@ class Mailer(object):
     interface.implements(IMailer)
 
     def send(self, fromaddr, toaddrs, message):
-        if self.disabled:
-            logger.info("Tring to send mail, but mailer is disabled.")
-            return
-
         # log message
         if self.log_emails:
             logger.log(logging.INFO, toaddrs)
@@ -31,7 +27,7 @@ class Mailer(object):
             mailer = SMTPMailer(self.hostname, self.port)
 
         # delivery
-        if self.no_delivery:
+        if self.disabled:
             logger.info("Mail delivery is disabled.")
             return
 

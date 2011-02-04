@@ -59,19 +59,14 @@ class IMailer(IMailDelivery):
                         u'as the errors handler address.'),
         required = False)
 
-    disabled = schema.Bool(
-        title = _(u'Disabled'),
-        description = _(u'Disable sending message.'),
-        default = False)
-
     log_emails = schema.Bool(
         title = _(u'Log messages'),
         description= _(u'Log email address and message.'),
         default = False)
 
-    no_delivery = schema.Bool(
-        title = _(u'No delivery'),
-        description = _('Disable final delivery to smtp server.'),
+    disabled = schema.Bool(
+        title = _(u'Disabled'),
+        description = _(u'Disable sending message.'),
         default = False)
 
 

@@ -27,3 +27,39 @@ We can use IMailDelivery.send method
 
   >>> getEMails(True)
   [('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')]
+
+
+using smtp auth
+
+  >>> mailer.smtpuser = u'nikolay'
+  >>> mailer.smtppass = u'12345'
+  >>> mailer.send('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')
+  SMTP Auth selected
+
+  >>> mailer.smtpuser = u''
+
+logging
+
+  >>> mailer.log_emails = True
+  >>> mailer.send('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')
+  >>> _ = getEMails(True)
+  >>> mailer.log_emails = False
+  
+disable mailer
+
+  >>> getEMails()
+  []
+  >>> mailer.disabled = True
+  >>> mailer.send('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')
+  >>> getEMails()
+  []
+
+  >>> mailer.disabled = False
+
+exception in smtp maler
+
+  >>> SMTPMailer.raiseError = True
+  >>> mailer.send('nikolay@z3ext.net', ('fafhrd@z3ext.net',), 'Test message')
+  >>> getEMails()
+  []
+  >>> del SMTPMailer.raiseError

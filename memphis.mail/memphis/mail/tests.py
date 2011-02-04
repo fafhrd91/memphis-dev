@@ -16,7 +16,13 @@ from interfaces import IMailer
 emails = []
 
 def send(self, fromaddr, toaddr, message):
+    if getattr(self, 'raiseError', False):
+        raise ValueError
+
+    if self.username:
+        print "SMTP Auth selected"
     emails.append((fromaddr, toaddr, message))
+
 
 def getEMails(clear=True):
     global emails
@@ -28,6 +34,7 @@ def getEMails(clear=True):
 
 def setUp(test):
     test.globs['getEMails'] = getEMails
+    test.globs['SMTPMailer'] = SMTPMailer
     memphis.config.loadPackage('memphis.mail')
     setUpDatastorage(test)
     testing.setUpTestAsModule(test, 'memphis.TESTS')
@@ -36,8 +43,6 @@ def setUp(test):
     mailer = Mailer()
     mailer.hostname = 'localhost'
     mailer.port = 25
-    mailer.username = ''
-    mailer.password = ''
     mailer.email_from_name = u'Portal administrator'
     mailer.email_from_address = u'portal@z3ext.net'
     mailer.errors_address = ''
