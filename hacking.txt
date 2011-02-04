@@ -1,0 +1,51 @@
+================
+Memphis test app
+================
+
+In `testapp` run buildout:
+
+   >> python2.6 ./bootstrap.py -c devel.cfg
+   >> ./bin/buildout -n -c devel.cfg
+   
+Application initialization code is in:
+
+   src/testapp/__init__.py
+ 
+Run application:
+
+   >> ./bin/paster serve development.ini
+   
+Application runs on 6543 port:
+
+   >> http://localhost:6543/
+   
+sqlite3 is used as database, it is created automaticly on startup:
+
+   >> ./parts/db.sqlite
+
+
+Code examples::
+
+   Preferences system
+   
+       1. simple custom preferences 
+       
+         # ./src/testapp/prefs.py
+         
+       2. use preferences for additional user functionality,
+          change password form
+        
+         # memphis/users/preferences.py
+         
+         
+   Control panel configlet
+   
+       1. Mailer configlet (wrapper for zope.sendmail)
+       
+         # memphis/mail/mailer.py
+         
+      2. Password tool
+      
+         # memphis/users/passwordtool.py
+
+       
