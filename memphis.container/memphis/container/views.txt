@@ -1,0 +1,14 @@
+================
+Adding menu/form
+================
+
+    >>> from pyramid.testing import DummyRequest
+    >>> from memphis import storage, view
+    >>> from memphis.container import pagelets, IContainer, ISimpleContainer
+
+    >>> container = IContainer(storage.insertItem(ISimpleContainer))
+    >>> request = DummyRequest()
+
+No menu
+
+#    >>> view.renderPagelet(pagelets.IAddingMenuView, container, request)

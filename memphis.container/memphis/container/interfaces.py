@@ -1,5 +1,6 @@
 """ Container-related interfaces
 """
+from memphis import storage
 from zope import schema, interface
 from zope.interface.common.mapping import IItemMapping
 from zope.interface.common.mapping import IReadMapping, IEnumerableMapping
@@ -7,7 +8,6 @@ from pyramid.i18n import TranslationStringFactory
 
 _ = TranslationStringFactory('memphis.container')
 
-from memphis import storage
 
 
 class IContained(interface.Interface):

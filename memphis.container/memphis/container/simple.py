@@ -9,7 +9,7 @@ from zope.lifecycleevent import ObjectRemovedEvent
 
 from memphis import config, storage
 from exceptions import InvalidItemType
-from interfaces import IContained, ISimpleContainer
+from interfaces import ISimpleContainer, ISimpleContained
 
 
 class ISimpleContainerRelation(interface.Interface):
@@ -22,18 +22,19 @@ class ISimpleContainerRelation(interface.Interface):
 
 
 class Contained(storage.BehaviorBase):
-    interface.implements(IContained)
+    interface.implements(ISimpleContained)
 
-    storage.behavior('sample.contained', relation=ISimpleContainerRelation,
+    storage.behavior('simple.contained', relation=ISimpleContainerRelation,
                      title = u'Contained item',
-                     description = u'Contained item for sample container.')
+                     description = u'Contained item for simple container.')
 
     def __init__(self, item, relation):
         self.context = item
         self.relation = relation
 
         try:
-            rel = self.relation.getRelations(destination=self.context).next()
+            rel = self.relation.getReferences(
+                destination=self.context.oid).next()
             self.__name__ = rel.name
             self.__parent__ = rel.__source__
         except StopIteration:
@@ -44,9 +45,9 @@ class Contained(storage.BehaviorBase):
 class Container(storage.BehaviorBase):
     interface.implements(ISimpleContainer)
 
-    storage.behavior('sample.container', relation=ISimpleContainerRelation,
+    storage.behavior('simple.container', relation=ISimpleContainerRelation,
                      title = u'Container',
-                     description = u'Sample container behavior.')
+                     description = u'Simple container implementation.')
 
     def __init__(self, item, relation):
         self.context = item
@@ -54,14 +55,14 @@ class Container(storage.BehaviorBase):
 
     def __iter__(self):
         relation = self.relation
-        for rel in relation.getRelations(self.context):
+        for rel in relation.getReferences(self.context.oid):
             yield rel.name
 
     keys = __iter__
 
     def __getitem__(self, name):
         try:
-            rel = self.relation.getRelations(self.context, name=name).next()
+            rel = self.relation.getReferences(self.context.oid, name=name).next()
             return rel.__destination__
         except StopIteration:
             pass
@@ -69,7 +70,7 @@ class Container(storage.BehaviorBase):
 
     def get(self, key, default=None):
         try:
-            rel = self.relation.getRelations(self.context, name=key).next()
+            rel = self.relation.getReferences(self.context.oid, name=key).next()
             return rel.__destination__
         except StopIteration:
             pass
@@ -77,22 +78,19 @@ class Container(storage.BehaviorBase):
 
     def values(self):
         relation = self.relation
-        for rel in relation.getRelations(self.context):
+        for rel in relation.getReferences(self.context.oid):
             yield rel.__destination__
 
     def __len__(self):
-        data = [r for r in self.relation.getRelations(self.context)]
-        if data is not None:
-            return len(data)
-        return 0
+        return len(list(self.relation.getReferences(self.context.oid)))
 
     def items(self):
-        for rel in self.relation.getRelations(self.context):
+        for rel in self.relation.getReferences(self.context.oid):
             yield rel.name, rel.__destination__
 
     def __contains__(self, key):
         try:
-            self.relation.getRelations(self.context, name=key).next()
+            self.relation.getReferences(self.context.oid, name=key).next()
             return True
         except StopIteration:
             pass
@@ -101,8 +99,8 @@ class Container(storage.BehaviorBase):
     has_key = __contains__
 
     def __setitem__(self, name, object):
-        if not IContained.providedBy(object):
-            raise InvalidItemType("Item has to implement IContained interface")
+        if not ISimpleContained.providedBy(object):
+            object.applyBehavior(ISimpleContained)
 
         if not isinstance(name, unicode):
             name = unicode(name)
@@ -118,7 +116,7 @@ class Container(storage.BehaviorBase):
         if old is not None:
             raise KeyError(name)
 
-        contained = IContained(object)
+        contained = ISimpleContained(object)
         oldname = contained.__name__
         oldparent = contained.__parent__
         oldname = None
@@ -126,17 +124,19 @@ class Container(storage.BehaviorBase):
 
         if oldparent is None or oldname is None:
             event = ObjectAddedEvent(object, container, name)
-        else:
-            event = ObjectMovedEvent(
-                object, oldparent, oldname, container, name)
+        # fixme: fix moving item from one container to another
+        #else:
+        #    event = ObjectMovedEvent(
+        #        object, oldparent, oldname, container, name)
 
-        self.relation.insert(container, object, name=name)
+        self.relation.insert(container.oid, object.oid, name=name)
 
         notify(event)
 
     def __delitem__(self, name):
         try:
-            rel = self.relation.getRelations(self.context, name=name).next()
+            rel = self.relation.getReferences(
+                self.context.oid, name=name).next()
         except StopIteration:
             raise KeyError(name)
 

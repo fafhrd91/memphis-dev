@@ -21,11 +21,11 @@ class DecoratorSpecificationDescriptor(ObjectSpecificationDescriptor):
     >>> class I4(Interface):
     ...     pass
 
-    >>> class D1(SpecificationDecoratorBase):
+    >>> class D1(LocationWrapper):
     ...   implements(I1)
 
 
-    >>> class D2(SpecificationDecoratorBase):
+    >>> class D2(LocationWrapper):
     ...   implements(I2)
 
     >>> class X(object):
@@ -70,7 +70,7 @@ class DecoratorSpecificationDescriptor(ObjectSpecificationDescriptor):
         if inst is None:
             return getObjectSpecification(cls)
         else:
-            provided = providedBy(getProxiedObject(inst))
+            provided = providedBy(inst.__object__)
 
             # Use type rather than __class__ because inst is a proxy and
             # will return the proxied object's class.
@@ -82,9 +82,31 @@ class DecoratorSpecificationDescriptor(ObjectSpecificationDescriptor):
 
 
 class LocationWrapper(object):
-    """ readonly location wrapper """
+    """ readonly location wrapper
 
-    def __init__(self, object, parent, name):
+    >>> class Content(object):
+    ...     attr = 'Test'
+    ...     def __call__(self):
+    ...         return 'Called'
+
+    >>> content = Content()
+
+    >>> location = LocationWrapper(content, name='newlocation')
+
+    >>> location.attr
+    'Test'
+    >>> location()
+    'Called'
+    >>> location.__name__
+    'newlocation'
+    >>> location.__providedBy__ = None
+    Traceback (most recent call last):
+    ...
+    TypeError: Can't set __providedBy__ on a decorated object
+
+    """
+
+    def __init__(self, object, parent=None, name=''):
         self.__object__ = object
         self.__parent__ = parent
         self.__name__ = name

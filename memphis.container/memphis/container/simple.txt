@@ -7,33 +7,32 @@ Register behavior with zcml directive.
    >>> from zope import interface, component
    >>> from zope.component.eventtesting import getEvents, clearEvents
 
-   >>> from memphis.storage import api, container, interfaces
-   >>> from memphis.storage.interfaces import IContained, IContainer
+   >>> from memphis import storage, container
+   >>> from memphis.container import IContained, IContainer, ISimpleContainer
 
 
 Create container
 ----------------
 
-   >>> itemCont = api.insertItem()
-   >>> itemCont.applyBehavior('base.container', 'base.contained')
+   >>> itemCont = storage.insertItem()
+   >>> itemCont.applyBehavior(ISimpleContainer)
+
+   >>> ISimpleContainer.providedBy(itemCont)
+   True
 
    >>> IContainer.providedBy(itemCont)
    True
 
-   >>> container = itemCont.getBehavior('base.container')
+   >>> container = IContainer(itemCont)
    >>> container
-   <memphis.storage.container.Container object at ...>
+   <memphis.container.simple.Container object at ...>
 
    >>> container = IContainer(itemCont)
    >>> container
-   <memphis.storage.container.Container object at ...>
+   <memphis.container.simple.Container object at ...>
 
    >>> len(container)
    0
-
-# fixme: need to use martian for adapter registration probably
-   >>> interfaces.IItem(container) is itemCont
-   True
 
    >>> container['item1']
    Traceback (most recent call last):
@@ -46,26 +45,16 @@ Create container
 
 Let's add contained item
 
-   >>> item = api.insertItem()
+   >>> item = storage.insertItem()
+   >>> IContained.providedBy(item)
+   False
+   
    >>> container[u'item1'] = item
-   Traceback (most recent call last):
-   ...
-   InvalidItemType: Item has to implement IContained interface
-
-   >>> item.applyBehavior('base.contained')
-
-   >>> print IContained(item).__name__
-   None
-
-   >>> print IContained(item).__parent__
-   None
 
    >>> container[''] = item
    Traceback (most recent call last):
    ...
    ValueError: empty names are not allowed
-
-   >>> container['item1'] = item
 
    >>> ev = getEvents()[-1]
    >>> ev
@@ -76,6 +65,9 @@ Let's add contained item
    
    >>> ev.newName
    u'item1'
+
+   >>> IContained.providedBy(item)
+   True
 
    >>> IContained(item).__parent__.oid == itemCont.oid
    True
@@ -121,7 +113,7 @@ Let's add contained item
    >>> getEvents()
    []
 
-   >>> item2 = api.insertItem('base.contained')
+   >>> item2 = storage.insertItem()
    >>> container[u'item1'] = item2
    Traceback (most recent call last):
    ...
@@ -131,16 +123,16 @@ Let's add contained item
    >>> list(container.keys())
    [u'item1', u'item2']
 
-   >>> list(api.getItemBRelations(item.oid))[0].__source__.oid == itemCont.oid
+   >>> list(item.getBackReferences())[0].__source__.oid == itemCont.oid
    True
 
-   >>> list(api.getItemBRelations(item2.oid))[0].__source__.oid == itemCont.oid
+   >>> list(item2.getBackReferences())[0].__source__.oid == itemCont.oid
    True
 
-   >>> for rel in api.getItemRelations(itemCont.oid):
+   >>> for rel in itemCont.getReferences():
    ...     print rel.type, rel.__destination__
-   base.container <memphis.storage...>
-   base.container <memphis.storage...>
+   simple.container <memphis.storage...>
+   simple.container <memphis.storage...>
 
 
 Delete item
@@ -157,7 +149,7 @@ Delete item
    >>> ev.oldParent.oid == itemCont.oid
    True
 
-   >>> list(api.getItemRelations(item.oid))
+   >>> list(item.getReferences())
    []
 
    >>> list(container.keys())
@@ -166,9 +158,9 @@ Delete item
    >>> 'item1' in container
    False
 
-   >>> for rel in api.getItemRelations(itemCont.oid):
+   >>> for rel in itemCont.getReferences():
    ...     print rel.type, rel.__destination__
-   base.container <memphis.storage...>
+   simple.container <memphis.storage...>
 
    >>> del container['item1']
    Traceback (most recent call last):

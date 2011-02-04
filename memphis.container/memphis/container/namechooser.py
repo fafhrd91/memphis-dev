@@ -4,7 +4,7 @@ $Id: namechooser.py 4729 2011-02-03 05:26:47Z nikolay $
 """
 from zope import interface
 from memphis import config
-from interfaces import IContainer, INameChooser
+from interfaces import _, IContainer, INameChooser
 
 
 class NameChooser(object):
@@ -15,16 +15,23 @@ class NameChooser(object):
         self.context = context
 
     def checkName(self, name, object):
-        """See zope.container.interfaces.INameChooser
+        """See memphis.container.interfaces.INameChooser
 
         We create and populate a dummy container
 
-        >>> from zope.container.sample import SampleContainer
-        >>> container = SampleContainer()
-        >>> container['foo'] = 'bar'
-        >>> from zope.container.contained import NameChooser
+        >>> from memphis import storage
+        >>> from memphis.container.interfaces import ISimpleContainer
+        >>> container = IContainer(storage.insertItem(ISimpleContainer))
+
+        >>> container['foo'] = storage.insertItem()
+        >>> from memphis.container.namechooser import NameChooser
 
         An invalid name raises a ValueError:
+
+        >>> NameChooser(container).checkName('', object())
+        Traceback (most recent call last):
+        ...
+        ValueError: An empty name was provided. Names cannot be empty.
 
         >>> NameChooser(container).checkName('+foo', object())
         Traceback (most recent call last):
@@ -50,23 +57,23 @@ class NameChooser(object):
         >>> NameChooser(container).checkName('2', object())
         True
 
-        We can reserve some names by providing a IReservedNames adapter
-        to a container:
+        #We can reserve some names by providing a IReservedNames adapter
+        #to a container:
 
-        >>> from zope.container.interfaces import IContainer
-        >>> class ReservedNames(object):
-        ...     zope.component.adapts(IContainer)
-        ...     zope.interface.implements(IReservedNames)
-        ...
-        ...     def __init__(self, context):
-        ...         self.reservedNames = set(('reserved', 'other'))
+        #>>> from zope.container.interfaces import IContainer
+        #>>> class ReservedNames(object):
+        #...     zope.component.adapts(IContainer)
+        #...     zope.interface.implements(IReservedNames)
+        #...
+        #...     def __init__(self, context):
+        #...         self.reservedNames = set(('reserved', 'other'))
 
-        >>> zope.component.getSiteManager().registerAdapter(ReservedNames)
+        #>>> zope.component.getSiteManager().registerAdapter(ReservedNames)
 
-        >>> NameChooser(container).checkName('reserved', None)
-        Traceback (most recent call last):
-        ...
-        NameReserved: reserved
+        #>>> NameChooser(container).checkName('reserved', None)
+        #Traceback (most recent call last):
+        #...
+        #NameReserved: reserved
         """
 
         if isinstance(name, str):
@@ -104,11 +111,11 @@ class NameChooser(object):
 
         We create and populate a dummy container
 
-        >>> from zope.container.sample import SampleContainer
-        >>> container = SampleContainer()
-        >>> container['foobar.old'] = 'rst doc'
+        >>> from memphis import storage
+        >>> from memphis.container.interfaces import ISimpleContainer
+        >>> container = IContainer(storage.insertItem(ISimpleContainer))
 
-        >>> from zope.container.contained import NameChooser
+        >>> container['foobar.old'] = storage.insertItem()
 
         the suggested name is converted to unicode:
 
@@ -129,6 +136,12 @@ class NameChooser(object):
 
         >>> NameChooser(container).chooseName('', [])
         u'list'
+
+        If name is not convertible to unicode use empty name
+        >>> NameChooser(container).chooseName(
+        ...    '\xc3\x91\xc2\x82\xc3\x90\xc2\xb5\xc3\x91\xc2\x81\xc3\x91\xc2\x82',
+        ...     object())
+        u'object'
 
         """
         container = self.context
