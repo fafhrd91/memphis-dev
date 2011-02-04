@@ -54,11 +54,8 @@ class PasswordFormValidator(validator.InvariantsValidator):
 
 class CurrentPasswordValidator(validator.SimpleFieldValidator):
     config.adapts(
-        interface.Interface,
-        interface.Interface,
         IPersonalPasswordForm,
-        CurrentPassword,
-        interface.Interface)
+        CurrentPassword)
 
     def validate(self, value):
         super(CurrentPasswordValidator, self).validate(value)
