@@ -27,6 +27,7 @@ def getEMails(clear=True):
 
 
 def setUp(test):
+    test.globs['getEMails'] = getEMails
     memphis.config.loadPackage('memphis.mail')
     setUpDatastorage(test)
     testing.setUpTestAsModule(test, 'memphis.TESTS')
@@ -53,6 +54,10 @@ def tearDown(test):
 
 def test_suite():
     return unittest.TestSuite((
+        doctest.DocFileSuite(
+            'template.txt',
+            setUp=setUp, tearDown=tearDown,
+            optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
         doctest.DocFileSuite(
             'mailer.txt',
             setUp=setUp, tearDown=tearDown,

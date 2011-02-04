@@ -16,7 +16,8 @@ class ControlPanel(dict):
     __name__ = 'settings'
     __parent__ = view.Root
 
-    configlets = {}
+    def __init__(self):
+        self.configlets = {}
 
     def addConfiglet(self, configlet):
         category = self[configlet.__category__]
@@ -34,9 +35,10 @@ class ControlPanel(dict):
         return "ControlPanel"
 
 
-config.action(
-    config.registerUtility,
-    ControlPanel(), interfaces.IControlPanel, '')
+def registerControlPanel():
+    config.registerUtility(ControlPanel(), interfaces.IControlPanel, '')
+
+config.action(registerControlPanel)
 
 config.action(
     registerCategory,
@@ -59,4 +61,4 @@ config.action(
     registerCategory,
     "principals", interfaces.IPrincipalsCategory,
     _("Principals management"),
-     _("Portal principals management panel."))
+    _("Portal principals management panel."))

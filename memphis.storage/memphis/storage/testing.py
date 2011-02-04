@@ -21,10 +21,10 @@ def setUpCA(test):
 
 
 def setUpDatastorage(test):
+    setUpCA(test)
+
     config.addPackage('memphis.storage.meta')
     config.loadPackage('memphis.config')
-
-    setUpCA(test)
 
     engine = create_engine('sqlite://')
     Session = sessionmaker()

@@ -104,7 +104,7 @@ class MailGenerator(object):
             mainmessage.attach(message)
 
             for msg in alternatives:
-                mainmessage.attach(IMailMessage(msg).message(
+                mainmessage.attach(MailGenerator(msg).message(
                         multipart_format, *args, **kw))
 
             message = mainmessage
@@ -125,10 +125,10 @@ class MailGenerator(object):
         if not message.has_key('X-Mailer'):
             message['X-mailer'] = 'memphis.mailer'
 
-        if 'To' not in message and context.to_address:
+        if not message.get('To') and context.to_address:
             message['To'] = context.to_address
 
-        if 'From' not in message and context.from_address:
+        if not message.get('From') and context.from_address:
             message['From'] = formataddr(
                 (context.from_name, context.from_address))
 

@@ -1,0 +1,176 @@
+============
+mailtemplate
+============
+
+  >>> from memphis import mail, view
+
+  >>> class MyMailTemplate(mail.MailTemplate):
+  ...     template = view.template('memphis.mail:tests.pt')
+  ...     subject = 'Test subject'
+  ...     charset = 'utf-8'
+  ...     contentType = 'text/html'
+
+  >>> class Content(object):
+  ...     pass
+  >>> content = Content()
+
+  >>> from pyramid.testing import DummyRequest
+
+  >>> request = DummyRequest()
+
+  >>> mt = MyMailTemplate(content, request)
+
+  >>> print mt()
+  From nobody ...
+  Content-Type: text/html; charset="utf-8"
+  MIME-Version: 1.0
+  Content-Transfer-Encoding: base64
+  Subject: =?utf-8?q?Test_subject?=
+  Date: ...
+  Message-ID: 
+  X-mailer: memphis.mailer
+  From: Portal administrator <portal@localhost.local>
+  <BLANKLINE>
+  VGVzdCBtYWlsIHRlbXBsYXRlIDEK
+  <BLANKLINE>
+
+We can send template
+
+  >>> mt.send(mail.formataddr(('', 'test@z3ext.net',),))
+  >>> from_hdr, to_hdr, message = getEMails(True)[0]
+  >>> from_hdr, to_hdr
+  (u'Portal administrator <portal@localhost.local>', 'test@z3ext.net')
+
+  >>> print message
+  Content-Type: text/html; charset="utf-8"
+  MIME-Version: 1.0
+  Content-Transfer-Encoding: base64
+  Subject: =?utf-8?q?Test_subject?=
+  Date: ...
+  Message-ID: 
+  X-mailer: memphis.mailer
+  To: test@z3ext.net
+  From: Portal administrator <portal@localhost.local>
+  <BLANKLINE>
+  VGVzdCBtYWlsIHRlbXBsYXRlIDEK
+  <BLANKLINE>
+
+We can add header to template
+
+  >>> mt.addHeader('X-Mailer', 'doctests')
+  >>> print mt()
+  From ...
+  Content-Type: text/html; charset="utf-8"
+  ...
+  X-Mailer: doctests
+  ...
+  <BLANKLINE>
+
+We add any header to generated mail message
+
+  >>> print mt(**{'To': ('nkim@memphis.org', False),
+  ...             'Reply-To': 'return@memphis.org'})
+  From ...
+  Content-Type: text/html; charset="utf-8"
+  ...
+  To: nkim@memphis.org
+  Reply-To: return@memphis.org
+  ...
+  <BLANKLINE>
+
+  >>> mt.hasHeader('to')
+  True
+
+  >>> mt.hasHeader('TO')
+  True
+
+  >>> mt.hasHeader('unknown')
+  False
+
+We can add files to mail template
+
+  >>> img = 'GIF89a\t\x00\r\x00\x91\x02\x00\xb3\xb3\xb3\xff\xa5\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\x00\x00\x02\x00,\x00\x00\x00\x00\t\x00\r\x00\x00\x02\x16\x94\x8fy\xc1\xcb\xef^\x88\x07Xe\x01\xbe\x06v9}\x12\xa5\x94H\x01\x00;'
+  >>> mt.addAttachment(img, 'image/gif', 'test.gif')
+
+  >>> print mt()
+  From ...
+  Content-Type: multipart/mixed; boundary="===============...=="
+  ...
+  Subject: =?utf-8?q?Test_subject?=
+  ...
+  --===============...==
+  Content-Type: image/gif
+  MIME-Version: 1.0
+  Content-Id: <test.gif@z3ext>
+  Content-Disposition: attachment; filename="test.gif"
+  Content-Transfer-Encoding: base64
+  R0lGODlhCQANAJECALOzs/+lAP///wAAACH5BAEAAAIALAAAAAAJAA0AAAIWlI95wcvvXogHWGUB
+  vgZ2OX0SpZRIAQA7
+  --===============...==
+  ...
+
+  >>> img = 'GIF89a\t\x00\r\x00\x91\x02\x00\xb3\xb3\xb3\xff\xa5\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\x00\x00\x02\x00,\x00\x00\x00\x00\t\x00\r\x00\x00\x02\x16\x94\x8fy\xc1\xcb\xef^\x88\x07Xe\x01\xbe\x06v9}\x12\xa5\x94H\x01\x00;'
+  >>> mt.addAttachment(img, 'image/gif', 'test2.gif', 'inline')
+
+  >>> print mt()
+  From ...
+  Content-Type: multipart/mixed; boundary="===============...=="
+  ...
+  --===============...==
+  Content-Type: image/gif
+  MIME-Version: 1.0
+  Content-Id: <test.gif@z3ext>
+  Content-Disposition: attachment; filename="test.gif"
+  Content-Transfer-Encoding: base64
+  <BLANKLINE>
+  R0lGODlhCQANAJECALOzs/+lAP///wAAACH5BAEAAAIALAAAAAAJAA0AAAIWlI95wcvvXogHWGUB
+  vgZ2OX0SpZRIAQA7
+  --===============...==
+  ...
+  --===============...==
+  Content-Type: image/gif
+  MIME-Version: 1.0
+  Content-Id: <test2.gif@z3ext>
+  Content-Disposition: inline; filename="test2.gif"
+  Content-Transfer-Encoding: base64
+  <BLANKLINE>
+  R0lGODlhCQANAJECALOzs/+lAP///wAAACH5BAEAAAIALAAAAAAJAA0AAAIWlI95wcvvXogHWGUB
+  vgZ2OX0SpZRIAQA7
+  --===============...==--
+  ...
+
+
+We can add alternative multipart message
+Let's register alternative mail template
+
+  >>> class MyAltMailTemplate(mail.MailTemplate):
+  ...     template = view.template('memphis.mail:tests_text.pt')
+  ...     contentType = 'text/palin'
+  ...     subject = u'Test subject'
+  ...     charset = 'utf-8'
+
+  >>> mt.addAlternative(MyAltMailTemplate(content, request))
+
+  >>> print mt()
+  From ...
+  Content-Type: multipart/alternative;
+      boundary="===============...=="
+  MIME-Version: 1.0
+  Subject: =?utf-8?q?Test_subject?=
+  To: nkim@memphis.org
+  Reply-To: return@memphis.org
+  X-Mailer: doctests
+  Date: ...
+  Message-ID: 
+  From: Portal administrator <portal@localhost.local>
+  <BLANKLINE>
+  ...
+  --===============...==--
+
+
+We can send template
+
+  >>> mt.send(('test@z3ext.net',))
+  >>> from_hdr, to_hdr, message = getEMails(True)[-1]
+  >>> from_hdr, to_hdr
+  (u'Portal administrator <portal@localhost.local>', 'nkim@memphis.org')

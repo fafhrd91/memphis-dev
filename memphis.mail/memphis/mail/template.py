@@ -29,12 +29,9 @@ class MailTemplate(object):
     errors_address = ''
 
 
-    def __init__(self, context, request, **kw):
+    def __init__(self, context, request):
         self.context = context
         self.request = request
-
-        for attr, value in kw.items():
-            setattr(self, attr, value)
 
         self._files = []
         self._headers = {}
@@ -82,8 +79,8 @@ class MailTemplate(object):
 
         return self.template(**kwargs)
 
-    def send(self, emails = None, **kw):
-        if not emails:
+    def send(self, emails=None, **kw):
+        if emails:
             self.to_address = emails
 
         message = self(**kw)
@@ -93,10 +90,12 @@ class MailTemplate(object):
 
     def __call__(self, **kw):
         for key, value in kw.items():
-            setattr(self, key, value)
+            if type(value) is tuple:
+                self.addHeader(key, value[0], value[1])
+            else:
+                self.addHeader(key, value)
 
         self.update()
-
         return MailGenerator(self)()
 
 
