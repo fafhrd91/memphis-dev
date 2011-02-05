@@ -43,10 +43,6 @@ def setUpDatastorage(test):
 
 def tearDownDatastorage(test):
     sqlalchemy.orm.clear_mappers()
-
-    meta.cleanUp()
-    registry.cleanUp()
-
     storage.setSession(None)
     storage.setMetadata(None)
     catesting.tearDown(test)

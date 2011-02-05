@@ -147,3 +147,6 @@ def registerBehavior(name, spec, factory, relation=None, schema=None,
 def cleanUp():
     global registry
     registry = Registry()
+
+
+config.registerCleanup(cleanUp)

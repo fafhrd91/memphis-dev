@@ -49,7 +49,7 @@ import martian
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
-from memphis import storage
+from memphis import storage, config
 from memphis.storage import registry
 from memphis.storage.directives import schema, relation, behavior
 
@@ -140,3 +140,5 @@ def cleanUp():
     global schemaExecuted, relationExecuted
     schemaExecuted = []
     relationExecuted = []
+
+config.registerCleanup(cleanUp)
