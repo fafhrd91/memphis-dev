@@ -29,6 +29,7 @@ class LayoutView(object):
             if context is None:
                 break
 
+        id = getattr(context, '__id__', '')
         base_url = url.resource_url(cp, self.request)
 
         for category in cp.values():
@@ -38,7 +39,7 @@ class LayoutView(object):
                         'description': configlet.__description__,
                         'url': '%s%s/%s/'%(base_url, category.__name__,
                                            configlet.__name__),
-                        'selected': configlet.__id__ == context.__id__
+                        'selected': configlet.__id__ == id
                         }
 
                 configlets.append((configlet.__title__, info))
@@ -72,8 +73,10 @@ def registerRoute():
 config.action(registerRoute)
 
 
-# control panel view
-class ControlPanelView(object):
+class ControlPanelView(view.View):
+    view.pyramidView(
+        'index.html', IControlPanel,
+        template=view.template('memphis.controlpanel:templates/category.pt'))
 
     def update(self):
         super(ControlPanelView, self).update()
@@ -106,12 +109,6 @@ class ControlPanelView(object):
         data.sort()
         self.data = [info for t, info in data]
 
-
-config.action(
-    view.registerView,
-    'index.html', IControlPanel, ControlPanelView,
-    template=view.template('memphis.controlpanel:templates/category.pt'))
-
 config.action(
     view.registerDefaultView,
     'index.html', IControlPanel)
@@ -119,8 +116,9 @@ config.action(
 
 # configlet view
 
-class Configlet(form.EditForm):
+class Configlet(form.EditForm, view.View):
     """ configlet view """
+    view.pyramidView('index.html', IConfiglet)
 
     prefix = 'configlet.'
 
@@ -135,11 +133,6 @@ class Configlet(form.EditForm):
     @property
     def fields(self):
         return field.Fields(self.context.__schema__)
-
-
-config.action(
-    view.registerView,
-    'index.html', IConfiglet, Configlet)
 
 config.action(
     view.registerDefaultView, 'index.html', IConfiglet)

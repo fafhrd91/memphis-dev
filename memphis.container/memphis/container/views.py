@@ -4,6 +4,7 @@ $Id: views.py 4729 2011-02-03 05:26:47Z nikolay $
 """
 from pyramid import url
 from zope import interface
+from zope.component import getAdapters
 from zope.schema.vocabulary import SimpleVocabulary
 from memphis import view, config, form
 from memphis.container import pagelets, interfaces
@@ -36,6 +37,21 @@ class AddingForm(view.View):
             return view.renderView('', factory, request)
 
         raise NotFound
+
+
+class Actions(view.Pagelet):
+    view.pagelet(
+        pagelets.IActions,
+        template = view.template('memphis.container:templates/actions.pt'))
+
+    def update(self):
+        self.actions = [action for name, action in 
+                        getAdapters((self.context,), interfaces.IAction)]
+
+    def render(self):
+        if self.actions:
+            return super(Actions, self).render()
+        return u''
 
 
 config.action(

@@ -3,9 +3,11 @@
 $Id: form.py 4729 2011-02-03 05:26:47Z nikolay $
 """
 from webob.exc import HTTPFound
+from pyramid import url
 from pyramid.exceptions import NotFound
 
 from zope import schema, interface, event
+from zope.component import getMultiAdapter
 from zope.lifecycleevent import ObjectCreatedEvent
 
 from memphis import config, view
@@ -39,12 +41,13 @@ class AddFormNameValidator(validator.InvariantsValidator):
         container = self.view.context.__parent__
 
         # check content name
-        chooser = interfaces.INameChooser(container)
+        chooser = getMultiAdapter(
+            (container, self.view.context), interfaces.INameChooser)
 
         name = self.view.getName(None)
         if name or interfaces.IEmptyNamesNotAllowed.providedBy(container):
             try:
-                chooser.checkName(name, None)
+                chooser.checkName(name)
             except Exception, err:
                 error = ContentNameError(unicode(err))
                 errors.append(error)
@@ -87,9 +90,9 @@ class AddContentForm(form.Form):
         name = self.getName(object)
         container = self.context.__parent__
 
-        chooser = interfaces.INameChooser(container)
+        chooser = getMultiAdapter((container, object), interfaces.INameChooser)
 
-        name = chooser.chooseName(name, object)
+        name = chooser.chooseName(name)
         container[name] = object
 
         self.addedObject = container[name]
@@ -145,3 +148,17 @@ class AddContentForm(form.Form):
             return not interfaces.IContainerNamesContainer.providedBy(context)
         else:
             return False
+
+
+class Action(object):
+    interface.implements(interfaces.IAction)
+
+    name = ''
+    title = ''
+    description = ''
+    
+    def __init__(self, context):
+        self.context = context
+
+    def url(self, request):
+        return '%s%s'%(url.resource_url(self.context, request), self.name)

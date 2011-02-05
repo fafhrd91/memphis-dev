@@ -30,6 +30,10 @@ class TTWSchema(storage.BehaviorBase):
         else:
             self.schema = DefaultSchema
 
+        for id in schema.getFields(self.schema):
+            field = self.schema[id]
+            field.__name__ = str(field.__name__)
+
     def keys(self):
         return getFieldNamesInOrder(self.schema)
 

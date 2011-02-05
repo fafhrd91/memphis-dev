@@ -9,8 +9,9 @@ from pyramid import security
 from pyramid.config import Configurator
 from pyramid.exceptions import NotFound
 
-from memphis import view, config, ttwschema
+from memphis import view, config, ttwschema, container
 from memphis.form import form, field
+from memphis.form.pagelets import IFormView
 from memphis.preferences.root import Preferences
 from memphis.preferences.interfaces import IPreferences, IPreference
 from memphis.preferences.interfaces import ITTWProfileConfiglet
@@ -41,9 +42,11 @@ def registerRoute():
 config.action(registerRoute)
 
 
-
 # preferences view
-class PreferencesView(object):
+class PreferencesView(view.View):
+    view.pyramidView(
+        'index.html', IPreferences,
+        template=view.template('memphis.preferences:templates/category.pt'))
 
     def update(self):
         super(PreferencesView, self).update()
@@ -81,12 +84,6 @@ class PreferencesView(object):
         data.sort()
         self.data = [info for t, info in data]
 
-
-config.action(
-    view.registerView,
-    'index.html', IPreferences, PreferencesView,
-    template=view.template('memphis.preferences:templates/category.pt'))
-
 config.action(
     view.registerDefaultView,
     'index.html', IPreferences)
@@ -94,8 +91,9 @@ config.action(
 
 # preference view
 
-class Preference(form.EditForm):
+class Preference(view.View, form.EditForm):
     """ configlet view """
+    view.pyramidView('index.html', IPreference)
 
     prefix = 'preference.'
 
@@ -111,35 +109,25 @@ class Preference(form.EditForm):
     def fields(self):
         return field.Fields(self.context.__schema__)
 
-
-config.action(
-    view.registerView,
-    'index.html', IPreference, Preference)
-
 config.action(
     view.registerDefaultView, 'index.html', IPreference)
 
 
 # profile configlet view
-class TTWProfileConfigletView(object):
+class TTWProfileConfigletView(view.View):
+    view.pyramidView('index.html', ITTWProfileConfiglet)
 
     def render(self):
         context = self.context
         sch = ttwschema.ITTWSchema(context)
-
         sch.__name__ = context.__name__
         sch.__parent__ = context.__parent__
-
         return view.renderPagelet(
             ttwschema.ISchemaView, sch, self.request)
 
-config.action(
-    view.registerView,
-    'index.html', ITTWProfileConfiglet,
-    klass = TTWProfileConfigletView)
 
-
-class AddProfileFieldView(object):
+class AddProfileFieldView(view.View):
+    view.pyramidView('+', ITTWProfileConfiglet)
     
     def __call__(self):
         context = self.context
@@ -149,7 +137,26 @@ class AddProfileFieldView(object):
         return view.renderView('+', sch, self.request)
 
 
-config.action(
-    view.registerView,
-    '+', ITTWProfileConfiglet,
-    klass = AddProfileFieldView)
+class ConfigletActions(view.Pagelet):
+    view.pagelet(container.pagelets.IActions, ITTWProfileConfiglet)
+    
+    def __call__(self):
+        context = self.context
+        sch = ttwschema.ITTWSchema(context)
+        sch.__name__ = context.__name__
+        sch.__parent__ = context.__parent__
+        return view.renderPagelet(
+            container.pagelets.IActions, sch, self.request)
+
+
+class ConfigletSchemaPreview(view.View):
+    view.pyramidView('preview.html', ITTWProfileConfiglet)
+
+    def __call__(self):
+        context = self.context
+        sch = ttwschema.ITTWSchema(context)
+        sch.__name__ = context.__name__
+        sch.__parent__ = context.__parent__
+        sch.title = context.__title__
+        sch.description = context.__description__
+        return view.renderView('preview.html', sch, self.request)

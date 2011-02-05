@@ -7,6 +7,10 @@ from memphis import view
 from memphis.container.interfaces import IContainer
 
 
+class IActions(interface.Interface):
+    view.pageletType("container:actions")
+
+
 class IListingView(interface.Interface):
     view.pageletType("container:listing", IContainer)
 

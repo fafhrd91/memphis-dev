@@ -10,4 +10,9 @@ from memphis.container.interfaces import ISimpleContained
 from memphis.container.interfaces import ISimpleContainer
 
 # forms
+from memphis.container.form import Action
 from memphis.container.form import AddContentForm
+
+
+# pagelets
+from memphis.container import pagelets

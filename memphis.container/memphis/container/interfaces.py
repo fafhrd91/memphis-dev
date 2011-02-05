@@ -138,3 +138,13 @@ class INameChooser(interface.Interface):
 
 class IAddContentForm(interface.Interface):
     """ content ad form """
+
+
+class IAction(interface.Interface):
+    """ item action """
+
+    name = interface.Attribute('Name')
+
+    title = interface.Attribute('Title')
+
+    description = interface.Attribute('Description')

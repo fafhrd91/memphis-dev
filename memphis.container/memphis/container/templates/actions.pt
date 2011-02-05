@@ -1,0 +1,7 @@
+<ul class="z-wizard-wizardsteps">
+    <li tal:repeat="action view.actions"
+	tal:attributes="class request.url.endswith(action.name) and
+			'z-wizard-selected' or None">
+      <a href="${action.url(request)}">${action.title}</a> 
+    </li>
+</ul>
