@@ -2,7 +2,6 @@
 
 from memphis.container.interfaces import IContained
 from memphis.container.interfaces import IContainer
-from memphis.container.interfaces import IManageableContainer
 from memphis.container.interfaces import IFactory
 from memphis.container.interfaces import IFactoryVocabulary
 

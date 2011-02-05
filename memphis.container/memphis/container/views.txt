@@ -7,8 +7,16 @@ Adding menu/form
     >>> from memphis.container import pagelets, IContainer, ISimpleContainer
 
     >>> container = IContainer(storage.insertItem(ISimpleContainer))
+    >>> container.__name__ = 'test'
+    >>> container.__parent__ = None
     >>> request = DummyRequest()
 
-No menu
+No addable content
 
-#    >>> view.renderPagelet(pagelets.IAddingMenuView, container, request)
+    >>> print view.renderPagelet(pagelets.IAddingMenuView, container, request)
+    <div class="z-cp-frame">
+      <h2>Add fields</h2>
+      <ul>
+    <BLANKLINE>
+      </ul>
+    </div>

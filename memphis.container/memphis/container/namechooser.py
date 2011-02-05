@@ -8,13 +8,14 @@ from interfaces import _, IContainer, INameChooser
 
 
 class NameChooser(object):
-    config.adapts(IContainer)
     interface.implements(INameChooser)
+    config.adapts(IContainer, interface.Interface)
 
-    def __init__(self, context):
+    def __init__(self, context, object):
         self.context = context
+        self.object = object
 
-    def checkName(self, name, object):
+    def checkName(self, name):
         """See memphis.container.interfaces.INameChooser
 
         We create and populate a dummy container
@@ -28,39 +29,38 @@ class NameChooser(object):
 
         An invalid name raises a ValueError:
 
-        >>> NameChooser(container).checkName('', object())
+        >>> NameChooser(container, object()).checkName('')
         Traceback (most recent call last):
         ...
         ValueError: An empty name was provided. Names cannot be empty.
 
-        >>> NameChooser(container).checkName('+foo', object())
+        >>> NameChooser(container, object()).checkName('+foo')
         Traceback (most recent call last):
         ...
         ValueError: Names cannot begin with '+' or '@' or contain '/'
 
         A name that already exists raises a KeyError:
 
-        >>> NameChooser(container).checkName('foo', object())
+        >>> NameChooser(container, object()).checkName('foo')
         Traceback (most recent call last):
         ...
         KeyError: u'The given name is already being used'
 
         A name must be a string or unicode string:
 
-        >>> NameChooser(container).checkName(2, object())
+        >>> NameChooser(container, object()).checkName(2)
         Traceback (most recent call last):
         ...
         TypeError: ('Invalid name type', <type 'int'>)
 
         A correct name returns True:
 
-        >>> NameChooser(container).checkName('2', object())
+        >>> NameChooser(container, object()).checkName('2')
         True
 
         #We can reserve some names by providing a IReservedNames adapter
         #to a container:
 
-        #>>> from zope.container.interfaces import IContainer
         #>>> class ReservedNames(object):
         #...     zope.component.adapts(IContainer)
         #...     zope.interface.implements(IReservedNames)
@@ -70,7 +70,7 @@ class NameChooser(object):
 
         #>>> zope.component.getSiteManager().registerAdapter(ReservedNames)
 
-        #>>> NameChooser(container).checkName('reserved', None)
+        #>>> NameChooser(container, None).checkName('reserved')
         #Traceback (most recent call last):
         #...
         #NameReserved: reserved
@@ -104,8 +104,8 @@ class NameChooser(object):
         return True
 
 
-    def chooseName(self, name, object):
-        """See zope.container.interfaces.INameChooser
+    def chooseName(self, name):
+        """See memphis.container.interfaces.INameChooser
 
         The name chooser is expected to choose a name without error
 
@@ -119,28 +119,27 @@ class NameChooser(object):
 
         the suggested name is converted to unicode:
 
-        >>> NameChooser(container).chooseName('foobar', object())
+        >>> NameChooser(container, object()).chooseName('foobar')
         u'foobar'
 
         If it already exists, a number is appended but keeps the same extension:
 
-        >>> NameChooser(container).chooseName('foobar.old', object())
+        >>> NameChooser(container, object()).chooseName('foobar.old')
         u'foobar-2.old'
 
         Bad characters are turned into dashes:
 
-        >>> NameChooser(container).chooseName('foo/foo', object())
+        >>> NameChooser(container, object()).chooseName('foo/foo')
         u'foo-foo'
 
         If no name is suggested, it is based on the object type:
 
-        >>> NameChooser(container).chooseName('', [])
+        >>> NameChooser(container, []).chooseName('')
         u'list'
 
         If name is not convertible to unicode use empty name
-        >>> NameChooser(container).chooseName(
-        ...    '\xc3\x91\xc2\x82\xc3\x90\xc2\xb5\xc3\x91\xc2\x81\xc3\x91\xc2\x82',
-        ...     object())
+        >>> NameChooser(container, object()).chooseName(
+        ...    '\xff\xc3\xb5\xc3\x91\xc2\x81\xc3\x91\xc2\x82')
         u'object'
 
         """
@@ -154,7 +153,7 @@ class NameChooser(object):
         name = name.replace('/', '-').lstrip('+@')
 
         if not name:
-            name = unicode(object.__class__.__name__)
+            name = unicode(self.object.__class__.__name__)
 
         # for an existing name, append a number.
         # We should keep client's os.path.extsep (not ours), we assume it's '.'
@@ -172,6 +171,6 @@ class NameChooser(object):
             n = name + u'-' + unicode(i) + suffix
 
         # Make sure the name is valid.  We may have started with something bad.
-        self.checkName(n, object)
+        self.checkName(n)
 
         return n

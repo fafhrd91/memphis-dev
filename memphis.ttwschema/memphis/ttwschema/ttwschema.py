@@ -18,7 +18,7 @@ class DefaultSchema(interface.Interface):
 
 
 class TTWSchema(storage.BehaviorBase):
-    interface.implements(ITTWSchema, container.IManageableContainer)
+    interface.implements(ITTWSchema, container.IContainer)
     storage.behavior('memphis.ttwschema', ITTWSchema, schema=ITTWSchema)
 
     def __init__(self, *args, **kw):

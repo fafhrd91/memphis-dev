@@ -2,7 +2,9 @@
 
 $Id: views.py 4729 2011-02-03 05:26:47Z nikolay $
 """
+from pyramid import url
 from zope import interface
+from zope.schema.vocabulary import SimpleVocabulary
 from memphis import view, config, form
 from memphis.container import pagelets, interfaces
 from memphis.container.location import LocationWrapper
@@ -14,12 +16,14 @@ class AddingMenu(view.Pagelet):
         template = view.template('memphis.container:templates/addingmenu.pt'))
 
     def update(self):
-        self.url = self.request.resource_url(self.context)
-        self.factories = interfaces.IFactoryVocabulary(self.context)
+        self.url = url.resource_url(self.context, self.request)
+        self.factories = interfaces.IFactoryVocabulary(self.context, None)
+        if self.factories is None:
+            self.factories = SimpleVocabulary(())
 
 
 class AddingForm(view.View):
-    view.pyramidView('+', interfaces.IManageableContainer)
+    view.pyramidView('+', interfaces.IContainer)
 
     def __call__(self):
         request = self.request

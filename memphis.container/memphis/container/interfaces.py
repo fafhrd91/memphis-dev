@@ -100,10 +100,6 @@ class ISimpleContainer(IContainer):
 
 
 # adding
-class IManageableContainer(IContainer):
-    """ marker interface """
-
-
 class IEmptyNamesNotAllowed(interface.Interface):
     """ marker interface """
 
@@ -131,12 +127,13 @@ class IFactoryVocabulary(schema.interfaces.IVocabulary):
 
 
 class INameChooser(interface.Interface):
+    """ adapter for (container, object) """
 
-    def checkName(object, name):
-        """ """
+    def checkName(name):
+        """ check name """
 
-    def chooseName(object, name):
-        """ """
+    def chooseName(name):
+        """ choose name """
 
 
 class IAddContentForm(interface.Interface):
