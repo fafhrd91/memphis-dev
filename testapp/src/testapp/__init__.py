@@ -11,7 +11,7 @@ from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
 from memphis import storage
 from memphis import config as memphis_config
-from memphis.contenttype import root
+from memphis.container import root
 
 my_session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
 

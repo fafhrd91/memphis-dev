@@ -1,8 +1,7 @@
-""" content types system implementation
+""" content type interfaces
 
 $Id: interfaces.py 11771 2011-01-29 22:56:56Z fafhrd91 $
 """
-from memphis import view
 from zope import schema, interface
 from pyramid.i18n import TranslationStringFactory
 
@@ -35,15 +34,7 @@ class IContent(interface.Interface):
     """ marker interface for content types """
 
 
-class IContained(interface.Interface):
-    """ """
-
-    __name__ = interface.Attribute('__name__')
-
-    __parent__ = interface.Attribute('__parent__')
-
-
-class IContentItem(IItem, IContained):
+class IContentItem(IItem):
     """ marker interface for content types """
 
 
@@ -119,21 +110,3 @@ class IContentTypeChecker(interface.Interface):
 
 class IContentTypeType(interface.interfaces.IInterface):
     """ content type type """
-
-
-
-# some useful behaviors
-class IRoot(IContainer, view.IRoot):
-    """ concept of application root """
-
-
-class InvalidContainerType(Exception): #Invalid, TypeError):
-    """The type of a container is not valid."""
-
-
-class InvalidItemType(Exception): #Invalid, TypeError):
-    """The type of an item is not valid."""
-
-
-class InvalidType(Exception): #Invalid, TypeError):
-    """The type of an object is not valid."""

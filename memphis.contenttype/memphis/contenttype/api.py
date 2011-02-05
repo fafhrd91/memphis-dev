@@ -5,7 +5,7 @@ $Id: api.py 11771 2011-01-29 22:56:56Z fafhrd91 $
 from zope.component import getSiteManager
 
 from memphis import storage
-from memphis.contenttype import behaviors, root
+from memphis.contenttype import behaviors
 from memphis.contenttype.interfaces import \
     IContent, IContentItem, IContainer, IContentType, IContentTypeSchema
 from memphis.contenttype.contenttype import \

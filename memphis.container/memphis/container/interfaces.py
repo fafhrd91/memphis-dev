@@ -148,3 +148,8 @@ class IAction(interface.Interface):
     title = interface.Attribute('Title')
 
     description = interface.Attribute('Description')
+
+
+# application root
+class IRoot(IContainer):
+    """ root """
