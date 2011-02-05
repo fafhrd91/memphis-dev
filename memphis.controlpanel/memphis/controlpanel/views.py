@@ -11,9 +11,54 @@ from memphis.controlpanel.interfaces import IConfiglet, IControlPanel
 
 
 # layout
+class LayoutView(object):
+
+    data = None
+
+    def update(self):
+        super(LayoutView, self).update()
+
+        context = self.maincontext
+        cp = getControlPanel()
+        if context is cp:
+            return
+
+        data = []
+        while not IConfiglet.providedBy(context):
+            context = getattr(context, '__parent__', None)
+            if context is None:
+                break
+
+        base_url = url.resource_url(cp, self.request)
+
+        for category in cp.values():
+            configlets = []
+            for configlet in category.values():
+                info = {'title': configlet.__title__,
+                        'description': configlet.__description__,
+                        'url': '%s%s/%s/'%(base_url, category.__name__,
+                                           configlet.__name__),
+                        'selected': configlet.__id__ == context.__id__
+                        }
+
+                configlets.append((configlet.__title__, info))
+
+            if configlets:
+                configlets.sort()
+                data.append(
+                    (category.title,
+                     {'title': category.title,
+                      'description': category.description,
+                      'configlets': [c for t, c in configlets]}))
+
+        data.sort()
+        self.data = [info for t, info in data]
+
+
 config.action(
     view.registerLayout,
     '', IControlPanel, parent='page', skipParent=True,
+    klass = LayoutView,
     template=view.template("memphis.controlpanel:templates/layout.pt"))
 
 

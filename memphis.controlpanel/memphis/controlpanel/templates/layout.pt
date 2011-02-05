@@ -1,13 +1,31 @@
 <div class="z-controlpanel-wrapper" style="font-size:75%">
   <div id="z-controlpanel" style="margin-left: 0;margin-right: 0;"
-       tal:define="nav string:test;
-		   noNav python: False; rendered view.render()">
+       tal:define="nav layout.data;
+		   noNav not bool(nav); rendered view.render()">
+    <tal:block tal:content="structure pagelet:container:actions" />
+    <br />
     <table class="z-cp-layout" tal:omit-tag="noNav">
       <tr tal:omit-tag="noNav">
-	<td class="z-cp-nav-wrapper"
-	    tal:condition="nav" tal:content="structure nav"></td>
-	<td id="z-portal-workspace"
-	    tal:omit-tag="noNav" tal:content="structure rendered"></td>
+	<td class="z-cp-nav-wrapper" tal:condition="nav">
+	  <div class="z-cp-nav">
+	    <tal:block tal:repeat="item nav">
+	      <div class="z-cp-nav-item">
+		<div class="z-cp-level1">
+		  ${item['title']}
+		</div>
+	      </div>
+	      <div tal:repeat="configlet item['configlets']"
+		   tal:attributes="class configlet['selected'] and 
+				   'z-cp-nav-item-selected' or 'z-cp-nav-item'">
+		<div class="z-cp-level2">
+		  <a href="${configlet['url']}">${configlet['title']}</a>
+		</div>
+	      </div>
+	    </tal:block>
+	  </div>
+	</td>
+	<td id="z-portal-workspace" tal:omit-tag="noNav">
+	  <tal:block tal:content="structure rendered" /></td>
       </tr>
     </table>
   </div>
