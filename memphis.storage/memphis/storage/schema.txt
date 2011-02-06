@@ -171,6 +171,9 @@ You can use `query` method to build custom queries to relation. `query`
 accept `sqlalchemy.query().filter` parameters. Schema object has
 `Type` attribute, it is `sqlalchemy` table instance::
 
+   >>> [s.title for s in sch.query()]
+   [u'New title']
+
    >>> [s.title for s in sch.query(sch.Type.title == 'New title')]
    [u'New title']
 

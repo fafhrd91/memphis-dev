@@ -68,8 +68,12 @@ class Item(object):
 
     @classmethod
     def getItem(cls, oid):
-        res = getSession().query(Item).filter(Item.oid == oid)
-        return res.first()
+        return getSession().query(Item).filter(Item.oid == oid).first()
+
+    @classmethod
+    def listItems(cls, type):
+        return getSession().query(Item).filter(
+            Item.type == getBehavior(type).name)
 
     @classmethod
     def insertItem(cls, type=''):

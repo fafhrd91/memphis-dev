@@ -52,6 +52,9 @@ def test_suite():
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             doctest.DocTestSuite(
+                'memphis.storage.behavior',
+                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            doctest.DocTestSuite(
                 'memphis.storage.datasheet',
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             ))

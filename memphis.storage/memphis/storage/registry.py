@@ -8,7 +8,7 @@ from zope.interface.interface import InterfaceClass
 from memphis import config
 from memphis.storage import hooks
 from memphis.storage.schema import Schema
-from memphis.storage.behavior import Behavior
+from memphis.storage.behavior import Behavior, BehaviorBase
 from memphis.storage.interfaces import ISchema, IBehavior
 from memphis.storage.exceptions import BehaviorNotFound, SchemaNotFound
 
@@ -125,28 +125,26 @@ def registerRelation(name, schema, klass=None,
 
 def registerBehavior(name, spec, factory, relation=None, schema=None,
                      title='', description = '', configContext=None, info=''):
-    # check relation
-    if relation:
-        config.addAction(
-            configContext,
-            discriminator = ('checkrelation', relation, schema, name),
-            callable=getRelation, args=(relation,))
 
-    bh = Behavior(name, title, spec, relation, factory, schema, description)
+    def _register(name, spec, factory, relation, schema, title, description):
+        # check relation
+        if relation:
+            getRelation(relation)
 
-    # register in internal registry
+        bh = Behavior(name, title, spec, relation, factory, schema, description)
+
+        # register in internal registry
+        registry.registerBehavior(bh)
+
     config.addAction(
         configContext,
         ('memphis.storage:registerBehavior', name),
-        callable= registry.registerBehavior,
-        args=(bh,), info=info)
+        callable= _register,
+        args=(name, spec, factory, relation, schema, title, description),
+        info=info)
 
-    return bh
 
-
+@config.cleanup
 def cleanUp():
     global registry
     registry = Registry()
-
-
-config.registerCleanup(cleanUp)

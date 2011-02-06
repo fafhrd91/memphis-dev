@@ -4,9 +4,28 @@ $Id: behavior.py 11774 2011-01-30 07:39:51Z fafhrd91 $
 """
 import sqlalchemy
 from zope import interface
+from zope.schema import getFields
 from memphis.storage.hooks import getSession
-from memphis.storage.interfaces import IBehavior
+from memphis.storage.interfaces import IBehavior, IBehaviorBase
 from memphis.storage.exceptions import StorageException
+
+
+class BehaviorBase(object):
+    interface.implements(IBehaviorBase)
+
+    __behavior__ = None
+    __relation__ = None
+    __datasheet__ = None
+
+    def __init__(self, context, relation=None):
+        self.context = context
+        self.__relation__ = relation
+        if self.__behavior__.schema:
+            self.__datasheet__ = context.getDatasheet(self.__behavior__.schema)
+
+
+class BehaviorFactoryBase(object):
+    pass
 
 
 class Behavior(object):
@@ -21,6 +40,14 @@ class Behavior(object):
         self.schema = schema
         self.factory = factory
         self.relation = relation
+
+        if type(factory) is type and issubclass(factory, BehaviorBase):
+            factory.__behavior__ = self
+
+            if schema is not None:
+                for f_id in getFields(schema):
+                    if not hasattr(factory, f_id):
+                        setattr(factory, f_id, BehaviorProperty(schema[f_id]))
 
     def apply(self, item):
         # run custom code
@@ -90,3 +117,105 @@ class SQLBehavior(object):
         self.oid = oid
         self.name = name
         self.inst_id = inst_id
+
+
+_marker = object()
+
+class BehaviorProperty(object):
+    """ Special property thats reads and writes values from
+    instance's 'data' attribute
+
+    Let's define simple schema field
+
+    >>> from zope import schema
+    >>> field = schema.TextLine(
+    ...    title = u'Test',
+    ...    default = u'default value')
+    >>> field.__name__ = 'attr1'
+
+    Now we need content class
+
+    >>> class Content(object):
+    ...
+    ...    attr1 = BehaviorProperty(field)
+
+    >>> class Datasheet(object):
+    ...     pass
+
+    Lets create class instance and add field values storage
+
+    >>> ob = Content()
+    >>> ob.__datasheet__ = Datasheet()
+
+    By default we should get field default value
+
+    >>> ob.attr1
+    u'default value'
+
+    We can set only valid value
+
+    >>> ob.attr1 = 'value1'
+    Traceback (most recent call last):
+    ...
+    WrongType: ('value1', <type 'unicode'>, 'attr1')
+
+    >>> ob.attr1 = u'value1'
+    >>> ob.attr1
+    u'value1'
+
+    >>> ob.__datasheet__.attr1
+    u'value1'
+
+    If storage contains field value we shuld get it
+
+    >>> ob.__datasheet__.attr1 = u'value2'
+    >>> ob.attr1
+    u'value2'
+
+    We can't set value for readonly fields
+
+    >>> field.readonly = True
+    >>> ob.attr1 = u'value1'
+    Traceback (most recent call last):
+    ...
+    ValueError: ('attr1', u'Field is readonly')
+
+    >>> del ob.attr1
+    >>> ob.__datasheet__.__dict__
+    {}
+
+    """
+
+    def __init__(self, field, name=None):
+        if name is None:
+            name = field.__name__
+
+        self.__field = field
+        self.__name = name
+
+    def __get__(self, inst, klass):
+        if inst is None:
+            return self
+
+        datasheet = inst.__datasheet__
+        value = getattr(datasheet, self.__name, _marker)
+        if value is _marker:
+            return self.__field.default
+
+        return value
+
+    def __set__(self, inst, value):
+        datasheet = inst.__datasheet__
+
+        field = self.__field.bind(inst)
+        field.validate(value)
+        if field.readonly and \
+               getattr(datasheet, self.__name, _marker) is not _marker:
+            raise ValueError(self.__name, u'Field is readonly')
+
+        setattr(datasheet, self.__name, value)
+
+    def __delete__(self, inst):
+        datasheet = inst.__datasheet__
+        if hasattr(datasheet, self.__name):
+            delattr(datasheet, self.__name)

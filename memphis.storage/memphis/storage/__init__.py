@@ -16,6 +16,8 @@ from memphis.storage.registry import queryBehavior
 from memphis.storage.registry import registerSchema
 from memphis.storage.registry import registerBehavior
 from memphis.storage.registry import registerRelation
+from memphis.storage.behavior import BehaviorBase
+from memphis.storage.behavior import BehaviorFactoryBase
 from memphis.storage.models import initializeModels
 
 from exceptions import BehaviorException
@@ -28,6 +30,7 @@ from memphis.storage.directives import schema, relation, behavior
 
 getItem = Item.getItem
 insertItem = Item.insertItem
+listItems = Item.listItems
 
 
 def initialize(engine, models=True):
@@ -47,14 +50,3 @@ def initialize(engine, models=True):
     config.addAction(
         discriminator = ('memphis.storage:initialize',),
         callable=_create)
-
-
-class BehaviorBase(object):
-
-    def __init__(self, context, relation=None):
-        self.context = context
-        self.relation = relation
-
-
-class BehaviorFactoryBase(object):
-    pass

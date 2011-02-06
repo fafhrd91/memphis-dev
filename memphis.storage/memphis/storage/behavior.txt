@@ -63,8 +63,10 @@ let's also create schema::
 
     >>> storage.registerSchema(u'behavior', IBehavior)
 
-    >>> bh = storage.registerBehavior(
+    >>> storage.registerBehavior(
     ...     u'behavior', IBehavior, Behavior, schema=IBehavior)
+    >>> bh = storage.getBehavior(IBehavior)
+
 
 First parameter is behavior name, second is behavior interface and
 third parameter is behavior factory.
@@ -165,6 +167,11 @@ If behavior factory has `applyBehavior` method, it is been called::
 
     >>> item.applyBehavior(ISimpleBehavior)
     Simple behavior has been applied.
+
+List primary behavior items:
+
+    >>> list(storage.Item.listItems(IBehavior))
+    [<memphis.storage.item.Item ...>]
 
 
 Remove behavior

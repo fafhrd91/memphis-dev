@@ -136,9 +136,8 @@ class BehaviorFactoryGrokker(martian.ClassGrokker):
         return True
 
 
+@config.cleanup
 def cleanUp():
     global schemaExecuted, relationExecuted
     schemaExecuted = []
     relationExecuted = []
-
-config.registerCleanup(cleanUp)

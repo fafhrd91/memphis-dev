@@ -231,7 +231,18 @@ Let's define very basic container/contained behavior::
     >>> class IContainer(interface.Interface):
     ...     """ simple container behavior """
 
-We will use relation for container implementaion, more detail on relations later::
+Also lets use schema::
+
+    >>> class IContainerSchema(interface.Interface):
+    ...     storage.schema('container')
+    ...     
+    ...     title = schema.TextLine(
+    ...         title = u'Container title',
+    ...         default = u'No title')
+
+
+We will use relation for container implementaion, more detail on
+relations later::
 
     >>> class IContainerRelation(interface.Interface):
     ...     storage.relation('container')
@@ -259,15 +270,16 @@ Now implementation::
 
     >>> class Container(storage.BehaviorBase):
     ...     storage.behavior('container', IContainer, IContainerRelation,
+    ...                      IContainerSchema,
     ...                      title = 'Conainer implementaion')
     ...         
     ...     def keys(self):
     ...         return [rel.name for rel in
-    ...                 self.relation.getReferences(self.context.oid)]
+    ...                 self.__relation__.getReferences(self.context.oid)]
     ...     
     ...     def __getitem__(self, name):
     ...         try:
-    ...             rel = self.relation.getReferences(
+    ...             rel = self.__relation__.getReferences(
     ...                 self.context.oid, name=name).next()
     ...             return rel.__destination__
     ...         except StopIteration:
@@ -278,7 +290,7 @@ Now implementation::
     ...         if not IContained.providedBy(item):
     ...             item.applyBehavior('contained')
     ...         
-    ...         self.relation.insert(self.context.oid, item.oid, name=name)
+    ...         self.__relation__.insert(self.context.oid, item.oid, name=name)
     ...         
     >>> reGrok()
 
@@ -333,6 +345,22 @@ Let's add item to container and do some operations::
 
 Full implementation of container is available
 in ``memphis\storage\container.py``.
+
+If behavior declare schema usage, behavior can access schema datasheet as
+behavior attributes::
+
+    >>> itemCont.schemas
+    [u'container']
+
+    >>> datasheet = itemCont.getDatasheet(IContainerSchema)
+    >>> datasheet.title
+    u'No title'
+    >>> container.title
+    u'No title'
+
+    >>> container.title = u'Container title'
+    >>> datasheet.title
+    u'Container title'
 
 
 Relation

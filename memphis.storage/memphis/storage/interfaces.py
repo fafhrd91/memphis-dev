@@ -68,7 +68,7 @@ class ISchema(interface.Interface):
 
 
 class IBehavior(interface.Interface):
-    """ base interface for bahaviors """
+    """ behavior info interface """
 
     name = interface.Attribute('Name')
 
@@ -90,6 +90,18 @@ class IBehavior(interface.Interface):
 
     def __call__(item):
         """ create behavior for item """
+
+
+class IBehaviorBase(interface.Interface):
+    """ base behavior """
+
+    context = interface.Attribute('Storage item')
+
+    __behavior__ = interface.Attribute('IBehavior object')
+
+    __relation__ = interface.Attribute('Relation, if behavior uses relation')
+
+    __datasheet__ = interface.Attribute('Datasheet, if behavior uses schema')
 
 
 class IBehaviorAppliedEvent(IObjectEvent):

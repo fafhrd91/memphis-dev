@@ -70,7 +70,10 @@ class Schema(object):
 
     def query(self, *args):
         session = getSession()
-        return session.query(self.Type).filter(*args)
+        if args:
+            return session.query(self.Type).filter(*args)
+        else:
+            return session.query(self.Type)
 
     @classmethod
     def getItemSchemas(cls, oid):
