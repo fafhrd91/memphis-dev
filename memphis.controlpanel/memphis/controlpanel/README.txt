@@ -160,8 +160,6 @@ view for controlpanel:
 
     >>> print view.renderView('index.html', cp, DummyRequest())
     200 OK
-    Content-Type: text/html; charset=UTF-8
-    Content-Length: 574
     ...
     <a href="http://example.com/settings/mycategory/coolconfiglet/"></a>
     ...
@@ -172,10 +170,8 @@ System automaticly generate 'index.html' form based on configlet schema:
 
     >>> print view.renderView('index.html', configlet, DummyRequest())
     200 OK
-    Content-Type: text/html; charset=UTF-8
-    Content-Length: 1911
     ...
-     <form action="http://example.com" name="configlet" id="configlet" method="post" enctype="multipart/form-data">
+    <form action="http://example.com" name="configlet" id="configlet" method="post" enctype="multipart/form-data">
     ...
     </form>
     ...

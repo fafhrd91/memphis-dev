@@ -4,8 +4,7 @@ $Id: views.py 11810 2011-01-31 06:56:01Z fafhrd91 $
 """
 from pyramid import url
 from pyramid.config import Configurator
-from memphis import view, config
-from memphis.form import form, field
+from memphis import view, config, form
 from memphis.controlpanel.api import getControlPanel
 from memphis.controlpanel.interfaces import IConfiglet, IControlPanel
 
@@ -132,7 +131,8 @@ class Configlet(form.EditForm, view.View):
 
     @property
     def fields(self):
-        return field.Fields(self.context.__schema__)
+        return form.Fields(self.context.__schema__)
+
 
 config.action(
     view.registerDefaultView, 'index.html', IConfiglet)
