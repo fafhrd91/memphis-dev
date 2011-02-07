@@ -4,7 +4,7 @@ Schema & Datasheet
 
 Schema is just schema definition, it doesn't contain bahavior.
 
-    >>> from zope import interface, schema
+    >>> from zope import interface, schema, component
     >>> from memphis import storage
     >>> from memphis.storage import interfaces
 
@@ -62,6 +62,21 @@ We can query for less specific schema interface::
     Traceback (most recent call last):
     ...
     SchemaNotFound: <InterfaceClass memphis.storage.TESTS.IUnknown>
+
+Typed schemas
+
+    >>> class ISchemaType(interface.Interface):
+    ...     pass
+
+    >>> class ISuperSchema(interface.Interface):
+    ...     storage.schema('superschema', type=ISchemaType)
+    ...     
+    ...     title = schema.TextLine(title = u'Title')
+    >>> reGrok()
+
+    >>> component.getUtility(
+    ...     ISchemaType, 'superschema') is storage.getSchema(ISuperSchema)
+    True
     
 
 Apply schema

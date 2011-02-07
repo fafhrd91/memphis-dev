@@ -43,6 +43,8 @@ setup(name='memphis.storage',
                           'zope.interface',
                           'memphis.config',
                           ],
+      extras_require = dict(test=['memphis.config [test]',
+                                  ]),
       entry_points = {
         'memphis': ['include = memphis.storage']
         },
