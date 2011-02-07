@@ -41,7 +41,7 @@ Now system is ready for configuration::
 You have to initialize storage with this engine, this should be done during
 application initialization::
 
-    >>> storage.initialize(engine)
+    >>> storage.initialize(engine, session)
 
 Now you should commit configuration settings. You should register
 all required relations, schemas, behavior before commiting config.

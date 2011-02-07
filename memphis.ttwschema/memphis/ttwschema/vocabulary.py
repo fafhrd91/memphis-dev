@@ -10,18 +10,7 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 from memphis import config, container
 
-from interfaces import _, IFieldFactory, ITTWSchema
-
-
-@config.adapter(ITTWSchema)
-@interface.implementer(container.IFactoryVocabulary)
-def getFieldFactories(context=None):
-    fields = [(name, f) for name, f in
-              component.getUtilitiesFor(IFieldFactory)]
-    fields.sort()
-
-    return SimpleVocabulary([SimpleTerm(f, name, f.title)
-                             for name, f in fields])
+from interfaces import _
 
 
 # Static DisplayLists

@@ -2,10 +2,6 @@
 
     >>> from memphis import storage
 
-Register behavior
-
-    >>> bh = api.registerBehavior("app.root", IRoot, Root)
-
 Root item is automaticly created on the first access
 
     >>> item = getRoot()
@@ -21,26 +17,31 @@ Root item is automaticly created on the first access
 
 It's not pssible to create more than one root item
 
-    >>> item = api.insertItem('app.root')
+    >>> item = storage.insertItem('app.root')
     Traceback (most recent call last):
     ...
     BehaviorException: Can't create more than one root object.
 
 Also root behavior can't be dropped
 
-    >>> bh.remove(item)
+    >>> storage.getBehavior(IRoot).remove(item)
     Traceback (most recent call last):
     ...
     BehaviorException: Can't remove app.root behavior.
 
+Contained
+
+    >>> IContained(item)
+    <memphis.container.root.ContainedRoot ...>
+
 $Id: root.py 11777 2011-01-30 07:41:52Z fafhrd91 $
 """
 from zope import interface
-from memphis import storage
+from memphis import storage, config, view, container
+from memphis.container.simple import ISimpleContainerRelation
 
 from interfaces import IRoot
-
-BEHAVIOR_NAME = 'app.root'
+from container import ContentContainer
 
 
 def getRoot():
@@ -52,15 +53,13 @@ def getRoot():
         return storage.insertItem(IRoot)
 
 
-class Root(storage.BehaviorBase):
-    interface.implements(IRoot)
+class Root(ContentContainer):
+    interface.implements(IRoot, view.IRoot)
     storage.behavior(
         'app.root',
+        relation = ISimpleContainerRelation,
         title = u'Application root',
         description = u'Smiple implementation for Application Root concept')
-
-    def __init__(self, item):
-        self.item = item
 
     @classmethod
     def applyBehavior(cls, item, behavior):
@@ -74,3 +73,14 @@ class Root(storage.BehaviorBase):
     @classmethod
     def removeBehavior(cls, item, behavior):
         raise storage.BehaviorException("Can't remove app.root behavior.")
+
+
+class ContainedRoot(object):
+    config.adapts(IRoot)
+    interface.implements(container.IContained)
+
+    __name__ = ''
+    __parent__ = None
+
+    def __init__(self, root):
+        self.root = root

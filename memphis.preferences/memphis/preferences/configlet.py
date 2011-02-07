@@ -31,9 +31,9 @@ class TTWProfileConfiglet(object):
 
 
 @config.adapter(ITTWProfileConfiglet)
-@interface.implementer(ttwschema.ITTWSchema)
-def getTTWSchemar(configlet):
-    return ttwschema.ITTWSchema(configlet.__item__)
+@interface.implementer(ttwschema.ISchema)
+def getSchema(configlet):
+    return ttwschema.ISchema(configlet.__item__)
 
 
 config.action(

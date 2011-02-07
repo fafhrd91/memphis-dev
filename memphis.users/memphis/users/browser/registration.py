@@ -37,8 +37,6 @@ class Registration(form.Form):
             self.status = self.formErrorsMessage
             return
 
-        print data
-
         item = storage.insertItem('memphis.user')
         datasheet = item.getDatasheet(IUserInfo)
 

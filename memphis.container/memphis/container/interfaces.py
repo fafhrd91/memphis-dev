@@ -1,6 +1,6 @@
 """ Container-related interfaces
 """
-from memphis import storage
+from memphis import storage, view
 from zope import schema, interface
 from zope.interface.common.mapping import IItemMapping
 from zope.interface.common.mapping import IReadMapping, IEnumerableMapping
@@ -118,12 +118,20 @@ class IFactory(interface.Interface):
 
     schema = interface.Attribute('Content schema')
 
+    hiddenFields = interface.Attribute('List of hidden fields')
+
     def __call__(**kw):
         """ create item """
 
 
-class IFactoryVocabulary(schema.interfaces.IVocabulary):
-    """ factories vocabulary """
+class IFactoryProvider(interface.Interface):
+    """ IFactory provider """
+
+    def __iter__():
+        """ factories iterator """
+
+    def get(name, default=None):
+        """ get factory by name """
 
 
 class INameChooser(interface.Interface):
@@ -150,6 +158,13 @@ class IAction(interface.Interface):
     description = interface.Attribute('Description')
 
 
-# application root
-class IRoot(IContainer):
-    """ root """
+# contained item info
+class IContainedInfo(interface.Interface):
+
+    title = interface.Attribute('Title')
+
+    description = interface.Attribute('Description')
+
+    modified = interface.Attribute('Modified time')
+
+    type = interface.Attribute('Item type')

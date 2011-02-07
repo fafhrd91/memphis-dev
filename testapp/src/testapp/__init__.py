@@ -9,9 +9,9 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
-from memphis import storage
+from memphis import storage, view
 from memphis import config as memphis_config
-from memphis.container import root
+from memphis.contenttype import root
 
 my_session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
 
@@ -54,8 +54,8 @@ def main(global_config, **settings):
     memphis_config.commit()
 
     # initialize memphis
-    storage.initialize(pyramid_sqla.get_engine())
-    storage.setSession(pyramid_sqla.get_session())
+    storage.initialize(pyramid_sqla.get_engine(),
+                       pyramid_sqla.get_session())
 
     config.end()
     return config.make_wsgi_app()

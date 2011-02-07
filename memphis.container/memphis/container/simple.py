@@ -21,7 +21,7 @@ class ISimpleContainerRelation(interface.Interface):
         required = True)
 
 
-class Contained(storage.BehaviorBase):
+class SimpleContained(storage.BehaviorBase):
     interface.implements(ISimpleContained)
 
     storage.behavior('simple.contained', relation=ISimpleContainerRelation,
@@ -42,19 +42,15 @@ class Contained(storage.BehaviorBase):
             self.__parent__ = None
 
 
-class Container(storage.BehaviorBase):
+class SimpleContainer(storage.BehaviorBase):
     interface.implements(ISimpleContainer)
 
     storage.behavior('simple.container', relation=ISimpleContainerRelation,
                      title = u'Container',
                      description = u'Simple container implementation.')
 
-    def __init__(self, item, relation):
-        self.context = item
-        self.relation = relation
-
     def __iter__(self):
-        relation = self.relation
+        relation = self.__relation__
         for rel in relation.getReferences(self.context.oid):
             yield rel.name
 
@@ -62,7 +58,8 @@ class Container(storage.BehaviorBase):
 
     def __getitem__(self, name):
         try:
-            rel = self.relation.getReferences(self.context.oid, name=name).next()
+            rel = self.__relation__.getReferences(
+                self.context.oid, name=name).next()
             return rel.__destination__
         except StopIteration:
             pass
@@ -70,27 +67,28 @@ class Container(storage.BehaviorBase):
 
     def get(self, key, default=None):
         try:
-            rel = self.relation.getReferences(self.context.oid, name=key).next()
+            rel = self.__relation__.getReferences(
+                self.context.oid, name=key).next()
             return rel.__destination__
         except StopIteration:
             pass
         return default
 
     def values(self):
-        relation = self.relation
+        relation = self.__relation__
         for rel in relation.getReferences(self.context.oid):
             yield rel.__destination__
 
     def __len__(self):
-        return len(list(self.relation.getReferences(self.context.oid)))
+        return len(list(self.__relation__.getReferences(self.context.oid)))
 
     def items(self):
-        for rel in self.relation.getReferences(self.context.oid):
+        for rel in self.__relation__.getReferences(self.context.oid):
             yield rel.name, rel.__destination__
 
     def __contains__(self, key):
         try:
-            self.relation.getReferences(self.context.oid, name=key).next()
+            self.__relation__.getReferences(self.context.oid, name=key).next()
             return True
         except StopIteration:
             pass
@@ -129,17 +127,17 @@ class Container(storage.BehaviorBase):
         #    event = ObjectMovedEvent(
         #        object, oldparent, oldname, container, name)
 
-        self.relation.insert(container.oid, object.oid, name=name)
+        self.__relation__.insert(container.oid, object.oid, name=name)
 
         notify(event)
 
     def __delitem__(self, name):
         try:
-            rel = self.relation.getReferences(
+            rel = self.__relation__.getReferences(
                 self.context.oid, name=name).next()
         except StopIteration:
             raise KeyError(name)
 
         notify(ObjectRemovedEvent(rel.__destination__, self.context, name))
 
-        self.relation.remove(rel.oid)
+        self.__relation__.remove(rel.oid)

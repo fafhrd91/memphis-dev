@@ -132,14 +132,34 @@ class ITime(schema.interfaces.ITime):
         required=False)
 
 
-class ITTWSchema(interface.Interface):
+class ISchema(container.IContained):
     """ behavior/model for ttw schema """
     storage.schema('memphis.ttwschema')
+
+    title = schema.TextLine(
+        title = u'Title',
+        required = True)
+
+    description = schema.Text(
+        title = u'Description',
+        required = False)
 
     model = schema.Text(
         title = u'Model',
         default = u'')
 
+    published = schema.Bool(
+        title = u'Published',
+        default = False)
 
-class ITTWSchemaContainer(interface.Interface):
-    """ ttw schema container """
+    publishedmodel = schema.Text(
+        title = u'Published model',
+        default = u'')
+
+
+class ISchemaManagement(interface.Interface):
+    """ schema management configlet """
+
+
+class ISchemaType(storage.ISchema):
+    """ schema type """

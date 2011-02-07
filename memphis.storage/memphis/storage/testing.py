@@ -33,9 +33,8 @@ def setUpDatastorage(test):
     session = Session()
 
     config.begin()
-    storage.setSession(session)
     storage.setMetadata(sqlalchemy.MetaData())
-    storage.initialize(engine)
+    storage.initialize(engine, session)
 
     config.commit()
     session.commit()

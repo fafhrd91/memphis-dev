@@ -136,3 +136,16 @@ class BehaviorRemovedEvent(ObjectEvent):
         self.object = item
         self.name = name
         self.behavior = behavior
+
+
+class IStorageInitializedEvent(interface.Interface):
+    """ storage initialized event """
+
+    metadata = interface.Attribute('MetaData')
+
+
+class StorageInitializedEvent(object):
+    interface.implements(IStorageInitializedEvent)
+
+    def __init__(self, metadata):
+        self.metadata = metadata

@@ -3,6 +3,7 @@
 $Id: interfaces.py 11787 2011-01-31 00:38:52Z fafhrd91 $
 """
 from zope import schema, interface
+from zope.component.interfaces import IObjectEvent
 from pyramid.i18n import TranslationStringFactory
 
 from memphis import storage, view

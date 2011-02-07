@@ -3,7 +3,7 @@
 $Id: listing.py 11771 2011-01-29 22:56:56Z fafhrd91 $
 """
 from zope import interface
-from memphis.contenttype.interfaces import IContentItem, IContainer
+from memphis.contenttype.interfaces import IContentItem, IContentContainer
 
 
 class ListingView(object):

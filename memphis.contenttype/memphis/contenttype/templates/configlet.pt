@@ -1,0 +1,11 @@
+<h1>${context.__title__}</h1>
+<div>${context.__description__}</div>
+
+<br />
+<div class="z-cp-frame">
+  <h1>Content types</h1>
+  <br />
+  <tal:block content="structure pagelet:container:listing" />
+</div>
+
+<tal:block content="structure pagelet:container:addingmenu" />

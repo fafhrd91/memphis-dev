@@ -3,7 +3,7 @@
 $Id: configlet.py 11791 2011-01-31 02:57:54Z fafhrd91 $
 """
 from zope import interface
-from memphis import storage
+from memphis import storage, container
 from memphis.controlpanel.interfaces import IConfiglet, IConfigletData
 
 
@@ -26,7 +26,7 @@ class BehaviorFactory(object):
 
 
 class Configlet(object):
-    interface.implements(IConfiglet)
+    interface.implements(IConfiglet, container.IContained)
 
     @property
     def __name__(self):

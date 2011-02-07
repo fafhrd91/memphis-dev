@@ -2,6 +2,7 @@
 
 $Id: registry.py 11774 2011-01-30 07:39:51Z fafhrd91 $
 """
+from zope.component import getSiteManager
 from zope.interface.adapter import AdapterRegistry
 from zope.interface.interface import InterfaceClass
 
@@ -76,11 +77,14 @@ def queryBehavior(provided, spec=None, default=None):
     return registry.queryBehavior(provided, spec)
 
 
-def registerSchema(name, schema, klass=None,
+def registerSchema(name, schema, klass=None, type=None,
                    title='', description='', configContext=None, info=''):
 
-    def _register(name, schema, klass, title, description):
+    def _register(name, schema, klass, type, title, description):
         sob = Schema(name, schema, klass, title, description)
+
+        for tp in type:
+            getSiteManager().registerUtility(sob, tp, name)
 
         # register in internal registry
         registry.registerSchema(sob)
@@ -90,10 +94,15 @@ def registerSchema(name, schema, klass=None,
             hooks.getMetadata().create_all()
             session.flush()
 
+    if type is None:
+        type = ()
+    elif isinstance(type, InterfaceClass):
+        type = (type,)
+
     config.addAction(
         configContext,
         discriminator = ('memphis.storage:schema', name),
-        callable=_register, args=(name, schema, klass, title, description),
+        callable=_register, args=(name,schema,klass,type,title, description),
         info = info)
 
 

@@ -1,8 +1,5 @@
-""" content type interfaces
-
-$Id: interfaces.py 11771 2011-01-29 22:56:56Z fafhrd91 $
-"""
 from zope import schema, interface
+from memphis import storage, container, view
 from pyramid.i18n import TranslationStringFactory
 
 _ = TranslationStringFactory('memphis.contenttype')
@@ -30,20 +27,16 @@ class IItem(interface.Interface):
         required = False)
 
 
-class IContent(interface.Interface):
-    """ marker interface for content types """
-
-
 class IContentItem(IItem):
     """ marker interface for content types """
 
 
-class IContainer(IItem):
+class IContentContainer(container.ISimpleContainer):
     """ container for content """
 
 
-class IContentTypeSchema(interface.Interface):
-    """ content behavior schema """
+class IContent(interface.Interface):
+    """ behavior interface for content types """
 
     type = schema.TextLine(
         title = _(u'Type'),
@@ -51,12 +44,9 @@ class IContentTypeSchema(interface.Interface):
         required = True)
 
 
-class IContentType(interface.Interface):
-
-    name = schema.TextLine(
-        title = _(u'Name'),
-        description = _(u'Content Type Name'),
-        required = True)
+class IContentTypeSchema(interface.Interface):
+    """ schema for content type """
+    storage.schema('memphis.contenttype')
 
     title = schema.TextLine(
         title = _(u'Title'),
@@ -68,11 +58,25 @@ class IContentType(interface.Interface):
         description = _(u'Content Type Description'),
         required = False)
 
-    context = interface.Attribute('Context')
-    specification = interface.Attribute('Schema')
+    schemas = schema.Tuple(
+        title = _(u'Schemas'),
+        description = _(u'Content type schemas'),
+        value_type = schema.TextLine(),
+        default = (),
+        required = True)
 
-    schemas = interface.Attribute('List of additional schemas')
-    behaviors = interface.Attribute('List of additional behaviors')
+    behaviors = schema.Tuple(
+        title = _(u'Behaviors'),
+        description = _(u'Content type behaviors'),
+        value_type = schema.TextLine(),
+        default = (),
+        required = True)
+
+
+class IContentType(container.IFactory):
+    """ content type """
+
+    context = interface.Attribute('Context')
 
     def __bind__(context):
         """ bind to context """
@@ -110,3 +114,16 @@ class IContentTypeChecker(interface.Interface):
 
 class IContentTypeType(interface.interfaces.IInterface):
     """ content type type """
+
+
+class IContentTypesConfiglet(interface.Interface):
+    """ configlet """
+
+    
+class ISchemaType(storage.ISchema):
+    """ type """
+
+
+# application root
+class IRoot(IContentContainer, view.IRoot):
+    """ root """

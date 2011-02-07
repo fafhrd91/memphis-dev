@@ -2,8 +2,6 @@
   <div id="z-controlpanel" style="margin-left: 0;margin-right: 0;"
        tal:define="nav layout.data;
 		   noNav not bool(nav); rendered view.render()">
-    <tal:block tal:content="structure pagelet:container:actions" />
-    <br />
     <table class="z-cp-layout" tal:omit-tag="noNav">
       <tr tal:omit-tag="noNav">
 	<td class="z-cp-nav-wrapper" tal:condition="nav">
@@ -25,6 +23,7 @@
 	  </div>
 	</td>
 	<td id="z-portal-workspace" tal:omit-tag="noNav">
+	  <tal:block tal:content="structure pagelet:container:actions" />
 	  <tal:block tal:content="structure rendered" /></td>
       </tr>
     </table>

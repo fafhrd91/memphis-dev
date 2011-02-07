@@ -1,0 +1,19 @@
+<div class="z-cp-frame">
+  <h1>Content type schemas</h1>
+
+  <form method="post" action="${request.url}">
+    <ul>
+      <li tal:repeat="sch view.schemas">
+	<input type="checkbox" name="form-schemas" value="${sch.name}"
+	       tal:attributes="checked sch.name in context.schemas" />
+	${sch.title}
+	<div>${sch.description}</div>
+      </li>
+    </ul>
+    
+    <div class="z-form-controls">
+      <hr />
+      <input type="submit" name="form-save" value="Save" />
+    </div>
+  </form>
+</div>

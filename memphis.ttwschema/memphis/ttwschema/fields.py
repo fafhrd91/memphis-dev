@@ -3,7 +3,7 @@
 $Id: fields.py 11490 2009-12-07 09:29:34Z bubenkoff $
 """
 from rwproperty import getproperty, setproperty
-from zope import interface, schema
+from zope import interface, schema, component
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from z3c.schema.email import RFC822MailAddress
 from z3c.schema.baseurl.field import isValidBaseURL, BaseURL
@@ -30,17 +30,17 @@ def FieldType(*args, **kw):
 class FieldFactory(object):
     interface.implements(interfaces.IFieldFactory)
 
-    ignoreFields = (
+    hiddenFields = (
         'missing_value', 'default', 'readonly', 'value_type', 'order')
 
     def __init__(self, name, field, schema, title='', description='',
-                 ignoreFields = ()):
+                 hiddenFields = ()):
         self.name = name
         self.field = field
         self.schema = schema
         self.title = title
         self.description = description
-        self.ignoreFields = self.ignoreFields + ignoreFields
+        self.hiddenFields = self.hiddenFields + hiddenFields
 
         self.field.__factory__ = self
 
@@ -48,14 +48,26 @@ class FieldFactory(object):
         return self.field(**kw)
 
 
+class FactoryWrapper(object):
+    component.adapts(interfaces.ISchema)
+    interface.implements(interfaces.IFieldFactory)
+
+    def __init__(self, factory):
+        self.factory = factory
+
+    def __call__(self, context):
+        return self.factory
+
+
 Bool = FieldFactory(
     'boolean', schema.Bool, interfaces.IBool,
     title = _("Boolean"),
     description = _("Boolean field (YES or NO)."),
-    ignoreFields = ('min_length', 'max_length'))
+    hiddenFields = ('min_length', 'max_length'))
 
 config.action(
-    config.registerUtility, Bool, name = Bool.name)
+    config.registerAdapter, 
+    FactoryWrapper(Bool), (interfaces.ISchema,), name=Bool.name)
 
 
 Int = FieldFactory(
@@ -64,41 +76,44 @@ Int = FieldFactory(
     description = _("Field containing an Integer Value."))
 
 config.action(
-    config.registerUtility, Int, name = Int.name)
+    config.registerAdapter, 
+    FactoryWrapper(Int), (interfaces.ISchema,), name = Int.name)
 
 
 Text = FieldFactory(
     'Text', schema.Text, interfaces.IText,
     title = _("Text"),
     description = _("Field containing text with newlines."),
-    ignoreFields = ('min_length', 'max_length'))
+    hiddenFields = ('min_length', 'max_length'))
 
 config.action(
-    config.registerUtility, Text, name = Text.name)
+    config.registerAdapter,
+    FactoryWrapper(Text), (interfaces.ISchema,), name = Text.name)
 
 
 TextLine = FieldFactory(
     'TextLine', schema.TextLine, interfaces.ITextLine,
     title = _("Text Line"),
     description = _("Field containing text line without newlines."),
-    ignoreFields = ('min_length', 'max_length'))
+    hiddenFields = ('min_length', 'max_length'))
 
 config.action(
-    config.registerUtility, TextLine, name = TextLine.name)
+    config.registerAdapter, 
+    FactoryWrapper(TextLine), (interfaces.ISchema,), name = TextLine.name)
 
 
-Date = FieldType(
-    'Date', schema.Date, interfaces.IDate)
+#Date = FieldType(
+#    'Date', schema.Date, interfaces.IDate)
 
-Datetime = FieldType(
-    'Datetime', schema.Datetime, interfaces.IDatetime)
+#Datetime = FieldType(
+#    'Datetime', schema.Datetime, interfaces.IDatetime)
 
-Time = FieldType(
-    'Time', schema.Time, interfaces.ITime)
+#Time = FieldType(
+#    'Time', schema.Time, interfaces.ITime)
 
-EMail = FieldType(
-    'EMail', RFC822MailAddress, interfaces.IEmailField,
-    ignoreFields = Field.ignoreFields + ('max_length', 'min_length'))
+#EMail = FieldType(
+#    'EMail', RFC822MailAddress, interfaces.IEmailField,
+#    hiddenFields = Field.ignoreFields + ('max_length', 'min_length'))
 
 #RichText = FieldType(
 #    'RichText', RichText, interfaces.IRichText)
@@ -165,7 +180,7 @@ class MultiSelect(Field, schema.List, VocAccess):
     interface.implements(interfaces.IMultiSelect)
 
     missing_value = []
-    ignoreFields = Field.ignoreFields + ('unique', 'max_length', 'min_length')
+    hiddenFields = Field.ignoreFields + ('unique', 'max_length', 'min_length')
 
     def __init__(self, values=(), *args, **kw):
         kw['default'] = []
@@ -178,7 +193,7 @@ class MultiCheckbox(Field, schema.List, VocAccess):
     interface.implements(interfaces.IMultiCheckbox)
 
     missing_value = []
-    ignoreFields = Field.ignoreFields + ('unique', 'max_length', 'min_length')
+    hiddenFields = Field.ignoreFields + ('unique', 'max_length', 'min_length')
 
     def __init__(self, values=(), *args, **kw):
         kw['default'] = []
@@ -190,7 +205,7 @@ class MultiCheckbox(Field, schema.List, VocAccess):
 class Country(Field, schema.Choice, schema.TextLine):
     interface.implements(interfaces.ICountry)
 
-    ignoreFields = Field.ignoreFields + ('max_length', 'min_length')
+    hiddenFields = Field.ignoreFields + ('max_length', 'min_length')
 
     def __init__(self, *args, **kw):
         kw['vocabulary'] = vocabulary.countries
@@ -201,7 +216,7 @@ class Country(Field, schema.Choice, schema.TextLine):
 class State(Field, schema.Choice, schema.TextLine):
     interface.implements(interfaces.IState)
 
-    ignoreFields = Field.ignoreFields + ('max_length', 'min_length')
+    hiddenFields = Field.ignoreFields + ('max_length', 'min_length')
 
     def __init__(self, *args, **kw):
         kw['vocabulary'] = vocabulary.states

@@ -72,10 +72,10 @@ class SchemaGrokker(martian.InstanceGrokker):
         if value is _marker:
             return False
 
-        name, klass, t, d, info = value
+        name, klass, type, t, d, info = value
 
         registry.registerSchema(
-            name, interface, klass, t, d, configContext, info)
+            name, interface, klass, type, t, d, configContext, info)
         return True
 
 

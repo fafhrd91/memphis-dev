@@ -11,8 +11,8 @@ class schema(Directive):
     scope = CLASS
     store = ONCE_IFACE
 
-    def factory(self, name, klass=None, title = u'', description = u''):
-        return name, klass, title, description, getInfo()
+    def factory(self, name, klass=None, type=None, title=u'', description=u''):
+        return name, klass, type, title, description, getInfo()
 
 
 class relation(Directive):

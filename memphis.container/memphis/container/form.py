@@ -38,7 +38,7 @@ class AddFormNameValidator(validator.InvariantsValidator):
             return super(AddFormNameValidator, self).validate(data)
 
         errors = []
-        container = self.view.context.__parent__
+        container = interfaces.IContainer(self.view.context.__parent__)
 
         # check content name
         chooser = getMultiAdapter(
@@ -70,7 +70,8 @@ class AddContentForm(form.Form):
 
     @property
     def fields(self):
-        return field.Fields(self.context.schema, omitReadOnly=True)
+        return field.Fields(self.context.schema, omitReadOnly=True).omit(
+            *self.context.hiddenFields)
 
     @property
     def label(self):
@@ -88,7 +89,7 @@ class AddContentForm(form.Form):
 
     def add(self, object):
         name = self.getName(object)
-        container = self.context.__parent__
+        container = interfaces.IContainer(self.context.__parent__)
 
         chooser = getMultiAdapter((container, object), interfaces.INameChooser)
 

@@ -2,10 +2,12 @@
 
 $Id: location.py 4729 2011-02-03 05:26:47Z nikolay $
 """
-from zope.interface import providedBy
+from zope.interface import providedBy, implements
 from zope.interface.declarations import getObjectSpecification
 from zope.interface.declarations import ObjectSpecification
 from zope.interface.declarations import ObjectSpecificationDescriptor
+
+from interfaces import IContained
 
 
 class DecoratorSpecificationDescriptor(ObjectSpecificationDescriptor):
@@ -21,11 +23,11 @@ class DecoratorSpecificationDescriptor(ObjectSpecificationDescriptor):
     >>> class I4(Interface):
     ...     pass
 
-    >>> class D1(LocationWrapper):
+    >>> class D1(LocationProxy):
     ...   implements(I1)
 
 
-    >>> class D2(LocationWrapper):
+    >>> class D2(LocationProxy):
     ...   implements(I2)
 
     >>> class X(object):
@@ -81,8 +83,8 @@ class DecoratorSpecificationDescriptor(ObjectSpecificationDescriptor):
         raise TypeError("Can't set __providedBy__ on a decorated object")
 
 
-class LocationWrapper(object):
-    """ readonly location wrapper
+class LocationProxy(object):
+    """ readonly location proxy
 
     >>> class Content(object):
     ...     attr = 'Test'
@@ -91,7 +93,7 @@ class LocationWrapper(object):
 
     >>> content = Content()
 
-    >>> location = LocationWrapper(content, name='newlocation')
+    >>> location = LocationProxy(content, name='newlocation')
 
     >>> location.attr
     'Test'
@@ -105,16 +107,21 @@ class LocationWrapper(object):
     TypeError: Can't set __providedBy__ on a decorated object
 
     """
+    implements(IContained)
 
     def __init__(self, object, parent=None, name=''):
-        self.__object__ = object
-        self.__parent__ = parent
-        self.__name__ = name
+        dict = self.__dict__
+        dict['__object__'] = object
+        dict['__parent__'] = parent
+        dict['__name__'] = name
 
     def __call__(self, *args, **kw):
         return self.__object__(*args, **kw)
 
     def __getattr__(self, name):
         return getattr(self.__object__, name)
+
+    def __setattr__(self, name, value):
+        return setattr(self.__object__, name, value)
 
     __providedBy__ = DecoratorSpecificationDescriptor()

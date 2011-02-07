@@ -49,13 +49,12 @@ def registerConfiglet(name=None, schema=None, klass=None,
 
     # behavior
     bfactory = configlet.BehaviorFactory(name, bname)
-    behavior = storage.registerBehavior(
+    storage.registerBehavior(
         bname, schema, bfactory, schema = IConfigletData,
         title=title, description=description, configContext=configContext)
 
     # set additional attributes
     ConfigletClass.__category__ = category
-    ConfigletClass.__behavior__ = behavior
 
     # configlet instance
     inst = ConfigletClass()
@@ -66,6 +65,7 @@ def registerConfiglet(name=None, schema=None, klass=None,
     # register configlet in control panel
     def _register(configlet):
         getUtility(IControlPanel).addConfiglet(configlet)
+        inst.__behavior__ = storage.getBehavior(schema)
 
     config.addAction(
         configContext,

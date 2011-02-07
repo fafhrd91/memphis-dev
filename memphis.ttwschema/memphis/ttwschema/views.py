@@ -2,40 +2,64 @@
 
 $Id: views.py 4730 2011-02-03 05:27:33Z nikolay $
 """
-from zope.component import getUtility, queryUtility
+from webob.exc import HTTPFound
+from zope.component import getUtility, queryUtility, getMultiAdapter
 
-from memphis import config, view, container
-from memphis.form import field, form, button
-from memphis.ttwschema.interfaces import _, ITTWSchema
+from memphis import config, view, container, form
+from memphis.ttwschema.interfaces import _
 from memphis.ttwschema.interfaces import IField, IFieldFactory
-from memphis.ttwschema.vocabulary import getFieldFactories
+from memphis.ttwschema.interfaces import ISchema, ISchemaManagement
 
 import pagelets
+from configlet import SchemaFactory
+
 
 config.action(
     view.registerDefaultView,
     'index.html', IField)
 
-
-class SchemaView(view.Pagelet):
-    view.pagelet(
-        pagelets.ISchemaView,
-        template = view.template('memphis.ttwschema:templates/schemaview.pt'))
-
-    def update(self):
-        sch = self.context
-
-        self.fields = getFieldFactories()
-        self.url = self.request.resource_url(self.context)
+config.action(
+    view.registerDefaultView,
+    'listing.html', ISchema)
 
 
-class AddField(container.AddContentForm, view.View):
-    view.pyramidView('', IFieldFactory)
+class Listing(view.View):
+    view.pyramidView(
+        'index.html', ISchemaManagement,
+        template = view.template('memphis.ttwschema:templates/management.pt'))
 
-    @property
-    def fields(self):
-        return field.Fields(self.context.schema).omit(
-            *self.context.ignoreFields)
+
+class AddSchema(form.Form, view.View):
+    view.pyramidView('', SchemaFactory)
+
+    fields = form.Fields(ISchema).omit('model', 'published', 'publishedmodel')
+
+    label = _('Add schema')
+
+    def createAndAdd(self, data):
+        item = self.context.__parent__.create(data)
+        self.addedObject = item
+        return self.addedObject
+
+    @form.buttonAndHandler(_(u'Add'), name='add')
+    def handleAdd(self, action):
+        data, errors = self.extractData()
+
+        if errors:
+            view.addStatusMessage(
+                self.request, self.formErrorsMessage, 'warning')
+        else:
+            obj = self.createAndAdd(data)
+
+            if obj is not None:
+                self.addedObject = obj
+                self.finishedAdd = True
+                raise HTTPFound(location = '../../')
+
+    @form.buttonAndHandler(_(u'Cancel'), name='cancel')
+    def handleCancel(self, action):
+        url = pyramid.url.resource_url(self.context.__parent__, self.request)
+        raise HTTPFound(location = url)
 
 
 class FieldEdit(form.EditForm, view.View):
@@ -44,7 +68,7 @@ class FieldEdit(form.EditForm, view.View):
     @property
     def fields(self):
         factory = self.context.__factory__
-        return field.Fields(factory.schema).omit(*factory.ignoreFields)
+        return form.Fields(factory.schema).omit(*factory.hiddenFields)
 
     @property
     def label(self):
@@ -60,7 +84,7 @@ class FieldPreview(form.Form, view.View):
 
     @property
     def fields(self):
-        return field.Fields(self.context)
+        return form.Fields(self.context)
 
     @property
     def label(self):
@@ -71,7 +95,7 @@ class FieldPreview(form.Form, view.View):
     def description(self):
         return self.context.__factory__.description
 
-    @button.buttonAndHandler(_('Test field'), name='testfield')
+    @form.buttonAndHandler(_('Test field'), name='testfield')
     def handleTestField(self, action):
         data, errors = self.extractData()
         if errors:
@@ -82,11 +106,11 @@ class FieldPreview(form.Form, view.View):
 
 
 class SchemaPreview(form.Form, view.View):
-    view.pyramidView('preview.html', ITTWSchema)
+    view.pyramidView('preview.html', ISchema)
 
     @property
     def fields(self):
-        return field.Fields(self.context.schema)
+        return form.Fields(self.context.schema)
 
     @property
     def label(self):
@@ -96,7 +120,7 @@ class SchemaPreview(form.Form, view.View):
     def description(self):
         return self.context.description
 
-    @button.buttonAndHandler(_('Test schema'), name='testschema')
+    @form.buttonAndHandler(_('Test schema'), name='testschema')
     def handleTestSchema(self, action):
         data, errors = self.extractData()
         if errors:
@@ -104,6 +128,19 @@ class SchemaPreview(form.Form, view.View):
         else:
             view.addStatusMessage(
                 self.request, _('Schema has been processed successfully.'))
+
+
+class SchemaPublish(view.View):
+    view.pyramidView(
+        'publish.html', ISchema,
+        template = view.template('memphis.ttwschema:templates/publish.pt'))
+
+    def update(self):
+        if 'form-publish' in self.request.params:
+            self.context.published = True
+            self.context.publishedmodel = self.context.model
+            view.addStatusMessage(
+                self.request, _('Schema has been published.'))
 
 
 class EditAction(container.Action):
@@ -123,16 +160,24 @@ class PreviewAction(container.Action):
 
 
 class FieldsAction(container.Action):
-    config.adapts(ITTWSchema, 'listing')
+    config.adapts(ISchema, 'listing')
 
-    name = 'index.html'
+    name = 'listing.html'
     title = _('Fields')
     description = _('Schema fields')
 
 
 class SchemaPreviewAction(container.Action):
-    config.adapts(ITTWSchema, 'preview')
+    config.adapts(ISchema, 'preview')
 
     name = 'preview.html'
     title = _('Preview')
     description = _('Schema preview')
+
+
+class PublishAction(container.Action):
+    config.adapts(ISchema, 'publish')
+
+    name = 'publish.html'
+    title = _('Publish')
+    description = _('Publish schema')

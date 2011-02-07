@@ -25,10 +25,10 @@ def test_suite():
                 './simple.txt',
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
-            doctest.DocFileSuite(
-                './views.txt',
-                setUp=setUp, tearDown=tearDown,
-                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            #doctest.DocFileSuite(
+            #    './views.txt',
+            #    setUp=setUp, tearDown=tearDown,
+            #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             doctest.DocTestSuite(
                 'memphis.container.location',
                 setUp=setUp, tearDown=tearDown,
@@ -37,8 +37,8 @@ def test_suite():
                 'memphis.container.namechooser',
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
-            #doctest.DocTestSuite(
-            #    'memphis.container.root',
-            #    setUp=setUp, tearDown=tearDown,
-            #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            doctest.DocTestSuite(
+                'memphis.container.root',
+                setUp=setUp, tearDown=tearDown,
+                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             ))

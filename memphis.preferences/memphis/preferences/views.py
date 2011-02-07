@@ -91,7 +91,7 @@ config.action(
 
 # preference view
 
-class Preference(view.View, form.EditForm):
+class Preference(form.EditForm, view.View):
     """ configlet view """
     view.pyramidView('index.html', IPreference)
 

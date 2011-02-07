@@ -1,0 +1,11 @@
+<h1>${view.title}</h1>
+<div>${view.description}</div>
+
+<br />
+<div class="z-cp-frame">
+  <h1>Listing</h1>
+  <br />
+  <tal:block content="structure pagelet:container:listing" />
+</div>
+
+<tal:block content="structure pagelet:container:addingmenu" />

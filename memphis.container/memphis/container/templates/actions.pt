@@ -1,7 +1,10 @@
-<ul class="z-wizard-wizardsteps">
+<tal:block condition="view.actions">
+  <ul class="z-wizard-wizardsteps">
     <li tal:repeat="action view.actions"
 	tal:attributes="class request.url.endswith(action.name) and
 			'z-wizard-selected' or None">
       <a href="${action.url(request)}">${action.title}</a> 
     </li>
-</ul>
+  </ul>
+  <br />
+</tal:block>
