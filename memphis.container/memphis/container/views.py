@@ -28,7 +28,7 @@ class Listing(view.Pagelet):
 
     def values(self):
         for item in self.context.values():
-            yield interfaces.IContained(item)
+            yield interfaces.IContained(item, item)
 
 
 class ListingView(view.View):
@@ -105,21 +105,6 @@ class AddingForm(view.View):
 
 class AddContentForm(AddContentForm, view.View):
     view.pyramidView('', interfaces.IFactory)
-
-
-class Actions(view.Pagelet):
-    view.pagelet(
-        pagelets.IActions,
-        template = view.template('memphis.container:templates/actions.pt'))
-
-    def update(self):
-        self.actions = [action for name, action in 
-                        getAdapters((self.context,), interfaces.IAction)]
-
-    def render(self):
-        if self.actions:
-            return super(Actions, self).render()
-        return u''
 
 
 config.action(

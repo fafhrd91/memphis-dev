@@ -4,6 +4,8 @@ from memphis.container.interfaces import IContained
 from memphis.container.interfaces import IContainer
 from memphis.container.interfaces import INameChooser
 
+from memphis.container.interfaces import IAction
+
 # factory
 from memphis.container.interfaces import IFactory
 from memphis.container.interfaces import IFactoryProvider

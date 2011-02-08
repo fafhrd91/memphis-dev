@@ -10,50 +10,10 @@ from zope import schema, interface, event
 from zope.component import getMultiAdapter
 from zope.lifecycleevent import ObjectCreatedEvent
 
-from memphis import config, view
-from memphis.form import form, field, button, validator
-
+from memphis import config, view, form
 from memphis.container import interfaces
 
 _ = interfaces._
-
-
-class ContentNameError(schema.ValidationError):
-    __doc__ = _(u'Content name already in use.')
-
-    def __init__(self, msg):
-        self.__doc__ = msg
-
-
-class AddFormNameValidator(validator.InvariantsValidator):
-    config.adapts(
-        interface.Interface,
-        interface.Interface,
-        interfaces.IAddContentForm,
-        interface.Interface,
-        interface.Interface)
-
-    def validate(self, data):
-        if not self.view.nameAllowed():
-            return super(AddFormNameValidator, self).validate(data)
-
-        errors = []
-        container = interfaces.IContainer(self.view.context.__parent__)
-
-        # check content name
-        chooser = getMultiAdapter(
-            (container, self.view.context), interfaces.INameChooser)
-
-        name = self.view.getName(None)
-        if name or interfaces.IEmptyNamesNotAllowed.providedBy(container):
-            try:
-                chooser.checkName(name)
-            except Exception, err:
-                error = ContentNameError(unicode(err))
-                errors.append(error)
-                self.view.nameError = err
-
-        return tuple(errors) + super(AddFormNameValidator, self).validate(data)
 
 
 class AddContentForm(form.Form):
@@ -70,7 +30,7 @@ class AddContentForm(form.Form):
 
     @property
     def fields(self):
-        return field.Fields(self.context.schema, omitReadOnly=True).omit(
+        return form.Fields(self.context.schema, omitReadOnly=True).omit(
             *self.context.hiddenFields)
 
     @property
@@ -80,6 +40,29 @@ class AddContentForm(form.Form):
     @property
     def description(self):
         return self.context.description
+
+    def validate(self, data):
+        errors = super(AddContentForm, self).validate(data)
+
+        if not self.nameAllowed():
+            return errors
+
+        container = interfaces.IContainer(self.context.__parent__)
+
+        # check content name
+        chooser = getMultiAdapter(
+            (container, self.context), interfaces.INameChooser)
+
+        name = self.getName(None)
+        if name or interfaces.IEmptyNamesNotAllowed.providedBy(container):
+            try:
+                chooser.checkName(name)
+            except Exception, err:
+                error = form.CustomValidationError(unicode(err))
+                errors.append(error)
+                self.nameError = err
+
+        return errors
 
     def create(self, data):
         return self.context(**data)
@@ -105,7 +88,7 @@ class AddContentForm(form.Form):
         self.add(obj)
         return obj
 
-    @button.buttonAndHandler(_(u'Add'), name='add')
+    @form.buttonAndHandler(_(u'Add'), name='add')
     def handleAdd(self, action):
         data, errors = self.extractData()
 
@@ -123,7 +106,7 @@ class AddContentForm(form.Form):
                 self.finishedAdd = True
                 raise HTTPFound(location = self.nextURL())
 
-    @button.buttonAndHandler(_(u'Cancel'), name='cancel')
+    @form.buttonAndHandler(_(u'Cancel'), name='cancel')
     def handleCancel(self, action):
         view.addStatusMessage(self.request, self.formCancelMessage)
         raise HTTPFound(location = self.cancelURL())

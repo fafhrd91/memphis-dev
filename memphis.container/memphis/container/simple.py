@@ -67,10 +67,8 @@ class SimpleContainer(storage.BehaviorBase):
 
     def get(self, key, default=None):
         try:
-            rel = self.__relation__.getReferences(
-                self.context.oid, name=key).next()
-            return rel.__destination__
-        except StopIteration:
+            return self[key]
+        except KeyError:
             pass
         return default
 

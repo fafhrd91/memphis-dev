@@ -66,6 +66,20 @@ class Item(object):
     def __eq__(self, item):
         return self.oid == item.oid
 
+    def __conform__(self, spec):
+        # first try find directly applied behavior
+        if not hasattr(self, '_v__providedBy'):
+            provided = self.__providedBy__
+
+        behavior = self._v__providedByCache.get(spec)
+        if behavior is not None:
+            return behavior(self)
+
+        # probably item implements more specific behavior than `spec`
+        behavior = queryBehavior((self.__providedBy__,), spec)
+        if behavior is not None:
+            return behavior(self)
+
     @classmethod
     def getItem(cls, oid):
         return getSession().query(Item).filter(Item.oid == oid).first()
@@ -104,20 +118,6 @@ class Item(object):
 
     def getBackReferences(self, type=None):
         return Relation.getItemBackReferences(self.oid, type)
-
-    def __conform__(self, spec):
-        # first try find directly applied behavior
-        if not hasattr(self, '_v__providedBy'):
-            provided = self.__providedBy__
-
-        behavior = self._v__providedByCache.get(spec)
-        if behavior is not None:
-            return behavior(self)
-
-        # probably item implements more specific behavior than `spec`
-        behavior = queryBehavior((self.__providedBy__,), spec)
-        if behavior is not None:
-            return behavior(self)
 
     def applyBehavior(self, *args):
         for behavior in args:

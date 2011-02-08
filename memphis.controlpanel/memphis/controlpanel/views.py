@@ -4,7 +4,9 @@ $Id: views.py 11810 2011-01-31 06:56:01Z fafhrd91 $
 """
 from pyramid import url
 from pyramid.config import Configurator
-from memphis import view, config, form
+from zope.component import getAdapters
+
+from memphis import view, config, form, container
 from memphis.controlpanel.api import getControlPanel
 from memphis.controlpanel.interfaces import IConfiglet, IControlPanel
 
@@ -16,6 +18,9 @@ class LayoutView(object):
 
     def update(self):
         super(LayoutView, self).update()
+
+        self.actions = [action for name, action in 
+                        getAdapters((self.maincontext,), container.IAction)]
 
         context = self.maincontext
         cp = getControlPanel()

@@ -2,57 +2,38 @@
 
 $Id: validator.py 11798 2011-01-31 04:14:24Z fafhrd91 $
 """
-from zope import interface, component, schema
-from zope.component import getUtility
-
-from memphis import config
-from memphis.form import interfaces, validator
-
+from zope import interface
+from memphis import config, form
+from memphis.form import interfaces
 from memphis.users.interfaces import _
 
 from interfaces import IPrincipalPasswordForm, IPersonalPasswordForm
-from schemas import SPasswordForm, \
-    CurrentPassword, PasswordFormError, CurrentPasswordError
+from schemas import CurrentPassword, PasswordFormError, CurrentPasswordError
 
 
-class PasswordFormValidator(validator.InvariantsValidator):
-    config.adapts(
-        interface.Interface,
-        interface.Interface,
-        IPrincipalPasswordForm,
-        interface.interfaces.IInterface,
-        interface.Interface)
+class PasswordFormValidator(object):
+    config.adapts(IPrincipalPasswordForm)
+    interface.implements(form.IFormValidator)
+
+    def __init__(self, form):
+        self.form = form
 
     def validate(self, data):
-        if self.schema != SPasswordForm:
-            return super(PasswordFormValidator, self).validate(data)
-
-        password = self.view.widgets['password']
-        cpassword = self.view.widgets['confirm_password']
+        password = self.form.widgets['password']
+        cpassword = self.form.widgets['confirm_password']
 
         errors = []
 
         if password.error is None and cpassword.error is None:
             if data['password'] != data['confirm_password']:
                 error = PasswordFormError()
-                errors.append(error)
+                errors.append(form.WidgetError('password', error))
+                errors.append(form.WidgetError('confirm_password', error))
 
-                view = component.getMultiAdapter(
-                    (error, self.request, password, password.field,
-                     self.view, self.context), interfaces.IErrorViewSnippet)
-                view.update()
-                password.error = view
-
-                view = component.getMultiAdapter(
-                    (error, self.request, cpassword, cpassword.field,
-                     self.view, self.context), interfaces.IErrorViewSnippet)
-                view.update()
-                cpassword.error = view
-
-        return tuple(errors) + super(PasswordFormValidator, self).validate(data)
+        return errors
 
 
-class CurrentPasswordValidator(validator.SimpleFieldValidator):
+class CurrentPasswordValidator(form.FieldValidator):
     config.adapts(
         IPersonalPasswordForm,
         CurrentPassword)
@@ -61,7 +42,7 @@ class CurrentPasswordValidator(validator.SimpleFieldValidator):
         super(CurrentPasswordValidator, self).validate(value)
 
         # check current password
-        if self.context.checkPassword(value):
+        if self.form.context.checkPassword(value):
             return
 
         raise CurrentPasswordError()

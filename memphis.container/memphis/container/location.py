@@ -115,6 +115,9 @@ class LocationProxy(object):
         dict['__parent__'] = parent
         dict['__name__'] = name
 
+    def __conform__(self, spec):
+        return spec(self.__object__, None)
+
     def __call__(self, *args, **kw):
         return self.__object__(*args, **kw)
 
