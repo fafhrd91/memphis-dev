@@ -95,7 +95,7 @@ def registerSchema(name, schema, klass=None, type=None,
             session.flush()
 
     if type is None:
-        type = ()
+        type = (ISchema,)
     elif isinstance(type, InterfaceClass):
         type = (type,)
 
@@ -133,23 +133,32 @@ def registerRelation(name, schema, klass=None,
 
 
 def registerBehavior(name, spec, factory, relation=None, schema=None,
-                     title='', description = '', configContext=None, info=''):
+                     type = None, title='', description = '', 
+                     configContext=None, info=''):
 
-    def _register(name, spec, factory, relation, schema, title, description):
+    def _register(name, spec, factory, relation, schema, type, title,description):
         # check relation
         if relation:
             getRelation(relation)
 
         bh = Behavior(name, title, spec, relation, factory, schema, description)
 
+        for tp in type:
+            getSiteManager().registerUtility(bh, tp, name)
+
         # register in internal registry
         registry.registerBehavior(bh)
+
+    if type is None:
+        type = (IBehavior,)
+    elif isinstance(type, InterfaceClass):
+        type = (type,)
 
     config.addAction(
         configContext,
         ('memphis.storage:registerBehavior', name),
         callable= _register,
-        args=(name, spec, factory, relation, schema, title, description),
+        args=(name, spec, factory, relation, schema, type, title, description),
         info=info)
 
 

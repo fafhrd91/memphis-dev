@@ -20,5 +20,5 @@
       head over to the registration form.</a>
   </p>
 
-  <tal:block content="structure pagelet:view/form:view" />
+  <tal:block content="structure pagelet:view/form-view" />
 </div>

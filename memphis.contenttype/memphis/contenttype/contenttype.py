@@ -7,12 +7,13 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from memphis import storage, config, container
 
 from interfaces import _, IContent, IContentContainer
-from interfaces import IContentType, IContentTypeSchema, IBoundContentType
+from interfaces import IContentType, IContentTypeSchema, ISchemaType
 
 
 config.action(
     storage.registerSchema,
-    'content.item', IContent)
+    'content.item', IContent, type=ISchemaType,
+    title = 'Content item')
 
 
 class Content(storage.BehaviorBase):

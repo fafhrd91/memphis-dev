@@ -6,6 +6,7 @@
   <h1>Content types</h1>
   <br />
   <tal:block content="structure pagelet:container:listing" />
-</div>
 
-<tal:block content="structure pagelet:container:addingmenu" />
+  <br />
+  <tal:block content="structure pagelet:container:addingmenu" />
+</div>

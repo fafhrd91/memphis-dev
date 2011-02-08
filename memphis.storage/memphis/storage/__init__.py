@@ -19,8 +19,10 @@ from memphis.storage.registry import queryBehavior
 from memphis.storage.registry import registerSchema
 from memphis.storage.registry import registerBehavior
 from memphis.storage.registry import registerRelation
+
 from memphis.storage.behavior import BehaviorBase
 from memphis.storage.behavior import BehaviorFactoryBase
+from memphis.storage.interfaces import IBehavior
 
 # exceptions
 from memphis.storage.exceptions import BehaviorException

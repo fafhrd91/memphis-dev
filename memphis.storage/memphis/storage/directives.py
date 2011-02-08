@@ -28,5 +28,5 @@ class behavior(Directive):
     store = ONCE_NOBASE
 
     def factory(self, name, iface=None, relation=None, schema=None,
-                title = u'', description = u''):
-        return name, iface, relation, schema, title, description, getInfo()
+                type = None, title = u'', description = u''):
+        return name, iface, relation, schema, type, title, description, getInfo()

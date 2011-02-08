@@ -1,7 +1,8 @@
 import pyramid.url
 from zope.component import getUtilitiesFor
 from memphis import form, config, container, view, storage, ttwschema
-from memphis.contenttype.interfaces import _, ISchemaType, IContentTypeSchema
+from memphis.contenttype.interfaces import _, IContentTypeSchema
+from memphis.contenttype.interfaces import ISchemaType, IBehaviorType
 
 
 config.action(
@@ -94,6 +95,17 @@ class ContentTypeBehaviors(view.View):
         template = view.template('memphis.contenttype:templates/behaviors.pt'))
 
     def update(self):
-        schemas = storage.getSchema(ttwschema.ISchema)
-        for schema in schemas.query():
-            print schema
+        behaviors = []
+        
+        for name, bh in getUtilitiesFor(IBehaviorType):
+            behaviors.append((bh.title, bh))
+        
+        behaviors.sort()
+        self.behaviors = [behavior for t, behavior in behaviors]
+
+        request = self.request
+        if 'form-save' in request.params:
+            view.addStatusMessage(
+                request, 'Content type behaviors have been modified.')
+
+            self.context.behaviors = request.params.getall('form-behaviors')

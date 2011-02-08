@@ -27,15 +27,11 @@ class IItem(interface.Interface):
         required = False)
 
 
-class IContentItem(IItem):
-    """ marker interface for content types """
-
-
 class IContentContainer(container.ISimpleContainer):
     """ container for content """
 
 
-class IContent(interface.Interface):
+class IContent(IItem):
     """ behavior interface for content types """
 
     type = schema.TextLine(
@@ -122,6 +118,10 @@ class IContentTypesConfiglet(interface.Interface):
     
 class ISchemaType(storage.ISchema):
     """ type """
+
+
+class IBehaviorType(storage.ISchema):
+    """ content type behavior """
 
 
 # application root

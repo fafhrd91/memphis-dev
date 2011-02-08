@@ -50,7 +50,7 @@ from zope import interface
 from zope.interface.interface import InterfaceClass
 
 from memphis import storage, config
-from memphis.storage import registry
+from memphis.storage import registry, interfaces
 from memphis.storage.directives import schema, relation, behavior
 
 _marker = object()
@@ -110,13 +110,13 @@ class BehaviorGrokker(martian.ClassGrokker):
         if value is _marker:
             return False
 
-        name, iface, relation, schema, t, d, info = value
+        name, iface, relation, schema, type, t, d, info = value
 
         if iface is None:
             iface = list(interface.implementedBy(klass))[0]
 
         registry.registerBehavior(
-            name, iface, klass, relation, schema, t, d, configContext, info)
+            name, iface, klass, relation, schema, type, t, d, configContext, info)
         return True
 
 
@@ -129,10 +129,11 @@ class BehaviorFactoryGrokker(martian.ClassGrokker):
         if value is _marker:
             return False
 
-        name, iface, relation, schema, t, d, info = value
+        name, iface, relation, schema, type, t, d, info = value
 
         registry.registerBehavior(
-            name, iface, factory(), relation, schema, t, d, configContext, info)
+            name, iface, factory(), 
+            relation, schema, type, t, d, configContext, info)
         return True
 
 

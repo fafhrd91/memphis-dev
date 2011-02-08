@@ -1,5 +1,19 @@
 <div class="z-cp-frame">
   <h1>Content type behaviors</h1>
 
-
+  <form method="post" action="${request.url}">
+    <ul>
+      <li tal:repeat="behavior view.behaviors">
+	<input type="checkbox" name="form-behaviors" value="${behavior.name}"
+	       tal:attributes="checked behavior.name in context.behaviors" />
+	${behavior.title}
+	<div>${behavior.description}</div>
+      </li>
+    </ul>
+    
+    <div class="z-form-controls">
+      <hr />
+      <input type="submit" name="form-save" value="Save" />
+    </div>
+  </form>
 </div>

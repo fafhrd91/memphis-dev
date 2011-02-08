@@ -5,7 +5,7 @@ Behaviors
 Behavior is stateless, it can get item's datasheet to do any persistent
 tasks.
 
-    >>> from zope import interface, schema
+    >>> from zope import interface, schema, component
     >>> from zope.component.eventtesting import getEvents
     >>> from memphis import storage
     >>> from memphis.storage import interfaces
@@ -77,6 +77,28 @@ third parameter is behavior factory.
     >>> bh is storage.queryBehavior(IBehavior)
     True
 
+Typed behaviors
+
+    >>> class ICustomBehaviorType(interfaces.IBehavior):
+    ...     pass
+
+    >>> class ICustomBehavior(interface.Interface):
+    ...     pass
+    >>> 
+    >>> class CustomBehavior(object):
+    ...     interface.implements(ICustomBehavior)
+    ...     
+    ...     def __init__(self, item):
+    ...         self.item = item
+
+    >>> storage.registerBehavior(
+    ...     u'custombehavior', ICustomBehavior, CustomBehavior,
+    ...     type = ICustomBehaviorType)
+
+    >>> component.getUtility(
+    ...     ICustomBehaviorType, 'custombehavior') is \
+    ...    storage.getBehavior(ICustomBehavior)
+    True
 
 Apply behavior to item
 ----------------------
