@@ -10,6 +10,19 @@ from interfaces import _, IContent, IContentContainer
 from interfaces import IContentType, IContentTypeSchema, IBoundContentType
 
 
+config.action(
+    storage.registerSchema,
+    'content.item', IContent)
+
+
+class Content(storage.BehaviorBase):
+    interface.implements(IContent)
+    storage.behavior('content.item',
+                     schema = IContent,
+                     title = 'Content item',
+                     description = 'Base behavior for content items.')
+
+
 class ContentType(storage.BehaviorBase):
     interface.implements(IContentType)
     storage.behavior('memphis.contenttype', schema=IContentTypeSchema)
@@ -99,4 +112,15 @@ class FactoryProvider(object):
         if item is None:
             return default
 
+        return IContentType(storage.getItem(item.oid))
+
+
+@config.adapter(IContent)
+@interface.implementer(IContentType)
+def getContentType(item):
+    content = IContent(item)
+    
+    schema = storage.getSchema(IContentTypeSchema)
+    item = schema.query(schema.Type.oid == content.type).first()
+    if item is not None:
         return IContentType(storage.getItem(item.oid))

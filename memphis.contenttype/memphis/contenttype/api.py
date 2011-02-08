@@ -1,7 +1,7 @@
 from zope.component import getSiteManager
 
 from memphis import storage
-from memphis.contenttype import behaviors
+#from memphis.contenttype import behaviors
 #from memphis.contenttype.interfaces import \
 #    IContent, IContentItem, IContainer, IContentType, IContentTypeSchema
 #from memphis.contenttype.contenttype import \
