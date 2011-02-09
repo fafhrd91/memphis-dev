@@ -50,7 +50,7 @@
     </div>
     <div id="z-portal-workspace"> 
       <!--memphis-message-->
-      <div style="font-size: 120%">
+      <div>
 	<tal:block tal:content="structure view.render()" />
       </div>
     </div>

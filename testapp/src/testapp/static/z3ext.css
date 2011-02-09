@@ -150,12 +150,12 @@ background-color: #ffce7b;border: 1px solid #ffa500;padding: 1em;margin: 0 0 1em
 .z-form-field.error .x-form-fieldRequired {color: #ffce7b;}
 .z-form-controls {clear: both;margin-top: 1em;}
 .z-form-controls div {padding-top: 0.5em;}
-.z-form-button {background: transparent url(z3ext-layoutform-linkTransparent.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
-.z-form-standalonebtn {background: #E2EFFC url(z3ext-layoutform-linkOpaque.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
-.z-form-addbutton {background: transparent url(z3ext-layoutform-linkTransparent.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
-.z-form-savebutton {background: transparent url(z3ext-layoutform-linkTransparent.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
-.z-form-cancelbutton {background: #E2EFFC url(z3ext-layoutform-linkOpaque.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
-.z-form-removebutton {background: #E2EFFC url(z3ext-layoutform-linkOpaque.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
+.z-form-button {background: transparent url(linkTransparent.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
+.z-form-standalonebtn {background: #E2EFFC url(linkOpaque.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
+.z-form-addbutton {background: transparent url(inkTransparent.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
+.z-form-savebutton {background: transparent url(linkTransparent.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
+.z-form-cancelbutton {background: #E2EFFC url(linkOpaque.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
+.z-form-removebutton {background: #E2EFFC url(linkOpaque.gif) no-repeat;background-position: 5px center;cursor: pointer;font-size: 90%;padding: 1px 1px 1px 16px;}
 }
 
 
