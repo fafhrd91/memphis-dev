@@ -149,7 +149,7 @@ class ISchema(container.IContained):
         default = u'')
 
 
-class ISchemaManagement(interface.Interface):
+class ISchemaManagement(container.IContainer):
     """ schema management configlet """
 
 

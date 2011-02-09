@@ -1,0 +1,38 @@
+<div class="z-cp-frame" tal:define="hasKeys context.keys()">
+  <h1 class="z-form-label">${context.__title__}</h1>
+  <div class="z-form-description">${context.__description__}</div>
+
+  <form method="post" action="${request.url}" tal:condition="hasKeys">
+    <div class="z-table-container">
+      <table class="z-table">
+	<tbody tal:define="url request.resource_url(context)">
+	  <tr class="z-table-category">
+	    <td colspan="4">Schemas</td>
+	  </tr>
+	  <tr tal:repeat="sch context.values()"
+	      tal:attributes="class repeat['sch'].even() and
+			      'z-table-record even' or 'z-table-record
+			      odd'">
+	    <td><input type="checkbox" name="schema-id"
+		       value="${sch.__name__}" /></td>
+	    <td><a href="${url}${sch.oid}/index.html">
+		${sch.title}</a><br />
+	      <div class="discreet">${sch.description}</div>
+	    </td>
+	  </tr>
+	</tbody>
+      </table>
+    </div>
+    <div class="z-form-controls">
+      <hr />
+      <input type="submit" class="z-form-removebutton" 
+	     name="form-remove" value="Remove" />
+    </div>
+  </form>
+  <div class="z-table-empty" tal:condition="not hasKeys">
+    There are no ttw schemas.
+  </div>
+
+  <br />
+  <tal:block content="structure pagelet:container:addingmenu" />
+</div>

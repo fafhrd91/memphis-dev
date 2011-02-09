@@ -27,10 +27,20 @@ config.action(
     'index.html', ISchema)
 
 
-class Listing(view.View):
+config.action(
+    view.registerDefaultView,
+    'index.html', ISchemaManagement)
+
+
+class ConfigletView(view.View):
     view.pyramidView(
         'index.html', ISchemaManagement,
-        template = view.template('memphis.ttwschema:templates/management.pt'))
+        template = view.template('memphis.ttwschema:templates/configlet.pt'))
+
+    def update(self):
+        if 'form-remove' in self.request.params:
+            # remove schema
+            
 
 
 class AddSchema(form.Form, view.View):

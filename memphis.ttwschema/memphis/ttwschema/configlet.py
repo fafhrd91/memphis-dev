@@ -10,7 +10,7 @@ from interfaces import ISchema, ISchemaManagement
 
 
 class SchemaManagement(object):
-    interface.implements(container.IContainer, ISchemaManagement)
+    interface.implements(ISchemaManagement)
 
     def create(self, data):
         item = storage.insertItem(ISchema)
@@ -26,7 +26,7 @@ class SchemaManagement(object):
         return storage.getSchema(ISchema)
 
     def keys(self):
-        return [item.nameoid for item in self.schema.query()]
+        return [item.oid for item in self.schema.query()]
 
     def values(self):
         return [container.LocationProxy(item, self, item.oid)
@@ -64,7 +64,7 @@ config.action(
     controlpanel.registerConfiglet,
     'system.schemas', ISchemaManagement, SchemaManagement,
     title = u'Schema management',
-    description = u'TTW Schemas management configlet')
+    description = u'TTW Schemas management configlet.')
 
 
 class SchemaFactory(object):
