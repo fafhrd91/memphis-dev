@@ -37,10 +37,11 @@ class ListingView(view.View):
         template = view.template('memphis.container:templates/listingview.pt'))
 
     def update(self):
+        contained = interfaces.IContained(self.context)
+
         self.context = interfaces.IContainer(self.context)
 
         context = self.context
-        contained = interfaces.IContained(context)
         #self.title = getattr(context, 'title', context.__name__)
         #self.description = getattr(context, 'description', context.__name__)
         self.title = getattr(context, 'title', contained.__name__)

@@ -93,9 +93,6 @@ class AddContentForm(form.Form):
         data, errors = self.extractData()
 
         if errors:
-            errors = [error for error in errors
-                      if not error.error.__class__ == ContentNameError]
-
             view.addStatusMessage(
                 self.request, [self.formErrorsMessage] + errors, 'formError')
         else:

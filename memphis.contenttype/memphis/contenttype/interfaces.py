@@ -61,11 +61,21 @@ class IContentTypeSchema(interface.Interface):
         default = (),
         required = True)
 
+    schemaFields = schema.Dict(
+        title = u'Schema fields',
+        default = {},
+        required = True)
+
     behaviors = schema.Tuple(
         title = _(u'Behaviors'),
         description = _(u'Content type behaviors'),
         value_type = schema.TextLine(),
         default = (),
+        required = True)
+
+    behaviorActions = schema.Dict(
+        title = u'Behavior actions',
+        default = {},
         required = True)
 
 

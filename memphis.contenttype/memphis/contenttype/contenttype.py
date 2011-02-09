@@ -61,13 +61,13 @@ class ContentType(storage.BehaviorBase):
 
         for schema in self.schemas:
             sch = getUtility(storage.ISchema, schema)
-            content.applySchema(sch.specification)
+            content.applySchema(sch.specification, True)
 
         # update datasheets
-        #for ds in datasheets:
-        #    datasheet = content.queryDatasheet(ds.__id__)
-        #    if datasheet is not None:
-        #        datasheet.__load__(ds)
+        for name, ds in data.items():
+            datasheet = content.getDatasheet(name)
+            if datasheet is not None:
+                datasheet.__load__(ds)
 
         event.notify(ObjectCreatedEvent(content))
         return content

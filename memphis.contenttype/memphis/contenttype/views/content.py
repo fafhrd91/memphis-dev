@@ -1,4 +1,6 @@
 import pyramid.url
+from webob.exc import HTTPFound
+
 from zope import interface
 from zope.component import getUtility, queryUtility
 from memphis import form, config, container, view, storage, ttwschema
@@ -6,45 +8,68 @@ from memphis import form, config, container, view, storage, ttwschema
 from memphis.contenttype.interfaces import _, IContent, IContentType
 
 
-class AddContent(container.AddContentForm, view.View):
+class AddContent(form.EditForm, container.AddContentForm, view.View):
     view.pyramidView('', IContentType)
 
     fields = form.Fields()
+    validate = container.AddContentForm.validate
 
-    def update(self):
+    @property
+    def label(self):
+        return 'Add content: %s'%self.context.title
+
+    @property
+    def description(self):
+        return self.context.description
+
+    def listWrappedForms(self):
         ct = IContentType(self.context)
-        print '===========', ct
-        print '-----------', self.context.schemas
 
         forms = []
-        for schId in ('content.item',) + tuple(self.context.schemas):
+        datasheets = {}
+        for schId in tuple(self.context.schemas):
             schema = queryUtility(storage.ISchema, schId)
             if schema is not None:
-                form = EditDatasheet(schema.Type(), self.request, self)
+                ds = schema.Type()
+                datasheets[schema.name] = ds
+                form = EditDatasheet(ds, self.request, self)
                 form.update()
-                forms.append(form)
+                forms.append((schId, form))
 
-        self.subforms = forms
+        self.datasheets = datasheets
+        return forms
 
-        super(AddContent, self).update()
-        
-    #@property
-    #def fields(self):
-    #    schemas = []
-    #    for schId in self.context.schemas:
-    #        schemas.append(getUtility(storage.ISchema, schId).specification)
+    @form.buttonAndHandler(_(u'Add'), name='apply')
+    def handleAdd(self, action):
+        data, errors = self.extractData()
 
-    #    return form.Fields(schemas[0])
+        if errors:
+            view.addStatusMessage(
+                self.request, (self.formErrorsMessage,) + errors, 'formError')
+            return
 
-    #def update(self):
-    #    super(AddContent, self).update()
+        changes = self.applyChanges(data)
+
+        obj = self.createAndAdd(data)
+        if obj is not None:
+            self.addedObject = obj
+            self.finishedAdd = True
+            raise HTTPFound(location = self.nextURL())
 
 
-class EditDatasheet(form.EditSubForm):
+class EditDatasheet(form.SubForm):
+
+    @property
+    def prefix(self):
+        return self.context.__id__
 
     @property
     def fields(self):
-        return form.Fields(self.context.__schema__)
+        iface = self.context.__schema__
+        if iface.isOrExtends(IContent):
+            return form.Fields(self.context.__schema__).omit('type')
+        else:
+            return form.Fields(self.context.__schema__)
 
     @property
     def label(self):
@@ -60,17 +85,18 @@ class EditContent(form.EditForm, view.View):
 
     fields = form.Fields()
 
-    def update(self):
+    label = 'Modify content'
+
+    def listWrappedForms(self):
         ct = IContentType(self.context)
-        print '===========', ct
-        print '-----------', self.context.schemas
 
         forms = []
-        for schId in self.context.schemas:
+        for schId in ct.schemas:
             schema = queryUtility(storage.ISchema, schId)
             if schema is not None:
-                form = EditDatasheet(schema.Type(), self.request)
+                ds = self.context.getDatasheet(schema.specification)
+                form = EditDatasheet(ds, self.request, self)
                 form.update()
-                forms.append(form)
+                forms.append((schId, form))
 
-        self.subforms = forms
+        return forms

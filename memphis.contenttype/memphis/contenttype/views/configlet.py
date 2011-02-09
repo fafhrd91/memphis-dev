@@ -18,7 +18,8 @@ class Listing(view.View):
 class AddContentTypeSchema(form.Form, view.View):
     view.pyramidView('', ContentTypeFactory)
 
-    fields = form.Fields(IContentTypeSchema).omit('schemas', 'behaviors')
+    fields = form.Fields(IContentTypeSchema).omit(
+        'schemas', 'schemaFields', 'behaviors', 'behaviorActions')
 
     label = _('Add content type')
 

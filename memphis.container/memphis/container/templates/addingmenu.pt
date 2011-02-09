@@ -11,7 +11,7 @@
       <ul class="z-listing">
 	<li tal:repeat="factory view.factories">
 	  <a href="${view.url}+/${factory.name}/">${factory.title}</a>
-	  <div class="byline">${factory.description}</div>
+	  <div class="byline">${factory.description} &nbsp;</div>
 	</li>
       </ul>
     </fieldset>
