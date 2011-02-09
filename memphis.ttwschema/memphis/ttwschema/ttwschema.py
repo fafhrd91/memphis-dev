@@ -92,6 +92,11 @@ class Schema(storage.BehaviorBase):
         self.updateSchema()
 
     def updateSchema(self):
+        sch = getUtility(ISchemaType, self.context.oid)
+        sch.specification = self.schema
+        sch.Type.__schema__ = self.schema
+        interface.classImplements(sch.Type, self.schema)
+        
         self.model = unicode(supermodel.serializeSchema(self.schema))
 
     def installSchema(self):

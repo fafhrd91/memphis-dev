@@ -132,7 +132,7 @@ class DatasheetType(type):
         cls.__id__ = DataProperty(unicode(name))
         cls.__title__ = DataProperty(title)
         cls.__description__ = DataProperty(description)
-        cls.__schema__ = DataProperty(schema)
+        cls.__schema__ = schema
 
 
 class DataProperty(object):
