@@ -17,6 +17,8 @@ class SchemaManagement(object):
         ds = item.getDatasheet(ISchema)
         for key, val in data.items():
             setattr(ds, key, val)
+
+        ISchema(item).installSchema()
         return container.LocationProxy(ds, self, item.oid)
 
     @property

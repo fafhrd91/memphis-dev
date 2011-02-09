@@ -148,14 +148,6 @@ class ISchema(container.IContained):
         title = u'Model',
         default = u'')
 
-    published = schema.Bool(
-        title = u'Published',
-        default = False)
-
-    publishedmodel = schema.Text(
-        title = u'Published model',
-        default = u'')
-
 
 class ISchemaManagement(interface.Interface):
     """ schema management configlet """

@@ -2,8 +2,11 @@
 
 $Id: views.py 4730 2011-02-03 05:27:33Z nikolay $
 """
+from pyramid import url
 from webob.exc import HTTPFound
+from zope import event
 from zope.component import getUtility, queryUtility, getMultiAdapter
+from zope.lifecycleevent import ObjectRemovedEvent
 
 from memphis import config, view, container, form
 from memphis.ttwschema.interfaces import _
@@ -20,7 +23,7 @@ config.action(
 
 config.action(
     view.registerDefaultView,
-    'listing.html', ISchema)
+    'index.html', ISchema)
 
 
 class Listing(view.View):
@@ -130,17 +133,35 @@ class SchemaPreview(form.Form, view.View):
                 self.request, _('Schema has been processed successfully.'))
 
 
-class SchemaPublish(view.View):
+class SchemaView(view.View):
     view.pyramidView(
-        'publish.html', ISchema,
-        template = view.template('memphis.ttwschema:templates/publish.pt'))
+        'index.html', ISchema,
+        template = view.template('memphis.ttwschema:templates/schemaview.pt'))
 
     def update(self):
-        if 'form-publish' in self.request.params:
-            self.context.published = True
-            self.context.publishedmodel = self.context.model
-            view.addStatusMessage(
-                self.request, _('Schema has been published.'))
+        request = self.request
+        self.url = url.resource_url(self.context, request)
+
+        if 'form.remove' in request.params:
+            ids = request.params.getall('field-id')
+
+            context = self.context
+            for id in ids:
+                field = context[id]
+                event.notify(ObjectRemovedEvent(field, context, id))
+                del context[id]
+
+            if ids:
+                view.addStatusMessage(
+                    request, 'Selected fields have been removed.') 
+
+
+class SchemaEdit(form.EditForm, view.View):
+    view.pyramidView('edit.html', ISchema)
+
+    fields = form.Fields(ISchema).omit('model')
+
+    label = 'Modify schema'
 
 
 class EditAction(container.Action):
@@ -159,11 +180,19 @@ class PreviewAction(container.Action):
     description = _('Field preview')
 
 
+class ViewSchemaAction(container.Action):
+    config.adapts(ISchema, 'view')
+
+    name = 'index.html'
+    title = _('View schema')
+    description = _('View schema.')
+
+
 class FieldsAction(container.Action):
     config.adapts(ISchema, 'listing')
 
-    name = 'listing.html'
-    title = _('Fields')
+    name = 'edit.html'
+    title = _('Edit schema')
     description = _('Schema fields')
 
 
@@ -173,11 +202,3 @@ class SchemaPreviewAction(container.Action):
     name = 'preview.html'
     title = _('Preview')
     description = _('Schema preview')
-
-
-class PublishAction(container.Action):
-    config.adapts(ISchema, 'publish')
-
-    name = 'publish.html'
-    title = _('Publish')
-    description = _('Publish schema')

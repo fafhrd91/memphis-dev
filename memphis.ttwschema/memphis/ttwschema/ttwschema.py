@@ -2,7 +2,10 @@
 
 $Id: ttwschema.py 4730 2011-02-03 05:27:33Z nikolay $
 """
+import migrate.changeset
+
 from zope import interface, schema
+from zope.component import getUtility
 from zope.schema import getFieldNamesInOrder
 from zope.lifecycleevent import IObjectModifiedEvent
 
@@ -70,21 +73,32 @@ class Schema(storage.BehaviorBase):
             raise KeyError('Field already exists %s'%name)
 
         self.schema._InterfaceClass__attrs[name] = field
-        self.model = unicode(supermodel.serializeSchema(self.schema))
+
+        sch = getUtility(ISchemaType, self.context.oid)
+        for column in storage.mapFieldToColumns(field):
+            column.create(sch.Type.__table__, populate_default=True)
+
+        self.updateSchema()
 
     def __delitem__(self, name):
-        pass
+        field = self.schema[name]
+        field.interface = None
+        del self.schema._InterfaceClass__attrs[name]
+
+        sch = getUtility(ISchemaType, self.context.oid)
+        for column in storage.mapFieldToColumns(field):
+            getattr(sch.Type.__table__.c, column.name).drop()
+
+        self.updateSchema()
 
     def updateSchema(self):
-        self.model = supermodel.serializeSchema(self.schema)
+        self.model = unicode(supermodel.serializeSchema(self.schema))
 
     def installSchema(self):
-        print '---install---', self.title
-        # warning
         storage.registerSchema(
             self.context.oid, self.schema, 
             type=ISchemaType, title=self.title, description=self.description)
-    
+
 
 @config.handler(IField, IObjectModifiedEvent)
 def fieldModifiedEvent(field, ev):
@@ -95,6 +109,6 @@ def fieldModifiedEvent(field, ev):
 def storageInitializedEvent(ev):
     sch = storage.getSchema(ISchema)
     
-    for item in sch.query(sch.Type.published == True):
+    for item in sch.query():
         ttwschema = ISchema(storage.getItem(item.oid))
         ttwschema.installSchema()
