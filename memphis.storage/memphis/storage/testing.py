@@ -1,7 +1,4 @@
-""" memphis.storage tests setup
-
-$Id: testing.py 11801 2011-01-31 06:25:03Z fafhrd91 $
-"""
+""" memphis.storage tests setup """
 from zope.component import hooks, eventtesting
 from zope.component import testing as catesting
 

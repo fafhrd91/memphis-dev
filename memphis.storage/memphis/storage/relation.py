@@ -1,14 +1,10 @@
-"""
-
-$Id: relation.py 11784 2011-01-31 00:13:49Z fafhrd91 $
-"""
 import uuid
 import sqlalchemy
 import sqlalchemy.orm
 from zope import interface
 from memphis.storage import hooks
 from memphis.storage.hooks import getSession
-from memphis.storage.schema import buildTable
+from memphis.storage.table import buildTable
 from memphis.storage.datasheet import DatasheetType
 from memphis.storage.interfaces import IRelation, IReference
 

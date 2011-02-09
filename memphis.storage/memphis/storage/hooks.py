@@ -1,7 +1,3 @@
-"""
-
-$Id: hooks.py 11737 2011-01-27 23:14:43Z fafhrd91 $
-"""
 import sqlalchemy, threading
 
 

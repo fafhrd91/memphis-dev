@@ -1,7 +1,3 @@
-"""
-
-$Id: models.py 11784 2011-01-31 00:13:49Z fafhrd91 $
-"""
 import sqlalchemy, sqlalchemy.orm
 from memphis.storage.item import Item
 from memphis.storage.schema import SQLSchema

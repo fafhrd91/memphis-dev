@@ -1,7 +1,3 @@
-"""
-
-$Id: interfaces.py 11783 2011-01-31 00:08:17Z fafhrd91 $
-"""
 from zope import interface
 from zope.component.interfaces import IObjectEvent, ObjectEvent
 
@@ -65,6 +61,13 @@ class ISchema(interface.Interface):
 
     def create(data):
         """ create datasheet """
+
+
+class ISchemaFieldMapper(interface.Interface):
+    """ feild -> sqlalchemy column mapper """
+
+    def __call__():
+        """ return secuqence of sqlaclhemy.Column objects """
 
 
 class IBehavior(interface.Interface):

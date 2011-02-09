@@ -1,7 +1,3 @@
-"""
-
-$Id: directives.py 11770 2011-01-29 22:55:31Z fafhrd91 $
-"""
 from martian import Directive, CLASS, ONCE_NOBASE, ONCE_IFACE
 
 from memphis.config.directives import getInfo

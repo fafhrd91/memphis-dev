@@ -43,7 +43,6 @@ behavior for factory
   ConfigurationConflictError: Conflicting configuration actions
     ...
 
-$Id: meta.py 11770 2011-01-29 22:55:31Z fafhrd91 $
 """
 import martian
 from zope import interface

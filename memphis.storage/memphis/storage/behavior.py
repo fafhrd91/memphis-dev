@@ -1,7 +1,3 @@
-""" fixme: remove schema from item in Behavior.remove method
-
-$Id: behavior.py 11774 2011-01-30 07:39:51Z fafhrd91 $
-"""
 import sqlalchemy
 from zope import interface
 from zope.schema import getFields
@@ -76,6 +72,7 @@ class Behavior(object):
         oid = item.oid
         session = getSession()
 
+        # remove behaivor record
         ob = session.query(SQLBehavior).filter(
             sqlalchemy.and_(
                 SQLBehavior.oid == oid, SQLBehavior.name == self.name)).first()
@@ -84,6 +81,11 @@ class Behavior(object):
             raise StorageException('Behavior is not applied: %s'%self.name)
 
         session.delete(ob)
+
+        # remove schema
+        #if self.schema is not None:
+        #    item.removeSchema(self.schema)
+
         session.flush()
 
         if hasattr(self.factory, 'removeBehavior'):

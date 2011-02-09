@@ -1,12 +1,9 @@
-"""
-
-$Id: schema.py 11783 2011-01-31 00:08:17Z fafhrd91 $
-"""
-import copy, sqlalchemy
+import sqlalchemy
 from zope import interface, schema
 from zope.schema import getFieldsInOrder
 
-from hooks import getMetadata, getSession
+from hooks import getSession
+from table import buildTable
 from datasheet import DatasheetType
 from interfaces import ISchema
 from exceptions import StorageException
@@ -96,42 +93,6 @@ class Schema(object):
 
         sqlalchemy.orm.mapper(klass, table)
         return klass
-
-
-mapping = {
-    schema.interfaces.ITextLine: sqlalchemy.Unicode,
-    schema.interfaces.IText: sqlalchemy.UnicodeText,
-    schema.interfaces.IInt: sqlalchemy.Integer,
-    schema.interfaces.IDate: sqlalchemy.Date,
-    schema.interfaces.IDatetime: sqlalchemy.DateTime,
-    schema.interfaces.IFloat: sqlalchemy.Float,
-    schema.interfaces.IBool: sqlalchemy.Boolean,
-    }
-
-
-def buildTable(name, prefix, schema, columns, reserved=()):
-    tbname = name
-    for ch in '.-:#':
-        tbname = tbname.replace(ch, '_')
-
-    if schema is not None:
-        for name, field in getFieldsInOrder(schema):
-            if name in reserved:
-                raise StorageException(
-                    "Field name '%s' is reserved for internal use"%name)
-            found = False
-            for iface, tp in mapping.items():
-                if iface.providedBy(field):
-                    columns.append(
-                        sqlalchemy.Column(
-                            name, tp, default=copy.copy(field.default)))
-                    found = True
-                    break
-            if not found:
-                columns.append(sqlalchemy.Column(name, sqlalchemy.PickleType))
-
-    return sqlalchemy.Table(
-        '%s_%s'%(prefix, tbname), getMetadata(), *columns)
 
 
 class SQLSchema(object):

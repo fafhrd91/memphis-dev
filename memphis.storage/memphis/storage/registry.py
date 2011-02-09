@@ -1,7 +1,3 @@
-""" registry
-
-$Id: registry.py 11774 2011-01-30 07:39:51Z fafhrd91 $
-"""
 from zope.component import getSiteManager
 from zope.interface.adapter import AdapterRegistry
 from zope.interface.interface import InterfaceClass

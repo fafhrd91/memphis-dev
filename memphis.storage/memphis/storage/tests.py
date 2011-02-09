@@ -1,7 +1,4 @@
-""" memphis.storage tests
-
-$Id: tests.py 11786 2011-01-31 00:26:59Z fafhrd91 $
-"""
+""" memphis.storage tests """
 import sys, unittest, doctest
 from memphis.config.testing import setUpTestAsModule, tearDownTestAsModule
 from testing import setUpCA, setUpDatastorage, tearDownDatastorage

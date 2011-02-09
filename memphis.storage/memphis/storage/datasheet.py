@@ -1,7 +1,3 @@
-"""
-
-$Id: datasheet.py 11783 2011-01-31 00:08:17Z fafhrd91 $
-"""
 import sys, copy
 from zope import interface
 from zope.schema import getFields
