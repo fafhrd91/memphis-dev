@@ -2,7 +2,7 @@ import sqlalchemy, threading
 
 
 local = threading.local()
-local.metadata = sqlalchemy.MetaData()
+metadata = sqlalchemy.MetaData()
 
 
 def getSession():
@@ -14,8 +14,9 @@ def setSession(session):
 
 
 def getMetadata():
-    return getattr(local, 'metadata', None)
+    return metadata
 
 
 def setMetadata(md):
-    local.metadata = md
+    global metadata
+    metadata = md

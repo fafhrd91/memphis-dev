@@ -24,6 +24,8 @@ from memphis.storage.behavior import BehaviorBase
 from memphis.storage.behavior import BehaviorFactoryBase
 from memphis.storage.interfaces import IBehavior
 
+from memphis.storage.table import mapFieldToColumns
+
 # exceptions
 from memphis.storage.exceptions import BehaviorException
 from memphis.storage.exceptions import BehaviorNotFound

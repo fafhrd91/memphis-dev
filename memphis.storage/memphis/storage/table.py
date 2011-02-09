@@ -50,7 +50,7 @@ config.action(
     FieldMapper(sqlalchemy.Boolean), (schema.interfaces.IBool,))
 
 
-def getColumns(field):
+def mapFieldToColumns(field):
     columns = ISchemaFieldMapper(field, None)
     if columns is not None:
         return columns
@@ -68,7 +68,7 @@ def buildTable(name, prefix, schema, columns, reserved=()):
             if name in reserved:
                 raise StorageException(
                     "Field name '%s' is reserved for internal use"%name)
-            columns.extend(getColumns(field))
+            columns.extend(mapFieldToColumns(field))
 
     return sqlalchemy.Table(
         '%s_%s'%(prefix, tbname), getMetadata(), *columns)

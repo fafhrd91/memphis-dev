@@ -90,6 +90,7 @@ class Schema(object):
 
         klass = DatasheetType(
             self.name, schema, title=self.title, description=self.description)
+        klass.__table__ = table
 
         sqlalchemy.orm.mapper(klass, table)
         return klass
