@@ -17,6 +17,7 @@ class CTViewAction(container.Action):
     name = 'index.html'
     title = _('View')
     description = _('View content type')
+    weight = 10
 
 
 class CTEditAction(container.Action):
@@ -25,7 +26,7 @@ class CTEditAction(container.Action):
     name = 'edit.html'
     title = _('Edit')
     description = _('Edit content type')
-
+    weight = 20
 
 class CTSchemasAction(container.Action):
     config.adapts(IContentTypeSchema, 'schemas')
@@ -33,6 +34,7 @@ class CTSchemasAction(container.Action):
     name = 'schemas.html'
     title = _('Schemas')
     description = _('Content type schemas')
+    weight = 30
 
 
 class CTBehaviorsAction(container.Action):
@@ -41,6 +43,7 @@ class CTBehaviorsAction(container.Action):
     name = 'behaviors.html'
     title = _('Behaviors')
     description = _('Content type behaviors')
+    weight = 40
 
 
 class ContentTypeView(view.View):

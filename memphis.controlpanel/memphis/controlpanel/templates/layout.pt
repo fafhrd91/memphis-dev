@@ -9,9 +9,11 @@
 
 	    <div class="z-cp-nav">
 	      <tal:block tal:repeat="action layout.actions">
-		<div class="z-cp-nav-item">
+		<div tal:define="url action.url(request)"
+		     tal:attributes="class request.url == url and 
+				     'z-cp-nav-item-selected' or 'z-cp-nav-item'">
 		  <div class="z-cp-level1">
-		    <a href="${action.url(request)}">${action.title}</a> 
+		    <a href="${url}">${action.title}</a> 
 		  </div>
 		</div>
 	      </tal:block>

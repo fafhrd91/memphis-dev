@@ -64,7 +64,7 @@ config.action(
     controlpanel.registerConfiglet,
     'system.schemas', ISchemaManagement, SchemaManagement,
     title = u'Schema management',
-    description = u'TTW Schema management configlet')
+    description = u'TTW Schemas management configlet')
 
 
 class SchemaFactory(object):
@@ -74,8 +74,8 @@ class SchemaFactory(object):
     name = 'schema'
     schema = ISchema
     title = 'TTW Schema'
-    description = ''
-    hiddenFields = ('model', 'published', 'publishedmodel')
+    description = 'Schema object editable through the web.'
+    hiddenFields = ('model',)
 
     def __init__(self, context):
         self.context = context

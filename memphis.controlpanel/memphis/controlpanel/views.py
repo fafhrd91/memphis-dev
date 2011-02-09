@@ -19,8 +19,10 @@ class LayoutView(object):
     def update(self):
         super(LayoutView, self).update()
 
-        self.actions = [action for name, action in 
-                        getAdapters((self.maincontext,), container.IAction)]
+        actions = [(action.weight, action.title, action) for name, action in 
+                   getAdapters((self.maincontext,), container.IAction)]
+        actions.sort()
+        self.actions = [action for w,t,action in actions]
 
         context = self.maincontext
         cp = getControlPanel()

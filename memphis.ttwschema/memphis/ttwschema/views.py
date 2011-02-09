@@ -5,6 +5,7 @@ $Id: views.py 4730 2011-02-03 05:27:33Z nikolay $
 from pyramid import url
 from webob.exc import HTTPFound
 from zope import event
+from zope.schema import getFieldsInOrder
 from zope.component import getUtility, queryUtility, getMultiAdapter
 from zope.lifecycleevent import ObjectRemovedEvent
 
@@ -35,7 +36,7 @@ class Listing(view.View):
 class AddSchema(form.Form, view.View):
     view.pyramidView('', SchemaFactory)
 
-    fields = form.Fields(ISchema).omit('model', 'published', 'publishedmodel')
+    fields = form.Fields(ISchema).omit('model',)
 
     label = _('Add schema')
 
@@ -139,13 +140,14 @@ class SchemaView(view.View):
         template = view.template('memphis.ttwschema:templates/schemaview.pt'))
 
     def update(self):
+        context = self.context
         request = self.request
-        self.url = url.resource_url(self.context, request)
 
-        if 'form.remove' in request.params:
+        self.url = url.resource_url(context, request)
+
+        if 'form-remove' in request.params:
             ids = request.params.getall('field-id')
 
-            context = self.context
             for id in ids:
                 field = context[id]
                 event.notify(ObjectRemovedEvent(field, context, id))
@@ -155,6 +157,43 @@ class SchemaView(view.View):
                 view.addStatusMessage(
                     request, 'Selected fields have been removed.') 
 
+        elif 'form-moveup' in request.params or \
+                'form-movedown' in request.params:
+            ids = request.params.getall('field-id')
+
+            schema = context.schema
+
+            for field_id in ids:
+                field = context[field_id]
+                fields = [name for name, f in getFieldsInOrder(schema)]
+
+                cur_pos = fields.index(field_id)
+                if 'form-moveup' in request.params:
+                    new_pos = cur_pos-1
+                    if new_pos < 0 or fields[new_pos] in ids:
+                        continue
+
+                    slice_end = new_pos-1
+                    if slice_end == -1:
+                        slice_end = None
+                    intervening = [schema[field_id] 
+                                   for field_id in fields[cur_pos-1:slice_end:-1]]
+                else:
+                    new_pos = cur_pos + 1
+                    if new_pos > len(ids) or fields[new_pos] in ids:
+                        continue
+                    intervening = [schema[field_id] 
+                                   for field_id in fields[cur_pos+1:new_pos+1]]
+
+                # changing order
+                prev = field.order
+                for f in intervening:
+                    order = f.order
+                    f.order = prev
+                    prev = order
+                field.order = prev
+                context.updateSchema()
+
 
 class SchemaEdit(form.EditForm, view.View):
     view.pyramidView('edit.html', ISchema)
@@ -162,6 +201,7 @@ class SchemaEdit(form.EditForm, view.View):
     fields = form.Fields(ISchema).omit('model')
 
     label = 'Modify schema'
+    description = 'Modify schema basic attributes.'
 
 
 class EditAction(container.Action):
@@ -170,6 +210,7 @@ class EditAction(container.Action):
     name = 'index.html'
     title = _('Edit')
     description = _('Field edit form')
+    weight = 20
 
 
 class PreviewAction(container.Action):
@@ -178,6 +219,16 @@ class PreviewAction(container.Action):
     name = 'preview.html'
     title = _('Preview')
     description = _('Field preview')
+    weight = 10
+
+
+class MoveToSchemaAction(container.Action):
+    config.adapts(IField, 'schema')
+
+    name = '../index.html'
+    title = _('View schema')
+    description = _('Return back to schema.')
+    weight = 30
 
 
 class ViewSchemaAction(container.Action):
@@ -186,6 +237,7 @@ class ViewSchemaAction(container.Action):
     name = 'index.html'
     title = _('View schema')
     description = _('View schema.')
+    weight = 10
 
 
 class FieldsAction(container.Action):
@@ -194,6 +246,7 @@ class FieldsAction(container.Action):
     name = 'edit.html'
     title = _('Edit schema')
     description = _('Schema fields')
+    weight = 20
 
 
 class SchemaPreviewAction(container.Action):
@@ -202,3 +255,4 @@ class SchemaPreviewAction(container.Action):
     name = 'preview.html'
     title = _('Preview')
     description = _('Schema preview')
+    weight = 30
