@@ -1,0 +1,2 @@
+<h1 class="z-content-title">${view.title}</h1>
+<div class="z-content-description">${view.description}</div>
