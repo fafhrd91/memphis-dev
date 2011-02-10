@@ -42,12 +42,13 @@ class ResetPassword(object):
                     principal, request, passcode=passcode)
                 template.send()
 
-                view.addStatusMessage(
+                view.addMessage(
                     request,
                     _('Your password has been reset and is being emailed to you.'))
                 raise HTTPFound(location=request.application_url)
 
-            view.IStatusMessage(request).add(
+            view.addMessage(
+                request,
                 _(u"System can't restore password for this principal."))
 
 
@@ -73,7 +74,7 @@ class ResetPasswordForm(form.Form):
             self.passcode = passcode
             self.principal = principal
         else:
-            view.addStatusMessage(request, _("Passcode is invalid."), 'warning')
+            view.addMessage(request, _("Passcode is invalid."), 'warning')
             raise HTTPFound(
                 location='%s/resetpassword.html'%request.application_url)
 
@@ -85,19 +86,18 @@ class ResetPasswordForm(form.Form):
         data, errors = self.extractData()
 
         if errors:
-            view.addStatusMessage(request, self.formErrorsMessage, 'error')
+            view.addMessage(request, self.formErrorsMessage, 'error')
         else:
             try:
                 self.ptool.resetPassword(self.passcode, data['password'])
             except Exception, exc:
-                view.addStatusMessage(
-                    request, str(exc), 'warning')
+                view.addMessage(request, str(exc), 'warning')
                 return
 
             user = getUtility(IAuthentication).getUserByLogin(self.info.login)
             headers = security.remember(request, user.id)
 
-            view.addStatusMessage(
+            view.addMessage(
                 request, _('You have successfully changed your password.'))
 
             raise HTTPFound(

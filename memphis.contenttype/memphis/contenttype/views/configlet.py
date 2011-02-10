@@ -9,17 +9,26 @@ from memphis.contenttype.interfaces import \
 from memphis.contenttype.configlet import ContentTypeFactory
 
 
-class Listing(view.View):
+config.action(
+    view.registerDefaultView,
+    'index.html', IContentTypesConfiglet)
+
+
+class ConfigletView(form.Form, view.View):
     view.pyramidView(
         'index.html', IContentTypesConfiglet,
         template = view.template('memphis.contenttype:templates/configlet.pt'))
+
+    @form.buttonAndHandler(u'Remove', name='remove')
+    def removeHandler(self, action):
+        pass
 
 
 class AddContentTypeSchema(form.Form, view.View):
     view.pyramidView('', ContentTypeFactory)
 
     fields = form.Fields(IContentTypeSchema).omit(
-        'schemas', 'schemaFields', 'behaviors', 'behaviorActions')
+        'schemas', 'hiddenFields', 'behaviors', 'behaviorActions')
 
     label = _('Add content type')
 
@@ -33,8 +42,7 @@ class AddContentTypeSchema(form.Form, view.View):
         data, errors = self.extractData()
 
         if errors:
-            view.addStatusMessage(
-                self.request, self.formErrorsMessage, 'warning')
+            view.addMessage(self.request, self.formErrorsMessage, 'warning')
         else:
             obj = self.createAndAdd(data)
 

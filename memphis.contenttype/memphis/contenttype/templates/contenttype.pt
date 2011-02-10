@@ -1,8 +1,43 @@
 <div class="z-cp-frame">
-  <h1>${context.title}</h1>
-  <div>
-    ${context.description}
-  </div>
+  <h1 class="z-form-title">${context.title}</h1>
+  <div class="z-form-description">${context.description}</div>
 
-  put here content type description
+  <div class="z-table-container">
+    <table class="z-table">
+      <tbody>
+	<tr class="z-table-category">
+	  <td colspan="2">Schemas</td>
+	</tr>
+	<tr tal:repeat="sch view.schemas"
+	    tal:attributes="class repeat['sch'].even() and
+			    'z-table-record even' or 
+			    'z-table-record odd'">
+	  <td></td>
+	  <td>
+	    ${sch.title}
+	    <div class="discreet" tal:condition="sch.description">
+	      ${sch.description}
+	    </div>
+	  </td>
+	</tr>
+      </tbody>
+      <tbody>
+	<tr class="z-table-category">
+	  <td colspan="2">Behaviors</td>
+	</tr>
+	<tr tal:repeat="bh view.behaviors"
+	    tal:attributes="class repeat['bh'].even() and
+			    'z-table-record even' or 
+			    'z-table-record odd'">
+	  <td></td>
+	  <td>
+	    ${bh.title}
+	    <div class="discreet" tal:condition="bh.description">
+	      ${bh.description}
+	    </div>
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
 </div>

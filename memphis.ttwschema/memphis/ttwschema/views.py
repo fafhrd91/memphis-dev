@@ -32,15 +32,14 @@ config.action(
     'index.html', ISchemaManagement)
 
 
-class ConfigletView(view.View):
+class ConfigletView(form.Form, view.View):
     view.pyramidView(
         'index.html', ISchemaManagement,
         template = view.template('memphis.ttwschema:templates/configlet.pt'))
 
-    def update(self):
-        if 'form-remove' in self.request.params:
-            # remove schema
-            
+    @form.buttonAndHandler(u'Remove', name='remove')
+    def removeHandler(self, action):
+        pass
 
 
 class AddSchema(form.Form, view.View):
@@ -60,8 +59,7 @@ class AddSchema(form.Form, view.View):
         data, errors = self.extractData()
 
         if errors:
-            view.addStatusMessage(
-                self.request, self.formErrorsMessage, 'warning')
+            view.addMessage(self.request, self.formErrorsMessage, 'warning')
         else:
             obj = self.createAndAdd(data)
 
@@ -113,9 +111,9 @@ class FieldPreview(form.Form, view.View):
     def handleTestField(self, action):
         data, errors = self.extractData()
         if errors:
-            view.addStatusMessage(self.request, self.formErrorsMessage, 'error')
+            view.addMessage(self.request, self.formErrorsMessage, 'error')
         else:
-            view.addStatusMessage(
+            view.addMessage(
                 self.request, _('Field has been processed successfully.'))
 
 
@@ -138,71 +136,80 @@ class SchemaPreview(form.Form, view.View):
     def handleTestSchema(self, action):
         data, errors = self.extractData()
         if errors:
-            view.addStatusMessage(self.request, self.formErrorsMessage, 'error')
+            view.addMessage(self.request, self.formErrorsMessage, 'error')
         else:
-            view.addStatusMessage(
+            view.addMessage(
                 self.request, _('Schema has been processed successfully.'))
 
 
-class SchemaView(view.View):
+class SchemaView(form.Form, view.View):
     view.pyramidView(
         'index.html', ISchema,
         template = view.template('memphis.ttwschema:templates/schemaview.pt'))
 
-    def update(self):
+    @form.buttonAndHandler(u'Remove', name='remove')
+    def removeHandler(self, action):
+        ids = self.request.params.getall('field-id')
+
+        for id in ids:
+            field = self.context[id]
+            event.notify(ObjectRemovedEvent(field, self.context, id))
+            del self.context[id]
+
+        if ids:
+            view.addMessage(
+                self.request, 'Selected fields have been removed.') 
+
+    @form.buttonAndHandler(u'Move up', name='moveup')
+    def orderHandler(self, action):
+        self.changeOrder(self.request.params.getall('field-id'), 1)
+
+    @form.buttonAndHandler(u'Move down', name='movedown')
+    def orderHandler(self, action):
+        self.changeOrder(self.request.params.getall('field-id'), -1)
+
+    def changeOrder(self, ids, direction=0):
         context = self.context
-        request = self.request
 
-        self.url = url.resource_url(context, request)
+        changed = False
+        schema = context.schema
 
-        if 'form-remove' in request.params:
-            ids = request.params.getall('field-id')
+        for field_id in ids:
+            field = context[field_id]
+            fields = [name for name, f in getFieldsInOrder(schema)]
 
-            for id in ids:
-                field = context[id]
-                event.notify(ObjectRemovedEvent(field, context, id))
-                del context[id]
+            cur_pos = fields.index(field_id)
+            if direction == 1:
+                new_pos = cur_pos-1
+                if new_pos < 0 or fields[new_pos] in ids:
+                    continue
 
-            if ids:
-                view.addStatusMessage(
-                    request, 'Selected fields have been removed.') 
+                slice_end = new_pos-1
+                if slice_end == -1:
+                    slice_end = None
+                intervening = [schema[field_id] 
+                               for field_id in fields[cur_pos-1:slice_end:-1]]
+            else:
+                new_pos = cur_pos + 1
+                if new_pos > len(ids)+1 or fields[new_pos] in ids:
+                    continue
+                intervening = [schema[field_id] 
+                               for field_id in fields[cur_pos+1:new_pos+1]]
 
-        elif 'form-moveup' in request.params or \
-                'form-movedown' in request.params:
-            ids = request.params.getall('field-id')
+            # changing order
+            prev = field.order
+            for f in intervening:
+                order = f.order
+                f.order = prev
+                prev = order
+            field.order = prev
 
-            schema = context.schema
+            changed = True
+            context.updateSchema()
 
-            for field_id in ids:
-                field = context[field_id]
-                fields = [name for name, f in getFieldsInOrder(schema)]
-
-                cur_pos = fields.index(field_id)
-                if 'form-moveup' in request.params:
-                    new_pos = cur_pos-1
-                    if new_pos < 0 or fields[new_pos] in ids:
-                        continue
-
-                    slice_end = new_pos-1
-                    if slice_end == -1:
-                        slice_end = None
-                    intervening = [schema[field_id] 
-                                   for field_id in fields[cur_pos-1:slice_end:-1]]
-                else:
-                    new_pos = cur_pos + 1
-                    if new_pos > len(ids) or fields[new_pos] in ids:
-                        continue
-                    intervening = [schema[field_id] 
-                                   for field_id in fields[cur_pos+1:new_pos+1]]
-
-                # changing order
-                prev = field.order
-                for f in intervening:
-                    order = f.order
-                    f.order = prev
-                    prev = order
-                field.order = prev
-                context.updateSchema()
+        if changed:
+            view.addMessage(
+                self.request, u'Fields srder has been changed.')
 
 
 class SchemaEdit(form.EditForm, view.View):
@@ -245,7 +252,7 @@ class ViewSchemaAction(container.Action):
     config.adapts(ISchema, 'view')
 
     name = 'index.html'
-    title = _('View schema')
+    title = _('View')
     description = _('View schema.')
     weight = 10
 
@@ -254,8 +261,8 @@ class FieldsAction(container.Action):
     config.adapts(ISchema, 'listing')
 
     name = 'edit.html'
-    title = _('Edit schema')
-    description = _('Schema fields')
+    title = _('Edit')
+    description = _('Modify ttw schema')
     weight = 20
 
 

@@ -1,5 +1,5 @@
 <div id="z-portal-viewspace">
-  <tal:block tal:content="structure pagelet:container:actions" />
+  <tal:block tal:content="structure pagelet:container-actions" />
   <div id="z-content"
        tal:content="structure view.render()">
   </div>

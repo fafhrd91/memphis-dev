@@ -20,7 +20,7 @@ class ContentTypeFactory(object):
 
 
 class ContentTypesConfiglet(object):
-    interface.implements(container.IContainer, IContentTypesConfiglet)
+    interface.implements(IContentTypesConfiglet)
 
     __factories__ = {'ct': ContentTypeFactory()}
 

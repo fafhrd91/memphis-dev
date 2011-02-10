@@ -12,8 +12,7 @@ from interfaces import IContentType, IContentTypeSchema, ISchemaType
 
 config.action(
     storage.registerSchema,
-    'content.item', IContent, type=ISchemaType,
-    title = 'Content item')
+    'content.item', IContent, title = 'Content item')
 
 
 class Content(storage.BehaviorBase):
@@ -34,23 +33,6 @@ class ContentType(storage.BehaviorBase):
     @property
     def name(self):
         return self.context.oid
-
-    def add(self, content, name=''):
-        context = IContentContainer(self.context)
-
-        #print list(content.behaviors)
-        #print list(interface.providedBy(content))
-        #from memphis.storage.interfaces import IContained
-        #print IContained.providedBy(content)
-
-        idx = 0
-        name = 'item%s'%idx
-        while name in context:
-            idx += 1
-            name = 'item%s'%idx
-
-        context[name] = content
-        return content
 
     def __call__(self, **data):
         # create content with behaviors

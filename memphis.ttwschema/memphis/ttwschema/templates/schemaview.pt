@@ -7,11 +7,12 @@
       <table class="z-table">
 	<thead>
 	  <th></th>
-	  <th>Type</th>
 	  <th>Title</th>
+	  <th>Type</th>
 	  <th>Description</th>
 	</thead>
-	<tbody>
+	<tbody tal:define="ids request.params.getall('field-id');
+			   url request.resource_url(context)">
 	  <tr class="z-table-category">
 	    <td colspan="4">Schema fields</td>
 	  </tr>
@@ -20,30 +21,23 @@
 			      'z-table-record even' or 'z-table-record
 			      odd'">
 	    <td><input type="checkbox" name="field-id"
+		       tal:attributes="checked field.__name__ in ids"
 		       value="${field.__name__}" /></td>
-	    <td><a href="${view.url}${field.__name__}/index.html">
-		${field.__class__.__name__}</a></td>
-	    <td><a href="${view.url}${field.__name__}/index.html">
+	    <td><a href="${url}${field.__name__}/index.html">
 		${field.title}</a></td>
+	    <td class="discreet">${field.__class__.__name__}</td>
 	    <td>${field.description}</td>
 	  </tr>
 	</tbody>
       </table>
     </div>
-    <div class="z-form-controls">
-      <hr />
-      <input type="submit" class="z-form-removebutton" 
-	     name="form-remove" value="Remove" />
-      <input type="submit" class="z-form-button"
-	     name="form-moveup" value="Move up" />
-      <input type="submit" class="z-form-button"  
-	     name="form-movedown" value="Move down" />
-    </div>
+    <tal:block content="structure pagelet:view/form-actions" />
   </form>
+
   <div class="z-table-empty" tal:condition="not hasKeys">
     There are no fields in this schema.
   </div>
 
   <br />
-  <tal:block content="structure pagelet:container:addingmenu" />
+  <tal:block content="structure pagelet:container-addingmenu" />
 </div>

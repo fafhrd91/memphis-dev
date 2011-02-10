@@ -1,25 +1,10 @@
 <div class="z-controlpanel-wrapper">
-  <div id="z-controlpanel" style="margin-left: 0;margin-right: 0;"
-       tal:define="nav layout.data or layout.actions;
+  <div id="z-controlpanel" style="margin-left: 0;margin-right: 0"
+       tal:define="nav layout.data;
 		   noNav not bool(nav); rendered view.render()">
     <table class="z-cp-layout" tal:omit-tag="noNav">
       <tr tal:omit-tag="noNav">
 	<td class="z-cp-nav-wrapper" tal:condition="nav">
-	  <tal:block tal:condition="layout.actions">
-
-	    <div class="z-cp-nav">
-	      <tal:block tal:repeat="action layout.actions">
-		<div tal:define="url action.url(request)"
-		     tal:attributes="class request.url == url and 
-				     'z-cp-nav-item-selected' or 'z-cp-nav-item'">
-		  <div class="z-cp-level1">
-		    <a href="${url}">${action.title}</a> 
-		  </div>
-		</div>
-	      </tal:block>
-	    </div>
-	    <br />
-	  </tal:block>
 	  <div class="z-cp-nav">
 	    <tal:block tal:repeat="item layout.data">
 	      <div class="z-cp-nav-item">
@@ -38,6 +23,19 @@
 	  </div>
 	</td>
 	<td id="z-portal-workspace" tal:omit-tag="noNav">
+	  <tal:block tal:condition="layout.actions">
+	    <ul class="z-wizard-wizardsteps" 
+		style="font-size: 80%; margin-top: -0.8em; margin-bottom: -1em">
+	      <tal:block tal:repeat="action layout.actions">
+		<li tal:define="url action.url(request)"
+		    tal:attributes="class request.url == url and 
+				    'z-wizard-selected' or None">
+		    <a href="${url}">${action.title}</a> 
+		</li>
+	      </tal:block>
+	    </ul>
+	  </tal:block>
+
 	  <tal:block tal:content="structure rendered" /></td>
       </tr>
     </table>

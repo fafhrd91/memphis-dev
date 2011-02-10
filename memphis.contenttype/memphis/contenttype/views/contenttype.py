@@ -1,9 +1,10 @@
 import pyramid.url
 from zope.schema import getFieldsInOrder
-from zope.component import getUtilitiesFor
+from zope.component import queryUtility, getUtilitiesFor
 from memphis import form, config, container, view, storage, ttwschema
-from memphis.contenttype.interfaces import _, IContentTypeSchema
+from memphis.contenttype.interfaces import _
 from memphis.contenttype.interfaces import ISchemaType, IBehaviorType
+from memphis.contenttype.interfaces import IContent, IContentTypeSchema
 
 
 config.action(
@@ -52,12 +53,28 @@ class ContentTypeView(view.View):
         template = view.template(
             'memphis.contenttype:templates/contenttype.pt'))
 
+    def update(self):
+        schemas = []
+        for sId in self.context.schemas:
+            sch = queryUtility(storage.ISchema, sId)
+            if sch is not None:
+                schemas.append(sch)
+
+        self.schemas = schemas
+
+        behaviors = []
+        for bId in self.context.behaviors:
+            bh = queryUtility(IBehaviorType, bId)
+            if bh is not None:
+                behaviors.append(bh)
+        self.behaviors = behaviors
+
 
 class ContentTypeEdit(form.EditForm, view.View):
     view.pyramidView('edit.html', IContentTypeSchema)
 
     fields = form.Fields(IContentTypeSchema).omit(
-        'schemas', 'schemaFields', 'behaviors', 'behaviorActions')
+        'schemas', 'hiddenFields', 'behaviors', 'behaviorActions')
 
     @property
     def label(self):
@@ -68,7 +85,7 @@ class ContentTypeEdit(form.EditForm, view.View):
         return self.context.description
 
 
-class ContentTypeSchemas(view.View):
+class ContentTypeSchemas(form.Form, view.View):
     view.pyramidView(
         'schemas.html', IContentTypeSchema,
         template = view.template('memphis.contenttype:templates/schemas.pt'))
@@ -77,23 +94,18 @@ class ContentTypeSchemas(view.View):
         return [field for n, field in getFieldsInOrder(sch.specification)]
 
     def update(self):
+        super(ContentTypeSchemas, self).update()
+
         context = self.context
         request = self.request
 
         if 'form-addschema' in request.params:
-            view.addStatusMessage(
+            view.addMessage(
                 request, 'Content type schemas have been modified.')
 
-            context.schemas = context.schemas + tuple(
-                request.params.getall('schema-id'))
-
-        elif 'form-remove' in request.params:
-            view.addStatusMessage(
-                request, 'Content type schemas have been modified.')
-            
-            rem_sch = request.params.getall('schema-id')
-            context.schemas = tuple(
-                [sch for sch in context.schemas if sch not in rem_sch])
+            context.schemas = context.schemas + tuple([
+                    id for id in request.params.getall('schema-id')
+                    if id not in context.schemas])
 
         schemas = {}
 
@@ -104,9 +116,6 @@ class ContentTypeSchemas(view.View):
             schemas[name] = (schema.title, schema)
 
         enabled = []
-        if 'content.item' not in context.schemas:
-            context.schemas = context.schemas + ('content.item',)
-
         for schId in self.context.schemas:
             if schId in schemas:
                 enabled.append(schemas[schId][1])
@@ -118,24 +127,82 @@ class ContentTypeSchemas(view.View):
         self.schemas = [schema for t, schema in schemas 
                         if schema.name not in self.context.schemas]
 
+        fields = []
+        for sch, data in self.context.hiddenFields.items():
+            for fid in data:
+                fields.append('%s:%s'%(sch, fid))
 
-class ContentTypeBehaviors(view.View):
+        self.fields = fields
+
+    @form.buttonAndHandler(u'Remove')
+    def removeHandler(self, action):
+        rem_sch = self.request.params.getall('schema-id')
+        context.schemas = tuple(
+            [sch for sch in self.context.schemas if sch not in rem_sch])
+
+        view.addMessage(request, 'Content type schemas have been modified.')
+
+    @form.buttonAndHandler(u'Modify hidden')
+    def modifyHandler(self, action):
+        ids = self.request.params.getall('field-id')
+
+        hidden = {}
+        for fid in ids:
+            sch, field = fid.split(':', 1)
+            hidden.setdefault(sch, []).append(field)
+
+        self.context.hiddenFields = hidden
+
+        view.addMessage(self.request, 'Hidden fields have been modified.')
+
+    def changeOrder(self, names, up=True):
+        schemas = list(self.context.schemas)
+        schemas_len = len(schemas)
+
+        for name in names:
+            idx = schemas.index(name)
+            if up:
+                new = idx - 1
+                if new < 0 or schemas[new] in names:
+                    continue
+            else:
+                new = idx + 1
+                if new >= schemas_len or schemas[new] in names:
+                    continue
+
+            del schemas[idx]
+            schemas.insert(new, name)
+
+        self.context.schemas = tuple(schemas)
+        view.addMessage(self.request, 'Schemas order has been changed.')
+        
+
+    @form.buttonAndHandler(u'Move up')
+    def upHandler(self, action):
+        self.changeOrder(self.request.params.getall('schema-id'), True)
+
+    @form.buttonAndHandler(u'Move down')
+    def downHandler(self, action):
+        self.changeOrder(self.request.params.getall('schema-id'), False)
+
+
+class ContentTypeBehaviors(form.Form, view.View):
     view.pyramidView(
         'behaviors.html', IContentTypeSchema,
         template = view.template('memphis.contenttype:templates/behaviors.pt'))
 
     def update(self):
-        behaviors = []
+        super(ContentTypeBehaviors, self).update()
 
-        for name, bh in getUtilitiesFor(IBehaviorType):
-            behaviors.append((bh.title, bh))
-
+        behaviors = [(bh.title, bh)
+                     for name, bh in getUtilitiesFor(IBehaviorType)]
         behaviors.sort()
-        self.behaviors = [behavior for t, behavior in behaviors]
+        self.behaviors = [storage.getBehavior(IContent)] + \
+            [behavior for t, behavior in behaviors]
 
-        request = self.request
-        if 'form-save' in request.params:
-            view.addStatusMessage(
-                request, 'Content type behaviors have been modified.')
+    @form.buttonAndHandler(u'Save')
+    def saveHandler(self, action):
+        self.context.behaviors = self.request.params.getall('behavior-id')
 
-            self.context.behaviors = request.params.getall('form-behaviors')
+        view.addMessage(
+            self.request, 'Content type behaviors have been modified.')

@@ -1,4 +1,4 @@
-<div class="z-controlpanel-wrapper" style="font-size:75%">
+<div class="z-controlpanel-wrapper" style="font-size:95%">
   <div id="z-controlpanel" style="margin-left: 0;margin-right: 0;"
        tal:define="nav string:test;
 		   noNav python: False; rendered view.render()">

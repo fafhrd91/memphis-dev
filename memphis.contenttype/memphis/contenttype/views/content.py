@@ -33,6 +33,8 @@ class AddContent(form.EditForm, container.AddContentForm, view.View):
                 ds = schema.Type()
                 datasheets[schema.name] = ds
                 form = EditDatasheet(ds, self.request, self)
+                if schId in ct.hiddenFields:
+                    form.hidden = ct.hiddenFields[schId]
                 form.update()
                 forms.append((schId, form))
 
@@ -44,7 +46,7 @@ class AddContent(form.EditForm, container.AddContentForm, view.View):
         data, errors = self.extractData()
 
         if errors:
-            view.addStatusMessage(
+            view.addMessage(
                 self.request, (self.formErrorsMessage,) + errors, 'formError')
             return
 
@@ -59,17 +61,15 @@ class AddContent(form.EditForm, container.AddContentForm, view.View):
 
 class EditDatasheet(form.SubForm):
 
+    hidden = ()
+
     @property
     def prefix(self):
         return self.context.__id__
 
     @property
     def fields(self):
-        iface = self.context.__schema__
-        if iface.isOrExtends(IContent):
-            return form.Fields(self.context.__schema__).omit('type')
-        else:
-            return form.Fields(self.context.__schema__)
+        return form.Fields(self.context.__schema__).omit(*self.hidden)
 
     @property
     def label(self):
@@ -96,6 +96,8 @@ class EditContent(form.EditForm, view.View):
             if schema is not None:
                 ds = self.context.getDatasheet(schema.specification)
                 form = EditDatasheet(ds, self.request, self)
+                if schId in ct.hiddenFields:
+                    form.hidden = ct.hiddenFields[schId]
                 form.update()
                 forms.append((schId, form))
 

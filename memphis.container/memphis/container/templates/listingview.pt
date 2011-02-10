@@ -5,8 +5,8 @@
 <div class="z-cp-frame">
   <h1>Listing</h1>
   <br />
-  <tal:block content="structure pagelet:container:listing" />
+  <tal:block content="structure pagelet:container-listing" />
 
   <br />
-  <tal:block content="structure pagelet:container:addingmenu" />
+  <tal:block content="structure pagelet:container-addingmenu" />
 </div>

@@ -8,16 +8,16 @@ from memphis.container.interfaces import IContained, IContainer
 
 
 class IListing(interface.Interface):
-    view.pageletType("container:listing", IContainer)
+    view.pageletType("container-listing", IContainer)
     
 
 class IActions(interface.Interface):
-    view.pageletType("container:actions", IContained)
+    view.pageletType("container-actions", IContained)
 
 
 class IAddingView(interface.Interface):
-    view.pageletType("container:adding", IContainer)
+    view.pageletType("container-adding", IContainer)
 
 
 class IAddingMenuView(interface.Interface):
-    view.pageletType("container:addingmenu", IContainer)
+    view.pageletType("container-addingmenu", IContainer)

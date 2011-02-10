@@ -1,19 +1,33 @@
-<div class="z-cp-frame">
-  <h1>Content type behaviors</h1>
+<div class="z-form-standard">
+  <h1 class="z-form-label">Behaviors</h1>
+  <div class="z-form-description">Select content type behaviors.</div>
 
   <form method="post" action="${request.url}">
-    <ul>
-      <li tal:repeat="behavior view.behaviors">
-	<input type="checkbox" name="form-behaviors" value="${behavior.name}"
-	       tal:attributes="checked behavior.name in context.behaviors" />
-	${behavior.title}
-	<div>${behavior.description}</div>
-      </li>
-    </ul>
-    
-    <div class="z-form-controls">
-      <hr />
-      <input type="submit" name="form-save" value="Save" />
+    <div class="z-table-container">
+      <table class="z-table">
+	<tbody>
+	  <tr class="z-table-category">
+	    <td colspan="4">Behaviors</td>
+	  </tr>
+	  <tr tal:repeat="bh view.behaviors"
+	      tal:attributes="class repeat['bh'].even() and
+			      'z-table-record even' or 'z-table-record odd'">
+	    <td>
+	      <input type="checkbox" name="behavior-id" value="${bh.name}" 
+		     tal:attributes="checked bh.name in context.behaviors"
+		     tal:condition="bh.name !='content.item'" />
+	    </td>
+	    <td>
+	      ${bh.title}
+	      <div class="discreet" tal:condition="bh.description">
+		${bh.description}
+	      </div>
+	    </td>
+	  </tr>
+	</tbody>
+      </table>
     </div>
+
+    <tal:block content="structure pagelet:view/form-actions" />
   </form>
 </div>

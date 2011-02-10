@@ -93,7 +93,7 @@ class AddContentForm(form.Form):
         data, errors = self.extractData()
 
         if errors:
-            view.addStatusMessage(
+            view.addMessage(
                 self.request, [self.formErrorsMessage] + errors, 'formError')
         else:
             obj = self.createAndAdd(data)
@@ -105,7 +105,7 @@ class AddContentForm(form.Form):
 
     @form.buttonAndHandler(_(u'Cancel'), name='cancel')
     def handleCancel(self, action):
-        view.addStatusMessage(self.request, self.formCancelMessage)
+        view.addMessage(self.request, self.formCancelMessage)
         raise HTTPFound(location = self.cancelURL())
 
     def nextURL(self):

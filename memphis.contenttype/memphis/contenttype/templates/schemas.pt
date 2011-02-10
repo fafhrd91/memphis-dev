@@ -1,4 +1,4 @@
-<div class="z-form-standard">
+<div class="z-form-standard" tal:condition="view.enabled">
   <h1 class="z-form-label">Schemas</h1>
   <div class="z-form-description">Configure schemas for content type.</div>
 
@@ -10,10 +10,12 @@
 	  <th>Type</th>
 	  <th>Hidden</th>
 	</thead>
-	<tbody tal:repeat="sch view.enabled">
+	<tbody tal:repeat="sch view.enabled"
+	       tal:define="ids request.params.getall('schema-id')">
 	  <tr class="z-table-category">
 	    <td colspan="4">
 	      <input type="checkbox" name="schema-id"
+		     tal:attributes="checked sch.name in ids and 'on' or None"
 		     value="${sch.name}" /> &nbsp; ${sch.title}</td>
 	  </tr>
 	  <tr tal:repeat="field view.listFields(sch)"
@@ -22,28 +24,23 @@
 			      'z-table-record odd'">
 	    <th>${field.title}</th>
 	    <td class="discreet">${field.__class__.__name__}</td>
-	    <td class="center"><input type="checkbox" name="field-id"
-		       value="${field.__name__}" /></td>
+	    <td class="center">
+	      <input type="checkbox" name="field-id"
+		     tal:define="name '%s:%s'%(sch.name,field.__name__)"
+		     tal:attributes="checked name in view.fields 
+				     and 'on' or None"
+		     value="${name}" />
+	    </td>
 	  </tr>
 	</tbody>
       </table>
     </div>
 
-    <div class="z-form-controls">
-      <hr />
-      <input type="submit" class="z-form-removebutton" 
-	     name="form-remove" value="Remove" />
-      <input type="submit" class="z-form-savebutton"  
-	     name="form-save" value="Save" />
-      <input type="submit" class="z-form-button"  
-	     name="form-moveup" value="Move up" />
-      <input type="submit" class="z-form-button"  
-	     name="form-movedown" value="Move down" />
-    </div>
+    <tal:block content="structure pagelet:view/form-actions" />
   </form>
 </div>
 
-<div class="z-form-standard">
+<div class="z-form-standard" tal:condition="view.schemas">
   <h1 class="z-form-label">Add schemas</h1>
   <div class="z-form-description">Choose schemas for content type.</div>
 

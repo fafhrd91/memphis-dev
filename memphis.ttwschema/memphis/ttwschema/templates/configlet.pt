@@ -23,16 +23,13 @@
 	</tbody>
       </table>
     </div>
-    <div class="z-form-controls">
-      <hr />
-      <input type="submit" class="z-form-removebutton" 
-	     name="form-remove" value="Remove" />
-    </div>
+    <tal:block content="structure pagelet:view/form-actions" />
   </form>
+
   <div class="z-table-empty" tal:condition="not hasKeys">
     There are no ttw schemas.
   </div>
 
   <br />
-  <tal:block content="structure pagelet:container:addingmenu" />
+  <tal:block content="structure pagelet:container-addingmenu" />
 </div>

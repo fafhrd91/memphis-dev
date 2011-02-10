@@ -9,29 +9,11 @@ class WrongContentType(Exception):
     """ wrong content type """
 
 
-class IItem(interface.Interface):
-    """ Simple item """
-
-    title = schema.TextLine(
-        title = _(u'Title'),
-        description = _(u'Item title.'),
-        default = u'',
-        missing_value = u'',
-        required = True)
-
-    description = schema.Text(
-        title = _(u'Description'),
-        description = _(u'Brief summary of your content item.'),
-        default = u'',
-        missing_value = u'',
-        required = False)
-
-
 class IContentContainer(container.ISimpleContainer):
     """ container for content """
 
 
-class IContent(IItem):
+class IContent(interface.Interface):
     """ behavior interface for content types """
 
     type = schema.TextLine(
@@ -61,8 +43,8 @@ class IContentTypeSchema(interface.Interface):
         default = (),
         required = True)
 
-    schemaFields = schema.Dict(
-        title = u'Schema fields',
+    hiddenFields = schema.Dict(
+        title = u'Hidden fields',
         default = {},
         required = True)
 
@@ -122,7 +104,7 @@ class IContentTypeType(interface.interfaces.IInterface):
     """ content type type """
 
 
-class IContentTypesConfiglet(interface.Interface):
+class IContentTypesConfiglet(container.IContainer):
     """ configlet """
 
     
