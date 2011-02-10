@@ -47,6 +47,9 @@ class FieldFactory(object):
     def __call__(self, **kw):
         return self.field(**kw)
 
+    #def wrapSchema(self, schema):
+        
+
 
 class FactoryWrapper(object):
     component.adapts(interfaces.ISchema)
