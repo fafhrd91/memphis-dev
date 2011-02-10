@@ -48,18 +48,21 @@ def getRoot():
     behavior = storage.getBehavior(IRoot)
     try:
         oid = behavior.getBehaviorOIDs().next()
-        return storage.getItem(oid)
+        return IRoot(storage.getItem(oid))
     except StopIteration:
-        return storage.insertItem(IRoot)
+        return IRoot(storage.insertItem(IRoot))
 
 
 class Root(ContentContainer):
-    interface.implements(IRoot, view.IRoot)
+    interface.implements(IRoot, view.IRoot, container.IContained)
     storage.behavior(
         'app.root',
         relation = ISimpleContainerRelation,
         title = u'Application root',
         description = u'Smiple implementation for Application Root concept')
+
+    __name__ = ''
+    __parent__ = None
 
     @classmethod
     def applyBehavior(cls, item, behavior):
@@ -73,14 +76,3 @@ class Root(ContentContainer):
     @classmethod
     def removeBehavior(cls, item, behavior):
         raise storage.BehaviorException("Can't remove app.root behavior.")
-
-
-class ContainedRoot(object):
-    config.adapts(IRoot)
-    interface.implements(container.IContained)
-
-    __name__ = ''
-    __parent__ = None
-
-    def __init__(self, root):
-        self.root = root

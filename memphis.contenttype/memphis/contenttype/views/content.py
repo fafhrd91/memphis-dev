@@ -5,7 +5,13 @@ from zope import interface
 from zope.component import getUtility, queryUtility
 from memphis import form, config, container, view, storage, ttwschema
 
+from memphis.contenttype import schemas
 from memphis.contenttype.interfaces import _, IContent, IContentType
+
+
+config.action(
+    view.registerDefaultView,
+    'index.html', IContent)
 
 
 class AddContent(form.EditForm, container.AddContentForm, view.View):
@@ -52,7 +58,7 @@ class AddContent(form.EditForm, container.AddContentForm, view.View):
 
         changes = self.applyChanges(data)
 
-        obj = self.createAndAdd(data)
+        obj = self.createAndAdd(self.datasheets)
         if obj is not None:
             self.addedObject = obj
             self.finishedAdd = True
@@ -102,3 +108,19 @@ class EditContent(form.EditForm, view.View):
                 forms.append((schId, form))
 
         return forms
+
+
+class ViewContent(view.View):
+    view.pyramidView(
+        'index.html', IContent,
+        template = view.template('memphis.contenttype:templates/content.pt'))
+
+    description = ''
+
+    def update(self):
+        try:
+            ds = self.context.getDatasheet(schemas.IDublinCore)
+            self.title = ds.title
+            self.description = ds.description
+        except KeyError:
+            self.title = container.IContained(self.context).__name__

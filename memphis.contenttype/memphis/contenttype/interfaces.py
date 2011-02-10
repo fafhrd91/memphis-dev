@@ -5,14 +5,6 @@ from pyramid.i18n import TranslationStringFactory
 _ = TranslationStringFactory('memphis.contenttype')
 
 
-class WrongContentType(Exception):
-    """ wrong content type """
-
-
-class IContentContainer(container.ISimpleContainer):
-    """ container for content """
-
-
 class IContent(interface.Interface):
     """ behavior interface for content types """
 
@@ -20,6 +12,10 @@ class IContent(interface.Interface):
         title = _(u'Type'),
         description = _(u'Content Type Name'),
         required = True)
+
+
+class IContentContainer(container.ISimpleContainer):
+    """ container for content """
 
 
 class IContentTypeSchema(interface.Interface):
@@ -64,44 +60,8 @@ class IContentTypeSchema(interface.Interface):
 class IContentType(container.IFactory):
     """ content type """
 
-    context = interface.Attribute('Context')
-
-    def __bind__(context):
-        """ bind to context """
-
-    def add(content, name=''):
-        """ add content to container """
-
-    def checkObject(container, name, content):
-        """ check content in container """
-
-    def create(*datasheets):
+    def __call__(**datasheets):
         """ create content """
-
-    def isAdable():
-        """ addable in context """
-
-    def isAvailable():
-        """ available in context """
-
-    def listContainedTypes(checkAvailability=True):
-        """ list availabel content types allowed for adding """
-
-
-class IBoundContentType(interface.Interface):
-    """ bound content type """
-
-
-class IContentTypeChecker(interface.Interface):
-    """ check if content type withing context
-    factory mwthod should accept 2 parameters: contenttype and context """
-
-    def check():
-        """ check """
-
-
-class IContentTypeType(interface.interfaces.IInterface):
-    """ content type type """
 
 
 class IContentTypesConfiglet(container.IContainer):
@@ -117,5 +77,5 @@ class IBehaviorType(storage.ISchema):
 
 
 # application root
-class IRoot(IContentContainer, view.IRoot):
+class IRoot(IContentContainer, view.IRoot, container.IContained):
     """ root """

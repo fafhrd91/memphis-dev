@@ -12,6 +12,7 @@ from memphis.container.interfaces import IFactoryProvider
 
 # simple container behavior
 from memphis.container.simple import SimpleContainer
+from memphis.container.simple import ISimpleContainerRelation
 from memphis.container.interfaces import ISimpleContained
 from memphis.container.interfaces import ISimpleContainer
 

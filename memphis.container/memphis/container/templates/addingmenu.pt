@@ -1,6 +1,6 @@
 <tal:block condition="view.factories">
   <br /><br />
-  <div class="z-content-adding">
+  <div>
     <h2>Add content</h2>
     <div class="z-page-description"> 
       Select the type of item you want to add to your container.</div>

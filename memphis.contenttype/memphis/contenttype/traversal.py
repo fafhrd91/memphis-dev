@@ -88,7 +88,7 @@ class ResourceTreeTraverser(object):
                 else:
                     try:
                         next = container.LocationProxy(
-                            cont[segment], cont, segment)
+                            cont[segment], ob, segment)
                     except KeyError:
                         return {'context':ob,
                                 'view_name':segment,

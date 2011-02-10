@@ -1,7 +1,5 @@
 from zope import interface, event
-from zope.component import \
-    getAdapters, getUtility, queryUtility, getUtilitiesFor
-
+from zope.component import getAdapters, getUtility
 from zope.lifecycleevent import ObjectCreatedEvent
 
 from memphis import storage, config, container
@@ -41,40 +39,15 @@ class ContentType(storage.BehaviorBase):
             content.applyBehavior(*self.behaviors)
         content.getDatasheet(IContent).type = self.name
 
-        for schema in self.schemas:
-            sch = getUtility(storage.ISchema, schema)
-            content.applySchema(sch.specification, True)
-
-        # update datasheets
-        for name, ds in data.items():
-            datasheet = content.getDatasheet(name)
-            if datasheet is not None:
-                datasheet.__load__(ds)
-
+        for schId in self.schemas:
+            schema = getUtility(storage.ISchema, schId)
+            content.applySchema(schema.specification)
+            if schId in data:
+                ds = content.getDatasheet(schema.specification)
+                ds.__load__(data[schId])
+                
         event.notify(ObjectCreatedEvent(content))
         return content
-
-    def isAddable(self):
-        if not IBoundContentType.providedBy(self):
-            return False
-
-        for name, checker in getAdapters(
-            (self, self.context), IContentTypeChecker):
-            if not checker.check():
-                return False
-        else:
-            return True
-
-    def isAvailable(self):
-        if not IBoundContentType.providedBy(self):
-            return False
-
-        for name, checker in getAdapters(
-            (self, self.context), IContentTypeChecker):
-            if not checker.check():
-                return False
-        else:
-            return True
 
 
 class FactoryProvider(object):
