@@ -38,8 +38,8 @@ class ResetPassword(object):
             if principal is not None:
                 passcode = getUtility(IPasswordTool).generatePasscode(principal)
 
-                template = ResetPasswordTemplate(
-                    principal, request, passcode=passcode)
+                template = ResetPasswordTemplate(principal, request)
+                template.passcode = passcode
                 template.send()
 
                 view.addMessage(
