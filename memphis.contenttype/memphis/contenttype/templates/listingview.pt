@@ -1,0 +1,12 @@
+<h1>${context.__name__}</h1>
+<div></div>
+
+<br />
+<div class="z-wizard-viewspace">
+  <h1>Contents</h1>
+  <br />
+  <tal:block content="structure pagelet:container-listing" />
+
+  <br />
+  <tal:block content="structure pagelet:container-addingmenu" />
+</div>

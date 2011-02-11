@@ -1,0 +1,28 @@
+<table class="z-table" tal:condition="view.hasitems">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Title</th>
+      <th>Size</th>
+      <th>Created</th>
+      <th>Modified</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tr tal:repeat="item list(view.values())"
+      tal:attributes="class repeat['item'].even() and
+		      'z-table-record even' or 
+		      'z-table-record odd'">
+    <td></td>
+    <td><a href="${view.url}${item['name']}/">${item['name']}</a></td>
+    <td><a href="${view.url}${item['name']}/">${item['title']}</a></td>
+    <td></td>
+    <td>${item['created']}</td>
+    <td>${item['modified']}</td>
+    <td>${item['type']}</td>
+  </tr>
+</table>
+<div tal:condition="not view.hasitems">
+  There are no content in this container.
+</div>
