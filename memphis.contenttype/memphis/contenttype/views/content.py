@@ -100,7 +100,7 @@ class EditContent(form.EditForm, view.View):
         for schId in ct.schemas:
             schema = queryUtility(storage.ISchema, schId)
             if schema is not None:
-                ds = self.context.getDatasheet(schema.specification)
+                ds = schema.getDatasheet(content.oid)
                 form = EditDatasheet(ds, self.request, self)
                 if schId in ct.hiddenFields:
                     form.hidden = ct.hiddenFields[schId]

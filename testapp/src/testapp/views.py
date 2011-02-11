@@ -30,4 +30,4 @@ view.registerView(
     template=view.template("testapp:templates/welcome.pt"))
 
 view.registerDefaultView(
-    'index.html', view.IRoot)
+    'listing.html', view.IRoot)

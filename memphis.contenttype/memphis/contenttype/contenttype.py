@@ -41,11 +41,12 @@ class ContentType(storage.BehaviorBase):
 
         for schId in self.schemas:
             schema = getUtility(storage.ISchema, schId)
-            content.applySchema(schema.specification)
+            #content.applySchema(schema.specification)
+            schema.apply(content.oid)
             if schId in data:
-                ds = content.getDatasheet(schema.specification)
+                ds = schema.getDatasheet(content.oid)
                 ds.__load__(data[schId])
-                
+
         event.notify(ObjectCreatedEvent(content))
         return content
 

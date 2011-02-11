@@ -137,10 +137,10 @@ class ContentTypeSchemas(form.Form, view.View):
     @form.buttonAndHandler(u'Remove')
     def removeHandler(self, action):
         rem_sch = self.request.params.getall('schema-id')
-        context.schemas = tuple(
+        self.context.schemas = tuple(
             [sch for sch in self.context.schemas if sch not in rem_sch])
 
-        view.addMessage(request, 'Content type schemas have been modified.')
+        view.addMessage(self.request, 'Content type schemas have been modified.')
 
     @form.buttonAndHandler(u'Modify hidden')
     def modifyHandler(self, action):
