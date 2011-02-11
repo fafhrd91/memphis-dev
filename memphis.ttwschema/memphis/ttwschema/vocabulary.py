@@ -10,7 +10,20 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 from memphis import config, container
 
-from interfaces import _
+from interfaces import _, ISchema
+
+
+@interface.implementer(IVocabularyFactory)
+def getSchemas(context=None):
+    fields = [(name, f) for name, f in component.getUtilitiesFor(ISchema)]
+    fields.sort()
+
+    return SimpleVocabulary([SimpleTerm(f, name, f.title)
+                             for name, f in fields])
+
+config.action(
+    config.registerUtility,
+    getSchemas, IVocabularyFactory, name='memphis.ttw-schemas')
 
 
 # Static DisplayLists

@@ -114,10 +114,10 @@ class PasswordTool(object):
             return storage.getItem(rec.oid)
 
     def generatePasscode(self, principal):
-        rec = principal.getDatasheet(IPasswordReset, apply=True)
+        principal.applySchema(IPasswordReset)
 
         passcode = utils.genPassword2(32)
-        rec.passcode = passcode
+        IPasswordReset(principal).passcode = passcode
         return passcode
 
     def resetPassword(self, passcode, password):
@@ -125,7 +125,7 @@ class PasswordTool(object):
         if principal is None:
             raise PasswordResetingError("Passcode is invalid")
 
-        principal.getDatasheet(IUserInfo).password = self.encodePassword(password)
+        IUserInfo(principal).password = self.encodePassword(password)
         principal.removeSchema(IPasswordReset)
 
     def validatePassword(self, password):

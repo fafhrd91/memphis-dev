@@ -82,7 +82,3 @@ class IPreferences(view.IRoot):
     principal = schema.TextLine(
         title = u'Principal id',
         required = True)
-
-
-class ITTWProfileConfiglet(interface.Interface):
-    """ ttw profile schema """

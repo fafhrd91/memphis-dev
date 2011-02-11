@@ -24,7 +24,7 @@ class PrincipalPassword(form.EditForm):
     def update(self, *args, **kw):
         principal = self.context.user
 
-        info = principal.getDatasheet(IUserInfo)
+        info = IUserInfo(principal)
 
         self.principal_login = info.login
         self.principal_title = info.fullname

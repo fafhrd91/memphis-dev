@@ -13,7 +13,7 @@ class LayoutPage(object):
         self.isAnon = self.userId is None
 
         if self.userId is not None:
-            self.user = user.getDatasheet(IUserInfo)
+            self.user = IUserInfo(user)
 
 
 view.registerLayout(

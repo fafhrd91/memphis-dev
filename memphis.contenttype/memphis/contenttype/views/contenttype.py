@@ -91,7 +91,7 @@ class ContentTypeSchemas(form.Form, view.View):
         template = view.template('memphis.contenttype:templates/schemas.pt'))
 
     def listFields(self, sch):
-        return [field for n, field in getFieldsInOrder(sch.specification)]
+        return [field for n, field in getFieldsInOrder(sch.spec)]
 
     def update(self):
         super(ContentTypeSchemas, self).update()

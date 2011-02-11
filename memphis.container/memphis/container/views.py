@@ -51,7 +51,7 @@ class AddingMenu(view.Pagelet):
         context = self.context
 
         self.url = url.resource_url(
-            interfaces.IContained(context), self.request)
+            interfaces.IContained(context, context), self.request)
 
         factories = {}
         factories.update(getattr(context, '__factories__', {}))

@@ -24,10 +24,10 @@ class PasswordPreference(object):
 
     def checkPassword(self, password):
         return self.ptool.checkPassword(
-            self.user.getDatasheet(IUserInfo).password, password)
+            IUserInfo(self.user).password, password)
 
     def changePassword(self, password):
-        self.user.getDatasheet(IUserInfo).password = \
+        IUserInfo(self.user).password = \
             passwordTool.encodePassword(password)
 
     def isAvailable(self):

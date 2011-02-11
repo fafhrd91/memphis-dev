@@ -116,3 +116,12 @@ class IPasswordReset(interface.Interface):
 
 class IPasswordPreference(interface.Interface):
     """ password preference """
+
+
+class IUserProfileConfiglet(interface.Interface):
+    """ ttw profile configlet """
+
+    upschema = schema.Choice(
+        title = u'User profile schema',
+        vocabulary = 'memphis.ttw-schemas',
+        required = False)

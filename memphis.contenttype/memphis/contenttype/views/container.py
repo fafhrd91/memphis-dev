@@ -26,7 +26,7 @@ class Listing(view.Pagelet):
         for item in self.container.values():
             c = container.IContained(item, item)
             try:
-                dc = item.getDatasheet(schemas.IDublinCore)
+                dc = schemas.IDublinCore(item)
                 yield {'name': c.__name__,
                        'title': dc.title,
                        'modified': dc.modified,

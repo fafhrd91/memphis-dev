@@ -6,7 +6,6 @@ from hooks import getSession
 from table import buildTable
 from datasheet import DatasheetType
 from interfaces import ISchema
-from exceptions import StorageException
 
 
 class Schema(object):
@@ -32,7 +31,7 @@ class Schema(object):
             sqlalchemy.and_(
                 SQLSchema.oid == oid, SQLSchema.name == self.name)).first()
         if ob is not None:
-            raise StorageException('Schema already applied: %s'%self.name)
+            return
 
         session.add(SQLSchema(oid, self.name))
         session.flush()

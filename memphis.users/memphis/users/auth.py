@@ -25,7 +25,7 @@ class Authentication(object):
         user = self.getUserByLogin(login)
 
         if user is not None:
-            ds = user.getDatasheet(IUserInfo)
+            ds = IUserInfo(user)
 
             pwtool = getUtility(IPasswordTool)
             if pwtool.checkPassword(ds.password, password):

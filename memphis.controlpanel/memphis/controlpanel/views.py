@@ -4,11 +4,21 @@ $Id: views.py 11810 2011-01-31 06:56:01Z fafhrd91 $
 """
 from pyramid import url
 from pyramid.config import Configurator
+
+from zope import interface
 from zope.component import getAdapters
 
-from memphis import view, config, form, container
+from memphis import view, config, form
 from memphis.controlpanel.api import getControlPanel
 from memphis.controlpanel.interfaces import IConfiglet, IControlPanel
+
+try:
+    from memphis import container
+except:
+    class IAction(interface.Interface): pass
+    class Container(object):pass
+    container = Container()
+    container.IAction = IAction
 
 
 # layout

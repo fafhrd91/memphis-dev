@@ -74,7 +74,7 @@ class LoginSuccess(object):
             raise HTTPFound(
                 location = '%s/login.html'%self.request.application_url)
         else:
-            self.user = user.getDatasheet(IUserInfo)
+            self.user = IUserInfo(user)
 
 
 class LogoutForm(object):

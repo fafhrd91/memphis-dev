@@ -26,7 +26,7 @@ class ContentTypesConfiglet(object):
 
     def create(self, data):
         item = storage.insertItem(IContentType)
-        ds = item.getDatasheet(IContentTypeSchema)
+        ds = IContentTypeSchema(item)
         for key, val in data.items():
             setattr(ds, key, val)
         return container.LocationProxy(ds, self, item.oid)

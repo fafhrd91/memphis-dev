@@ -68,7 +68,7 @@ class ResetPasswordForm(form.Form):
 
         passcode = request.params.get('passcode')
         principal = self.ptool.getPrincipal(passcode)
-        self.info = principal.getDatasheet(IUserInfo)
+        self.info = IUserInfo(principal)
 
         if principal is not None:
             self.passcode = passcode
@@ -126,7 +126,7 @@ class ResetPasswordTemplate(mail.MailTemplate):
         self.url = '%s/resetpasswordform.html?passcode=%s'%(
             request.application_url, self.passcode)
 
-        info = self.context.getDatasheet(IUserInfo)
+        info = IUserInfo(self.context)
 
         self.to_address = mail.formataddr((info.fullname, info.login))
 

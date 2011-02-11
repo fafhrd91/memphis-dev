@@ -14,7 +14,7 @@ class SchemaManagement(object):
 
     def create(self, data):
         item = storage.insertItem(ISchema)
-        ds = item.getDatasheet(ISchema)
+        ds = ISchema(item)
         for key, val in data.items():
             setattr(ds, key, val)
 

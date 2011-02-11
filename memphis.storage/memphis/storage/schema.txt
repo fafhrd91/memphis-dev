@@ -87,11 +87,14 @@ Apply schema
 Apply schema with `applyBehavior` method::
 
     >>> item.applySchema(IMySchema)
+    >>> list(item.schemas)
+    [u'schema']
+
+You can apply schema multiple times::
 
     >>> item.applySchema(IMySchema)
-    Traceback (most recent call last):
-    ...
-    StorageException: Schema already applied: schema
+    >>> list(item.schemas)
+    [u'schema']
 
     >>> list(item.schemas)
     [u'schema']

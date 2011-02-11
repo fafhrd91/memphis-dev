@@ -32,7 +32,7 @@ class Preferences(storage.BehaviorBase):
             cls.__schema__.Type.principal == principal).first()
         if rec is None:
             item = storage.insertItem(IPreferences)
-            item.getDatasheet(IPreferences).principal = principal
+            IPreferences(item).principal = principal
         else:
             item = storage.getItem(rec.oid)
 

@@ -38,7 +38,7 @@ class Registration(form.Form):
             return
 
         item = storage.insertItem('memphis.user')
-        datasheet = item.getDatasheet(IUserInfo)
+        datasheet = IUserInfo(item)
 
         datasheet.login = data['login']
         datasheet.fullname = u'%s %s'%(data['firstname'], data['lastname'])

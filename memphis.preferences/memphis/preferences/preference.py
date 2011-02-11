@@ -31,7 +31,8 @@ class Preference(object):
             raise UnboundPreferenceGroup(self.__id__)
 
         # set principal data
-        data = self.principal.getDatasheet(self.__schema__, apply=True)
+        self.principal.applySchema(self.__schema__)
+        data = self.__schema__(self.principal)
 
         self.__dict__['__data__'] = data
         return data

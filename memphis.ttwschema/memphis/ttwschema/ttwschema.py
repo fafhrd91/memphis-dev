@@ -37,7 +37,7 @@ class Schema(storage.BehaviorBase):
 
     @property
     def __name__(self):
-        return self.context.oid
+        return self.__context__.oid
 
     def keys(self):
         return getFieldNamesInOrder(self.schema)
@@ -74,7 +74,7 @@ class Schema(storage.BehaviorBase):
 
         self.schema._InterfaceClass__attrs[name] = field
 
-        sch = getUtility(ISchemaType, self.context.oid)
+        sch = getUtility(ISchemaType, self.__context__.oid)
         for column in storage.mapFieldToColumns(field):
             column.create(sch.Type.__table__, populate_default=True)
 
@@ -85,15 +85,15 @@ class Schema(storage.BehaviorBase):
         field.interface = None
         del self.schema._InterfaceClass__attrs[name]
 
-        sch = getUtility(ISchemaType, self.context.oid)
+        sch = getUtility(ISchemaType, self.__context__.oid)
         for column in storage.mapFieldToColumns(field):
             getattr(sch.Type.__table__.c, column.name).drop()
 
         self.updateSchema()
 
     def updateSchema(self):
-        sch = getUtility(ISchemaType, self.context.oid)
-        sch.specification = self.schema
+        sch = getUtility(ISchemaType, self.__context__.oid)
+        sch.spec = self.schema
         sch.Type.__schema__ = self.schema
         interface.classImplements(sch.Type, self.schema)
         
@@ -101,7 +101,7 @@ class Schema(storage.BehaviorBase):
 
     def installSchema(self):
         storage.registerSchema(
-            self.context.oid, self.schema, 
+            self.__context__.oid, self.schema, 
             type=ISchemaType, title=self.title, description=self.description)
 
 

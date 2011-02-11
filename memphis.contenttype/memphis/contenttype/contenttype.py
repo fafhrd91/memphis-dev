@@ -30,18 +30,18 @@ class ContentType(storage.BehaviorBase):
 
     @property
     def name(self):
-        return self.context.oid
+        return self.__context__.oid
 
     def __call__(self, **data):
         # create content with behaviors
         content = storage.insertItem(IContent)
         if self.behaviors:
             content.applyBehavior(*self.behaviors)
-        content.getDatasheet(IContent).type = self.name
+        IContent(content).type = self.name
 
         for schId in self.schemas:
             schema = getUtility(storage.ISchema, schId)
-            #content.applySchema(schema.specification)
+            #content.applySchema(schema.spec)
             schema.apply(content.oid)
             if schId in data:
                 ds = schema.getDatasheet(content.oid)

@@ -29,12 +29,12 @@ class SimpleContained(storage.BehaviorBase):
                      description = u'Contained item for simple container.')
 
     def __init__(self, item, relation):
-        self.context = item
-        self.relation = relation
+        self.__context__ = item
+        self.__relation__ = relation
 
         try:
-            rel = self.relation.getReferences(
-                destination=self.context.oid).next()
+            rel = self.__relation__.getReferences(
+                destination=self.__context__.oid).next()
             self.__name__ = rel.name
             self.__parent__ = rel.__source__
         except StopIteration:
@@ -51,7 +51,7 @@ class SimpleContainer(storage.BehaviorBase):
 
     def __iter__(self):
         relation = self.__relation__
-        for rel in relation.getReferences(self.context.oid):
+        for rel in relation.getReferences(self.__context__.oid):
             yield rel.name
 
     keys = __iter__
@@ -59,7 +59,7 @@ class SimpleContainer(storage.BehaviorBase):
     def __getitem__(self, name):
         try:
             rel = self.__relation__.getReferences(
-                self.context.oid, name=name).next()
+                self.__context__.oid, name=name).next()
             return rel.__destination__
         except StopIteration:
             pass
@@ -74,19 +74,19 @@ class SimpleContainer(storage.BehaviorBase):
 
     def values(self):
         relation = self.__relation__
-        for rel in relation.getReferences(self.context.oid):
+        for rel in relation.getReferences(self.__context__.oid):
             yield rel.__destination__
 
     def __len__(self):
-        return len(list(self.__relation__.getReferences(self.context.oid)))
+        return len(list(self.__relation__.getReferences(self.__context__.oid)))
 
     def items(self):
-        for rel in self.__relation__.getReferences(self.context.oid):
+        for rel in self.__relation__.getReferences(self.__context__.oid):
             yield rel.name, rel.__destination__
 
     def __contains__(self, key):
         try:
-            self.__relation__.getReferences(self.context.oid, name=key).next()
+            self.__relation__.getReferences(self.__context__.oid, name=key).next()
             return True
         except StopIteration:
             pass
@@ -132,7 +132,7 @@ class SimpleContainer(storage.BehaviorBase):
     def __delitem__(self, name):
         try:
             rel = self.__relation__.getReferences(
-                self.context.oid, name=name).next()
+                self.__context__.oid, name=name).next()
         except StopIteration:
             raise KeyError(name)
 
