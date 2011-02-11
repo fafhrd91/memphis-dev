@@ -18,7 +18,7 @@ class Schema(object):
         self.name = name
         self.title = title
         self.description = description
-        self.specification = schema
+        self.spec = schema
 
         if klass is not None:
             self.Type = klass
@@ -46,8 +46,12 @@ class Schema(object):
         session.delete(ob)
 
         ob = session.query(self.Type).filter(self.Type.oid == oid).first()
-        session.delete(ob)
+        if ob is not None:
+            session.delete(ob)
         session.flush()
+
+    def __call__(self, item):
+        return self.getDatasheet(item.oid)
 
     def getDatasheet(self, oid):
         klass = self.Type
@@ -84,7 +88,7 @@ class Schema(object):
                 sqlalchemy.ForeignKey('items.oid'), primary_key=True),
         ]
 
-        schema = self.specification
+        schema = self.spec
 
         table = buildTable(self.name, 'schema', schema, columns, self.reserved)
 

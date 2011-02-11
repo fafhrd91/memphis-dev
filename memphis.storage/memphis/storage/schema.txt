@@ -96,18 +96,27 @@ Apply schema with `applyBehavior` method::
     >>> list(item.schemas)
     [u'schema']
 
+    >>> IMySchema.providedBy(item)
+    True
+
 
 Datasheet
 ---------
 
-Use `getDatasheet` method to get datasheet::
+Adapt to schema interface or use `getDatasheet` method to get datasheet::
 
     >>> item.getDatasheet(IMySchema).__schema__ is IMySchema
+    True
+
+    >>> IMySchema(item).__schema__ is IMySchema
     True
 
 Also it's possible to use less specific interface::
 
     >>> item.getDatasheet(IBase).__schema__ is IMySchema
+    True
+
+    >>> IBase(item).__schema__ is IMySchema
     True
 
 Attribute moification
@@ -205,10 +214,13 @@ Remove schema
     >>> item = storage.insertItem()
     >>> item.applySchema(IMySchema)
 
-    >>> item.getDatasheet(IMySchema)
+    >>> IMySchema(item)
     <memphis.storage.datasheet.Datasheet<schema> ...>
 
     >>> item.removeSchema(IMySchema)
+
+    >>> IMySchema.providedBy(item)
+    False
 
     >>> item.removeSchema(IMySchema)
     Traceback (most recent call last):

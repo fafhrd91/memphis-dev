@@ -100,6 +100,9 @@ class DatasheetType(type):
     >>> isinstance(ds, MyDatasheet2)
     True
 
+    >>> ds.__title__
+    'MyDatasheet'
+
     >>> ds.__title__ = 'test'
     Traceback (most recent call last):
     ...

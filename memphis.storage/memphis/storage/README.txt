@@ -1,8 +1,39 @@
-===========
-DataStorage
-===========
+===============
+Memphis storage
+===============
 
-fixme: need ad high level description here
+  Memphis storage implements high level data/behavior binding
+concept - Data component. Access to data and behavior is done
+in ZCA way. Data component consists with three primitives - schemas,
+behaviors, relations.
+
+  Schema is besicly sqlalchemy table with additional infomration.
+But schema defined as zope interface with zope schema fields, each
+field defines column in table. its possible to use any model with
+memphis storage, there is only one restriction, it should have
+oid foring key to items table. Actual record in db table is called
+datasheet.
+
+  Behavior is actual python code that do somthing, it is stateless,
+but it can uses schemas and relations to store additional information.
+
+  Relations is just many to many relations between any data components.
+But relation can have additional schema, so its possible to store
+some state on each reference.
+
+  Each data component can have any number assigned schemas, behaviors
+or relations. Data component doesn't have any sence at
+db or orm level. Binding data component to schema or to behavior
+happens at runtime. Basicly schema/behavior are only strings in
+'schema' and 'behavior' db tables, at runtime memphis searches
+named behavior and use it as adapter, same for schema.
+
+From python point of view storage item implements schemas and behaviors
+interfaces. And to get behavior or schema you have to adapt
+storage item.
+
+All premitives can be constructed at startup or during runtime. But
+runtime creation usefull mostly for schema only.
 
 
 Setup storage
@@ -77,8 +108,8 @@ Schema
 ======
 
 Schema is model in orm term. But it doesn't contain any application logic,
-it is just storage for data. You apply any schema to any item. Memphis storage
-uses `zope.schema` for schema definition::
+it is just storage for data. You may apply any schema to any item. Memphis
+storage uses `zope.schema` for schema definition::
 
     >>> from zope import interface, schema, component
 
@@ -108,7 +139,10 @@ table behind the scene. You can start use it immediately::
 
 Actual record of schema is called 'datasheet'::
 
-    >>> datasheet = item.getDatasheet(IMySchema)
+    >>> IMySchema.providedBy(item)
+    True
+
+    >>> datasheet = IMySchema(item)
     >>> datasheet.title
     u'No value'
 
@@ -125,7 +159,7 @@ database. Usually this is done by sqlalchemy transaction manager like
 
     >>> session.flush()
 
-    >>> datasheet = item.getDatasheet(IMySchema)
+    >>> datasheet = IMySchema(item)
     >>> datasheet.title
     u'New title value'
 
@@ -200,11 +234,11 @@ Now we can apply schema::
 
     >>> item.applySchema(IMyCustomSchema)
 
-    >>> datasheet = item.getDatasheet(IMyCustomSchema)
+    >>> datasheet = IMyCustomSchema(item)
     >>> datasheet.title = u'New title value'
     >>> session.flush()
 
-    >>> datasheet = item.getDatasheet(IMyCustomSchema)
+    >>> datasheet = IMyCustomSchema(item)
     >>> datasheet.title
     u'New title value'
 
@@ -259,11 +293,8 @@ Now implementation::
     ...     def __init__(self, context, relation):
     ...         super(Contained, self).__init__(context, relation)
     ...         
-    ...         self.context = context
-    ...         self.relation = relation
-    ...         
-    ...         rel = self.relation.getReferences(
-    ...             destination=self.context.oid).next()
+    ...         rel = self.__relation__.getReferences(
+    ...             destination=self.oid).next()
     ...         
     ...         self.__name__ = rel.name
     ...         self.__parent__ = rel.__source__
@@ -275,12 +306,12 @@ Now implementation::
     ...         
     ...     def keys(self):
     ...         return [rel.name for rel in
-    ...                 self.__relation__.getReferences(self.context.oid)]
+    ...                 self.__relation__.getReferences(self.oid)]
     ...     
     ...     def __getitem__(self, name):
     ...         try:
     ...             rel = self.__relation__.getReferences(
-    ...                 self.context.oid, name=name).next()
+    ...                 self.__context__.oid, name=name).next()
     ...             return rel.__destination__
     ...         except StopIteration:
     ...             pass
@@ -290,7 +321,7 @@ Now implementation::
     ...         if not IContained.providedBy(item):
     ...             item.applyBehavior('contained')
     ...         
-    ...         self.__relation__.insert(self.context.oid, item.oid, name=name)
+    ...         self.__relation__.insert(self.oid, item.oid, name=name)
     ...         
     >>> reGrok()
 

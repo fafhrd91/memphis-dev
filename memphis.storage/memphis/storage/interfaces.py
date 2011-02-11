@@ -98,13 +98,15 @@ class IBehavior(interface.Interface):
 class IBehaviorBase(interface.Interface):
     """ base behavior """
 
-    context = interface.Attribute('Storage item')
+    __context__ = interface.Attribute('Storage item')
 
     __behavior__ = interface.Attribute('IBehavior object')
 
     __relation__ = interface.Attribute('Relation, if behavior uses relation')
 
     __datasheet__ = interface.Attribute('Datasheet, if behavior uses schema')
+
+    oid = interface.Attribute('Storage item oid')
 
 
 class IBehaviorAppliedEvent(IObjectEvent):

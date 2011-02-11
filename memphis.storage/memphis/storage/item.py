@@ -16,7 +16,8 @@ from memphis.storage.interfaces import BehaviorAppliedEvent
 from memphis.storage.interfaces import BehaviorRemovedEvent
 from memphis.storage.exceptions import BehaviorException
 
-from memphis.storage.registry import getSchema, getBehavior, queryBehavior
+from memphis.storage.registry import getSchema, querySchema
+from memphis.storage.registry import getBehavior, queryBehavior
 
 _marker = object()
 
@@ -35,9 +36,16 @@ class ItemSpecification(ObjectSpecificationDescriptor):
         provided = []
         cache = {}
         for behavior in inst.behaviors:
-            behavior = getBehavior(behavior)
-            cache[behavior.spec] = behavior
-            provided.append(behavior.spec)
+            behavior = queryBehavior(behavior)
+            if behavior is not None:
+                cache[behavior.spec] = behavior
+                provided.append(behavior.spec)
+
+        for schId in inst.schemas:
+            sch = querySchema(schId)
+            if sch is not None and sch.spec not in cache:
+                cache[sch.spec] = sch
+                provided.append(sch.spec)
 
         if provided:
             spec = Implements(*provided)
@@ -64,17 +72,22 @@ class Item(object):
 
     def __conform__(self, spec):
         # first try find directly applied behavior
-        if not hasattr(self, '_v__providedBy'):
-            provided = self.__providedBy__
+        provided = self.__providedBy__
 
-        behavior = self._v__providedByCache.get(spec)
-        if behavior is not None:
-            return behavior(self)
+        # check cache
+        callable = self._v__providedByCache.get(spec)
+        if callable is not None:
+            return callable(self)
 
         # probably item implements more specific behavior than `spec`
-        behavior = queryBehavior((self.__providedBy__,), spec)
+        behavior = queryBehavior((provided,), spec)
         if behavior is not None:
             return behavior(self)
+
+        # check schema
+        schema = querySchema(spec)
+        if schema is not None:
+            return schema(self)
 
     @classmethod
     def getItem(cls, oid):
@@ -149,9 +162,15 @@ class Item(object):
 
     def applySchema(self, type):
         getSchema(type).apply(self.oid)
+        if hasattr(self, '_v__providedBy'):
+            del self._v__providedBy
+            del self._v__providedByCache
 
     def removeSchema(self, type):
         getSchema(type).remove(self.oid)
+        if hasattr(self, '_v__providedBy'):
+            del self._v__providedBy
+            del self._v__providedByCache
 
     def getDatasheet(self, name, apply=False):
         sch = getSchema(name)

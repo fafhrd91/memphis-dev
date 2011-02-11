@@ -14,10 +14,14 @@ class BehaviorBase(object):
     __datasheet__ = None
 
     def __init__(self, context, relation=None):
-        self.context = context
+        self.__context__ = context
         self.__relation__ = relation
         if self.__behavior__.schema:
             self.__datasheet__ = context.getDatasheet(self.__behavior__.schema)
+
+    @property
+    def oid(self):
+        return self.__context__.oid
 
 
 class BehaviorFactoryBase(object):
@@ -83,8 +87,8 @@ class Behavior(object):
         session.delete(ob)
 
         # remove schema
-        #if self.schema is not None:
-        #    item.removeSchema(self.schema)
+        if self.schema is not None:
+            item.removeSchema(self.schema)
 
         session.flush()
 

@@ -16,12 +16,16 @@ class Registry(object):
         self.behaviors = AdapterRegistry()
         self.behaviornames = {}
         self.schemas = AdapterRegistry()
+        self.schemanames = {}
         self.relations = {}
 
     def getRelation(self, key):
         return self.relations[key]
 
     def querySchema(self, schema, default=None):
+        if isinstance(schema, basestring):
+            return self.schemanames.get(schema, default)
+
         return self.schemas.lookup((ISchema,), schema, default=default)
 
     def queryBehavior(self, provided, spec, default=None):
@@ -34,7 +38,8 @@ class Registry(object):
         return self.behaviors.lookup(provided, spec, default=default)
 
     def registerSchema(self, schema):
-        self.schemas.register((ISchema,), schema.specification, '', schema)
+        self.schemas.register((ISchema,), schema.spec, '', schema)
+        self.schemanames[schema.name] = schema
 
     def registerRelation(self, rel, schema):
         self.relations[schema] = rel
