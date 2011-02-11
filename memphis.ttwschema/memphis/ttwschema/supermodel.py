@@ -3,7 +3,8 @@
 $Id: supermodel.py 4711 2011-02-02 22:55:35Z nikolay $
 """
 from memphis import config
-from plone.supermodel import converters, fields, serializer, parser
+from plone.supermodel import converters, fields
+from plone.supermodel import exportimport, serializer, parser
 
 
 config.action(config.registerAdapter, converters.DefaultFromUnicode)
@@ -97,3 +98,20 @@ config.action(config.registerUtility,
 config.action(config.registerAdapter, serializer.DefaultFieldNameExtractor)
 
 config.action(config.registerUtility, parser.DefaultSchemaPolicy())
+
+
+# additional serializers
+from z3c.schema.email import RFC822MailAddress
+
+RFC822MailAddressHandler = exportimport.BaseHandler(RFC822MailAddress)
+config.action(
+    config.registerUtility,
+    RFC822MailAddressHandler, name="z3c.schema.email.field.RFC822MailAddress")
+
+
+from fields import URL
+
+URLHandler = exportimport.BaseHandler(URL)
+config.action(
+    config.registerUtility,
+    URLHandler, name="memphis.ttwschema.fields.URL")

@@ -94,7 +94,7 @@ class AddContentForm(form.Form):
 
         if errors:
             view.addMessage(
-                self.request, [self.formErrorsMessage] + errors, 'formError')
+                self.request, (self.formErrorsMessage,) + errors, 'formError')
         else:
             obj = self.createAndAdd(data)
 
