@@ -48,7 +48,7 @@ class Preferences(storage.BehaviorBase):
 
         clone = category.__class__.__new__(category.__class__)
         clone.update(category)
-        clone.context = self.context
+        clone.context = self.__context__
         clone.__parent__ = self
         return clone
 

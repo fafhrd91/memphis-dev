@@ -57,7 +57,7 @@ class PreferencesView(view.View):
         for category in root.categories.values():
             prefs = []
             for pref in category.values():
-                pref = pref.__bind__(root.context)
+                pref = pref.__bind__(root.__context__)
 
                 if not pref.isAvailable():
                     continue
@@ -104,7 +104,7 @@ class Preference(form.EditForm, view.View):
 
     @property
     def fields(self):
-        return field.Fields(self.context.__schema__)
+        return form.Fields(self.context.__schema__)
 
 config.action(
     view.registerDefaultView, 'index.html', IPreference)
