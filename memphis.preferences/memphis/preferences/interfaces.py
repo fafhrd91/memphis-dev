@@ -6,7 +6,7 @@ $Id: interfaces.py 11800 2011-01-31 04:36:54Z fafhrd91 $
 from zope import schema, interface
 from pyramid.i18n import TranslationStringFactory
 
-from memphis import storage, view, ttwschema
+from memphis import storage, view
 
 _ = TranslationStringFactory('memphis.preferences')
 
