@@ -3,48 +3,33 @@ from memphis import storage
 from memphis.contenttype.interfaces import ISchemaType
 
 
-class IDublinCore(interface.Interface):
-    """ Dublin Core properties """
-    storage.schema('content.dublincore', type=ISchemaType,
-                   title = 'Dublin Core',
-                   description = 'Dublin core properties.')
-
-    title = schema.TextLine(
-        title = u'Title',
-        description =
-        u"The first unqualified Dublin Core 'Title' element value.")
-
-    description = schema.Text(
-        title = u'Description',
-        description =
-        u"The first unqualified Dublin Core 'Description' element value.",
-        required = False)
-
-    created = schema.Datetime(
-        title = u'Creation Date',
-        description =
-        u"The date and time that an object is created. "
-        u"\nThis is normally set automatically.",
-        required = False)
-
-    modified = schema.Datetime(
-        title = u'Modification Date',
-        description =
-        u"The date and time that the object was last modified in a\n"
-        u"meaningful way.",
-        required = False)
+class IDCPublishing(interface.Interface):
+    """Publishing properties"""
+    storage.schema('content.dc.publishing', type=ISchemaType,
+                   title = 'Dublin Core Pubishing',
+                   description = 'Dublin core publishing properties.')
 
     effective = schema.Datetime(
         title = u'Effective Date',
-        description =
-        u"The date and time that an object should be published. ",
+        description = u"The date and time that an object should be published.",
         required = False)
 
     expires = schema.Datetime(
         title = u'Expiration Date',
-        description =
-        u"The date and time that the object should become unpublished.",
+        description = \
+            u"The date and time that the object should become unpublished.",
         required = False)
+
+
+class IDCExtended(interface.Interface):
+    """Extended properties
+
+    This is a mixed bag of properties we want but that we probably haven't
+    quite figured out yet.
+    """
+    storage.schema('content.dc.extended', type=ISchemaType,
+                   title = 'Dublin Core Extended',
+                   description = 'Dublin Core extended properties.')
 
     creators = schema.Tuple(
         title = u'Creators',
@@ -60,13 +45,13 @@ class IDublinCore(interface.Interface):
 
     publisher = schema.Text(
         title = u'Publisher',
-        description =
-        u"The first unqualified Dublin Core 'Publisher' element value.",
+        description =\
+            u"The first unqualified Dublin Core 'Publisher' element value.",
         required = False)
 
     contributors = schema.Tuple(
         title = u'Contributors',
-        description =
-        u"The unqualified Dublin Core 'Contributor' element values",
+        description = \
+            u"The unqualified Dublin Core 'Contributor' element values",
         value_type = schema.TextLine(),
         required = False)

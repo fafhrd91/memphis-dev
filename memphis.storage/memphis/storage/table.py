@@ -31,6 +31,10 @@ config.action(
 
 config.action(
     config.registerAdapter,
+    FieldMapper(sqlalchemy.Unicode), (schema.interfaces.IChoice,))
+
+config.action(
+    config.registerAdapter,
     FieldMapper(sqlalchemy.Integer), (schema.interfaces.IInt,))
 
 config.action(

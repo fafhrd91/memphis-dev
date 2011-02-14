@@ -1,7 +1,3 @@
-"""
-
-$Id: ttwschema.py 4730 2011-02-03 05:27:33Z nikolay $
-"""
 import migrate.changeset
 
 from zope import interface, schema
@@ -12,7 +8,7 @@ from zope.lifecycleevent import IObjectModifiedEvent
 from plone import supermodel
 
 from memphis import config, storage, container
-from memphis.ttwschema.interfaces import IField, ISchema, ISchemaType
+from memphis.schema.interfaces import IField, ISchema, ISchemaType
 
 
 class DefaultSchema(interface.Interface):

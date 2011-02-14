@@ -26,7 +26,7 @@ ul.z-listing li a:visited,ul.z-listing li .z-listing-details a:visited,ul.z-hlis
 ul.z-listing li a:active,ul.z-listing li .z-listing-details a:active,ul.z-hlisting li a:active,ul.z-hlisting li .z-listing-details a:active {color: #003C75;background-color: transparent;}
 ul.z-listing li span,ul.z-hlisting li span {border: 0;border-bottom: 1px dotted #76797C;}
 ul.z-listing li .z-listing-details span a,ul.z-hlisting li .z-listing-details span a {border-bottom: 0px;}
-ul.z-listing li label,ul.z-hlisting li label {font-weight: bold;border-bottom: 1px dotted #76797C;}
+ul.z-listing li label,ul.z-hlisting li label {border-bottom: 1px dotted #76797C;}
 ul.z-listing li .z-listing-details div,ul.z-hlisting li .z-listing-details div {font-size: 90%;}
 ul.z-listing li .byline,ul.z-hlisting li .byline {color: #76797C;}
 ul.z-listing li ul.z-listing,ul.z-hlisting li ul.z-listing {margin-left: 1.5em;font-size: 110%;}

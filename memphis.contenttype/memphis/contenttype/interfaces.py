@@ -5,13 +5,68 @@ from pyramid.i18n import TranslationStringFactory
 _ = TranslationStringFactory('memphis.contenttype')
 
 
-class IContent(interface.Interface):
+class IDCDescriptive(interface.Interface):
+    """Basic descriptive meta-data properties"""
+
+    title = schema.TextLine(
+        title = u'Title',
+        description=u"The first unqualified Dublin Core 'Title' element value."
+        )
+
+    description = schema.Text(
+        title = u'Description',
+        description = u"The first unqualified Dublin Core "\
+            "'Description' element value.",
+        )
+
+
+class IDCTimes(interface.Interface):
+    """Time properties"""
+
+    created = schema.Datetime(
+        title = u'Creation Date',
+        description = u"The date and time that an object is created."
+        )
+
+    modified = schema.Datetime(
+        title = u'Modification Date',
+        description = u"The date and time that the object "\
+            "was last modified in a meaningful way.",
+        )
+
+
+class IContent(IDCDescriptive, IDCTimes):
     """ behavior interface for content types """
+
+    title = schema.TextLine(
+        title = _(u'Title'),
+        description = _(u'Item title.'),
+        default = u'',
+        missing_value = u'',
+        required = True)
+
+    description = schema.Text(
+        title = _(u'Description'),
+        description = _(u'Brief summary of your content item.'),
+        default = u'',
+        missing_value = u'',
+        required = False)
 
     type = schema.TextLine(
         title = _(u'Type'),
         description = _(u'Content Type Name'),
         required = True)
+
+    created = schema.Datetime(
+        title = _('Creation Date'),
+        description = _("The date and time that an object is created."),
+        required = False)
+
+    modified = schema.Datetime(
+        title = _('Modification Date'),
+        description = _("The date and time that the object was "
+                        "last modified in a meaningful way."),
+        required = False)
 
 
 class IContentContainer(container.ISimpleContainer):
@@ -23,13 +78,18 @@ class IContentTypeSchema(interface.Interface):
     storage.schema('memphis.contenttype')
 
     title = schema.TextLine(
-        title = _(u'Title'),
-        description = _(u'Content Type Title'),
+        title = _('Title'),
+        description = _('Content Type Title'),
         required = True)
 
     description = schema.Text(
-        title = _(u'Description'),
-        description = _(u'Content Type Description'),
+        title = _('Description'),
+        description = _('Content Type Description'),
+        required = False)
+
+    global_allow = schema.Bool(
+        title = _('Global allow'),
+        default = True,
         required = False)
 
     schemas = schema.Tuple(
@@ -56,6 +116,11 @@ class IContentTypeSchema(interface.Interface):
         default = {},
         required = True)
 
+    widgets = schema.Dict(
+        title = u'Widgets',
+        default = {},
+        required = True)
+
 
 class IContentType(container.IFactory):
     """ content type """
@@ -77,5 +142,5 @@ class IBehaviorType(storage.ISchema):
 
 
 # application root
-class IRoot(IContentContainer, view.IRoot, container.IContained):
+class IRoot(IContent, IContentContainer, view.IRoot, container.IContained):
     """ root """

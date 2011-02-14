@@ -1,7 +1,4 @@
-""" config registrations for plone.supermodel
-
-$Id: supermodel.py 4711 2011-02-02 22:55:35Z nikolay $
-"""
+""" config registrations for plone.supermodel """
 from memphis import config
 from plone.supermodel import converters, fields
 from plone.supermodel import exportimport, serializer, parser
@@ -109,9 +106,30 @@ config.action(
     RFC822MailAddressHandler, name="z3c.schema.email.field.RFC822MailAddress")
 
 
-from fields import URL
+from fields import EMail, Choice, ChoiceList, URL, List
+
 
 URLHandler = exportimport.BaseHandler(URL)
 config.action(
     config.registerUtility,
-    URLHandler, name="memphis.ttwschema.fields.URL")
+    URLHandler, name="memphis.schema.fields.URL")
+
+ChoiceHandler = exportimport.ChoiceHandler(Choice)
+config.action(
+    config.registerUtility,
+    ChoiceHandler, name="memphis.schema.fields.Choice")
+
+ChoiceListHandler = exportimport.BaseHandler(ChoiceList)
+config.action(
+    config.registerUtility,
+    ChoiceListHandler, name="memphis.schema.fields.ChoiceList")
+
+EMailHandler = exportimport.BaseHandler(EMail)
+config.action(
+    config.registerUtility,
+    EMailHandler, name="memphis.schema.fields.EMail")
+
+ListHandler = exportimport.BaseHandler(List)
+config.action(
+    config.registerUtility,
+    ChoiceListHandler, name="memphis.schema.fields.List")

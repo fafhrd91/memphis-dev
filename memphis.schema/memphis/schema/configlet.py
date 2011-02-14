@@ -65,7 +65,7 @@ class SchemaManagement(object):
 config.action(
     controlpanel.registerConfiglet,
     'system.schemas', ISchemaManagement, SchemaManagement,
-    title = u'Schema management',
+    title = u'Schemas',
     description = u'TTW Schemas management configlet.')
 
 

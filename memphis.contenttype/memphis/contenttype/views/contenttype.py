@@ -1,7 +1,7 @@
 import pyramid.url
-from zope.schema import getFieldsInOrder
-from zope.component import queryUtility, getUtilitiesFor
-from memphis import form, config, container, view, storage, ttwschema
+from zope import interface
+from zope.component import getSiteManager, queryUtility, getUtilitiesFor
+from memphis import form, config, container, view, storage, schema
 from memphis.contenttype.interfaces import _
 from memphis.contenttype.interfaces import ISchemaType, IBehaviorType
 from memphis.contenttype.interfaces import IContent, IContentTypeSchema
@@ -74,7 +74,7 @@ class ContentTypeEdit(form.EditForm, view.View):
     view.pyramidView('edit.html', IContentTypeSchema)
 
     fields = form.Fields(IContentTypeSchema).omit(
-        'schemas', 'hiddenFields', 'behaviors', 'behaviorActions')
+        'schemas', 'hiddenFields', 'behaviors', 'behaviorActions', 'widgets')
 
     @property
     def label(self):
@@ -91,10 +91,30 @@ class ContentTypeSchemas(form.Form, view.View):
         template = view.template('memphis.contenttype:templates/schemas.pt'))
 
     def listFields(self, sch):
-        return [field for n, field in getFieldsInOrder(sch.spec)]
+        return [field for n, field in schema.getFieldsInOrder(sch.spec)]
+
+    def getDefault(self, schId, fldId):
+        if self.context.widgets:
+            widgets = self.context.widgets
+            return widgets.get(schId, {}).get(fldId, None)
+        return None
+
+    def getWidgets(self, field):
+        widgets = []
+        default = None
+        for name, widget in self.adapters.lookupAll(
+            (interface.providedBy(field), self.requestProvided), form.IWidget):
+            if not name:
+                default = widget
+            else:
+                widgets.append(widget)
+        return default, widgets
 
     def update(self):
         super(ContentTypeSchemas, self).update()
+
+        self.adapters = getSiteManager().adapters
+        self.requestProvided = interface.providedBy(self.request)
 
         context = self.context
         request = self.request
@@ -109,11 +129,11 @@ class ContentTypeSchemas(form.Form, view.View):
 
         schemas = {}
 
-        for name, schema in getUtilitiesFor(ISchemaType):
-            schemas[name] = (schema.title, schema)
+        for name, sch in getUtilitiesFor(ISchemaType):
+            schemas[name] = (sch.title, sch)
 
-        for name, schema in getUtilitiesFor(ttwschema.ISchemaType):
-            schemas[name] = (schema.title, schema)
+        for name, sch in getUtilitiesFor(schema.ISchemaType):
+            schemas[name] = (sch.title, sch)
 
         enabled = []
         for schId in self.context.schemas:
@@ -124,8 +144,8 @@ class ContentTypeSchemas(form.Form, view.View):
 
         schemas = schemas.values()
         schemas.sort()
-        self.schemas = [schema for t, schema in schemas 
-                        if schema.name not in self.context.schemas]
+        self.schemas = [sch for t, sch in schemas 
+                        if sch.name not in self.context.schemas]
 
         fields = []
         for sch, data in self.context.hiddenFields.items():
@@ -140,7 +160,7 @@ class ContentTypeSchemas(form.Form, view.View):
         self.context.schemas = tuple(
             [sch for sch in self.context.schemas if sch not in rem_sch])
 
-        view.addMessage(self.request, 'Content type schemas have been modified.')
+        view.addMessage(self.request,'Content type schemas have been modified.')
 
     @form.buttonAndHandler(u'Modify hidden')
     def modifyHandler(self, action):
@@ -154,6 +174,18 @@ class ContentTypeSchemas(form.Form, view.View):
         self.context.hiddenFields = hidden
 
         view.addMessage(self.request, 'Hidden fields have been modified.')
+
+    @form.buttonAndHandler(u'Modify widgets')
+    def modifyHandler(self, action):
+        data = {}
+        for key, val in self.request.params.items():
+            if key.startswith('field:') and val != '__sys_default__':
+                schName, fldId = key[6:].split(':', 1)
+                data.setdefault(schName, {})[fldId] = val
+
+        if data != self.context.widgets:
+            self.context.widgets = data
+            view.addMessage(self.request, 'Widgets have been modified.')
 
     def changeOrder(self, names, up=True):
         schemas = list(self.context.schemas)
@@ -175,7 +207,6 @@ class ContentTypeSchemas(form.Form, view.View):
 
         self.context.schemas = tuple(schemas)
         view.addMessage(self.request, 'Schemas order has been changed.')
-        
 
     @form.buttonAndHandler(u'Move up')
     def upHandler(self, action):

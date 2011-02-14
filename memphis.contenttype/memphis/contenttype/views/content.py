@@ -3,10 +3,10 @@ from webob.exc import HTTPFound
 
 from zope import interface
 from zope.component import getUtility, queryUtility
-from memphis import form, config, container, view, storage, ttwschema
+from memphis import form, config, container, view, storage
 
-from memphis.contenttype import schemas
-from memphis.contenttype.interfaces import _, IContent, IContentType
+from memphis.contenttype.interfaces import \
+    _, IContent, IContentType, IDCDescriptive
 
 
 config.action(
@@ -33,14 +33,18 @@ class AddContent(form.EditForm, container.AddContentForm, view.View):
 
         forms = []
         datasheets = {}
-        for schId in tuple(self.context.schemas):
+        for schId in ('content.item',) + tuple(self.context.schemas):
             schema = queryUtility(storage.ISchema, schId)
             if schema is not None:
                 ds = schema.Type()
                 datasheets[schema.name] = ds
                 form = EditDatasheet(ds, self.request, self)
+                if schId == 'content.item':
+                    form.hidden = 'type', 'modified', 'created'
                 if schId in ct.hiddenFields:
                     form.hidden = ct.hiddenFields[schId]
+                if schId in ct.widgets:
+                    form.widgetFactories = ct.widgets[schId]
                 form.update()
                 forms.append((schId, form))
 
@@ -68,6 +72,7 @@ class AddContent(form.EditForm, container.AddContentForm, view.View):
 class EditDatasheet(form.SubForm):
 
     hidden = ()
+    widgetFactories = {}
 
     @property
     def prefix(self):
@@ -75,7 +80,11 @@ class EditDatasheet(form.SubForm):
 
     @property
     def fields(self):
-        return form.Fields(self.context.__schema__).omit(*self.hidden)
+        fields = form.Fields(self.context.__schema__).omit(*self.hidden)
+        for name, widget in self.widgetFactories.items():
+            fields[name].widgetFactory = widget
+
+        return fields
 
     @property
     def label(self):
@@ -97,13 +106,17 @@ class EditContent(form.EditForm, view.View):
         ct = IContentType(self.context)
 
         forms = []
-        for schId in ct.schemas:
+        for schId in ('content.item',) + ct.schemas:
             schema = queryUtility(storage.ISchema, schId)
             if schema is not None:
                 ds = schema.getDatasheet(self.context.oid)
                 form = EditDatasheet(ds, self.request, self)
+                if schId == 'content.item':
+                    form.hidden = 'type', 'modified', 'created'
                 if schId in ct.hiddenFields:
                     form.hidden = ct.hiddenFields[schId]
+                if schId in ct.widgets:
+                    form.widgetFactories = ct.widgets[schId]
                 form.update()
                 forms.append((schId, form))
 
@@ -115,12 +128,7 @@ class ViewContent(view.View):
         'index.html', IContent,
         template = view.template('memphis.contenttype:templates/content.pt'))
 
-    description = ''
-
     def update(self):
-        try:
-            ds = self.context.getDatasheet(schemas.IDublinCore)
-            self.title = ds.title
-            self.description = ds.description
-        except KeyError:
-            self.title = container.IContained(self.context).__name__
+        dc = IDCDescriptive(self.context)
+        self.title = dc.title
+        self.description = dc.description

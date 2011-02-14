@@ -9,6 +9,7 @@
 	  <th></th>
 	  <th>Type</th>
 	  <th>Hidden</th>
+	  <th>Widget</th>
 	</thead>
 	<tbody tal:repeat="sch view.enabled"
 	       tal:define="ids request.params.getall('schema-id')">
@@ -22,7 +23,10 @@
 	      tal:attributes="class repeat['field'].even() and
 			      'z-table-record even' or 
 			      'z-table-record odd'">
-	    <th>${field.title}</th>
+	    <th>
+	      ${field.title}
+	      <div class="discreet">${field.description}</div>
+	    </th>
 	    <td class="discreet">${field.__class__.__name__}</td>
 	    <td class="center">
 	      <input type="checkbox" name="field-id"
@@ -30,6 +34,24 @@
 		     tal:attributes="checked name in view.fields 
 				     and 'on' or None"
 		     value="${name}" />
+	    </td>
+	    <td tal:define="widgets view.getWidgets(field);
+			    default widgets[0]; widgets widgets[1]">
+	      <select tal:condition="widgets" 
+		      tal:define="dflt view.getDefault(sch.name,field.__name__)"
+		      tal:attributes="name 'field:%s:%s'%(sch.name,field.__name__)">
+		<option value="__sys_default__">
+		  System default
+		</option>
+		<option tal:attributes="value wg.__fname__;
+					selected wg.__fname__ == dflt"
+			tal:repeat="wg widgets">
+		  ${wg.__title__}
+		</option>
+	      </select>
+	      <tal:block condition="not widgets">
+		System default
+	      </tal:block>
 	    </td>
 	  </tr>
 	</tbody>

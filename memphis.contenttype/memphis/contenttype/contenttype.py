@@ -1,5 +1,5 @@
 from zope import interface, event
-from zope.component import getAdapters, getUtility
+from zope.component import getAdapters, queryUtility, getUtility
 from zope.lifecycleevent import ObjectCreatedEvent
 
 from memphis import storage, config, container
@@ -18,7 +18,7 @@ class Content(storage.BehaviorBase):
     storage.behavior('content.item',
                      schema = IContent,
                      title = 'Content item',
-                     description = 'Base behavior for content items.')
+                     description = 'Base behavior for content item.')
 
 
 class ContentType(storage.BehaviorBase):
@@ -37,10 +37,17 @@ class ContentType(storage.BehaviorBase):
         content = storage.insertItem(IContent)
         if self.behaviors:
             content.applyBehavior(*self.behaviors)
-        IContent(content).type = self.name
+
+        ds = IContent(content)
+        ds.type = self.name
+        if 'content.item' in data:
+            ds.title = data['content.item'].title
+            ds.description = data['content.item'].description
 
         for schId in self.schemas:
-            schema = getUtility(storage.ISchema, schId)
+            schema = queryUtility(storage.ISchema, schId)
+            if schema is None:
+                continue
             #content.applySchema(schema.spec)
             schema.apply(content.oid)
             if schId in data:
