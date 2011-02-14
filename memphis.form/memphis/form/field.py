@@ -24,7 +24,6 @@ from memphis import config
 
 from memphis.form import interfaces, util, error
 from memphis.form.error import MultipleErrors
-from memphis.form.widget import AfterWidgetUpdateEvent
 
 
 def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
@@ -170,7 +169,7 @@ class Fields(util.SelectionManager):
 
 
 class FieldWidgets(util.Manager):
-    """Widget manager for IFieldWidget."""
+    """Widget manager for IWidget."""
     config.adapts(
         interfaces.IFieldsForm,
         zope.interface.Interface)
@@ -214,17 +213,19 @@ class FieldWidgets(util.Manager):
 
             # Step 2: Get the widget for the given field.
             shortName = field.__name__
-            newWidget = True
-            if shortName in self._data:
-                # reuse existing widget
-                widget = self._data[shortName]
-                newWidget = False
-            elif field.widgetFactory.get(mode) is not None:
-                factory = field.widgetFactory.get(mode)
+
+            widget = None
+            factory = field.widgetFactory.get(mode)
+            if isinstance(factory, basestring):
+                widget = zope.component.queryMultiAdapter(
+                    (field.field, self.request),
+                    interfaces.IWidget, name=factory)
+            elif callable(factory):
                 widget = factory(field.field, self.request)
-            else:
+
+            if widget is None:
                 widget = zope.component.getMultiAdapter(
-                    (field.field, self.request), interfaces.IFieldWidget)
+                    (field.field, self.request), interfaces.IDefaultWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
@@ -235,10 +236,6 @@ class FieldWidgets(util.Manager):
 
             # Step 5: Set the form
             widget.form = self.form
-            # Optimization: Set both interfaces here, rather in step 4 and 5:
-            # ``alsoProvides`` is quite slow
-            zope.interface.alsoProvides(
-                widget, interfaces.IContextAware, interfaces.IFormAware)
 
             # Step 6: Set some variables
             widget.ignoreContext = ignoreContext
@@ -249,17 +246,18 @@ class FieldWidgets(util.Manager):
 
             # Step 8: Update the widget
             widget.update()
-            zope.event.notify(AfterWidgetUpdateEvent(widget))
+            #zope.event.notify(AfterWidgetUpdateEvent(widget))
 
             # Step 9: Add the widget to the manager
             if widget.required:
                 self.hasRequiredFields = True
             uniqueOrderedKeys.append(shortName)
-            if newWidget:
-                self._data_values.append(widget)
-                self._data[shortName] = widget
-                widget.__parent__ = self
-                widget.__name__ = shortName
+
+            self._data_values.append(widget)
+            self._data[shortName] = widget
+            widget.__parent__ = self
+            widget.__name__ = shortName
+
             # allways ensure that we add all keys and keep the order given from
             # button items
             self._data_keys = uniqueOrderedKeys

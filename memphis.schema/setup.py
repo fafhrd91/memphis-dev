@@ -1,7 +1,3 @@
-""" Setup for memphis.ttwschema package
-
-$Id: setup.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
 import sys, os
 from setuptools import setup, find_packages
 
@@ -11,14 +7,14 @@ def read(*rnames):
 version='0'
 
 
-setup(name='memphis.ttwschema',
+setup(name='memphis.schema',
       version=version,
       description="",
       long_description=(
           'Detailed Documentation\n' +
           '======================\n'
           + '\n\n' +
-          #read('memphis', 'ttwschema', 'README.txt')
+          #read('memphis', 'schema', 'README.txt')
           #+ '\n\n' +
           read('CHANGES.txt')
           ),
@@ -32,7 +28,7 @@ setup(name='memphis.ttwschema',
         'Topic :: Internet :: WWW/HTTP :: WSGI'],
       author='Nikolay Kim',
       author_email='fafhrd91@gmail.com',
-      url='http://pypi.python.org/pypi/memphis.ttwschema/',
+      url='http://pypi.python.org/pypi/memphis.schema/',
       license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
       packages=find_packages(),
       namespace_packages=['memphis'],
@@ -54,6 +50,6 @@ setup(name='memphis.ttwschema',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['include = memphis.ttwschema']
+        'memphis': ['include = memphis.schema']
         }
       )

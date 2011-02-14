@@ -11,53 +11,48 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Text Area Widget Implementation
-
-$Id: textarea.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-import zope.component
+"""Text Area Widget Implementation"""
 import zope.interface
 import zope.schema.interfaces
 
 from memphis import config, view
-
-from memphis.form import interfaces, pagelets
-from memphis.form.widget import Widget, FieldWidget
+from memphis.form import pagelets
+from memphis.form.widget import Widget
 from memphis.form.browser import widget
+from memphis.form.interfaces import _, ITextAreaWidget
 
 
 class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
     """Textarea widget implementation."""
-    zope.interface.implementsOnly(interfaces.ITextAreaWidget)
+    zope.interface.implementsOnly(ITextAreaWidget)
+    config.adapts(zope.schema.interfaces.IText, None)
+    config.adapts(zope.schema.interfaces.IText, None, name='textarea')
+    config.adapts(zope.schema.interfaces.IASCII, None)
+    config.adapts(zope.schema.interfaces.IASCII, None, name='textarea')
 
     klass = u'textarea-widget'
     value = u''
+
+    __fname__ = 'textarea'
+    __title__ = _(u'Text area widget')
+    __description__ = _(u'HTML Text Area input widget')
 
     def update(self):
         super(TextAreaWidget, self).update()
         widget.addFieldClass(self)
 
 
-@config.adapter(zope.schema.interfaces.IASCII, None)
-@config.adapter(zope.schema.interfaces.IText, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
-def TextAreaFieldWidget(field, request):
-    """IFieldWidget factory for TextWidget."""
-    return FieldWidget(field, TextAreaWidget(request))
-
-
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetDisplayView, interfaces.ITextAreaWidget,
+    pagelets.IWidgetDisplayView, ITextAreaWidget,
     template=view.template("memphis.form.browser:textarea_display.pt"))
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetInputView, interfaces.ITextAreaWidget,
+    pagelets.IWidgetInputView, ITextAreaWidget,
     template=view.template("memphis.form.browser:textarea_input.pt"))
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetHiddenView, interfaces.ITextAreaWidget,
+    pagelets.IWidgetHiddenView, ITextAreaWidget,
     template=view.template("memphis.form.browser:textarea_hidden.pt"))

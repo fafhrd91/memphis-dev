@@ -28,7 +28,7 @@ class AddContentTypeSchema(form.Form, view.View):
     view.pyramidView('', ContentTypeFactory)
 
     fields = form.Fields(IContentTypeSchema).omit(
-        'schemas', 'hiddenFields', 'behaviors', 'behaviorActions')
+        'schemas', 'hiddenFields', 'behaviors', 'behaviorActions', 'widgets')
 
     label = _('Add content type')
 

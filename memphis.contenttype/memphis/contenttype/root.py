@@ -36,27 +36,36 @@ Contained
 
 $Id: root.py 11777 2011-01-30 07:41:52Z fafhrd91 $
 """
-from zope import interface
+from zope import interface, event
+from zope.lifecycleevent import ObjectCreatedEvent
+
 from memphis import storage, config, view, container
 from memphis.container.simple import ISimpleContainerRelation
 
-from interfaces import IRoot
 from container import ContentContainer
+from interfaces import IRoot, IContent
 
 
 def getRoot():
     behavior = storage.getBehavior(IRoot)
     try:
         oid = behavior.getBehaviorOIDs().next()
-        return IRoot(storage.getItem(oid))
+        return storage.getItem(oid)
     except StopIteration:
-        return IRoot(storage.insertItem(IRoot))
+        item = storage.insertItem(IRoot)
+        dc = IContent(item)
+        dc.title = u'Site'
+        dc.description = u'Default memphis site.'
+
+        event.notify(ObjectCreatedEvent(item))
+        return item
 
 
 class Root(ContentContainer):
     interface.implements(IRoot, view.IRoot, container.IContained)
     storage.behavior(
         'app.root',
+        schema = IContent,
         relation = ISimpleContainerRelation,
         title = u'Application root',
         description = u'Smiple implementation for Application Root concept')

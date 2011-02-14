@@ -6,7 +6,8 @@ from memphis.form.form import extends, handleActionError
 from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
 
 # widget
-from memphis.form.widget import FieldWidget
+from memphis.form.widget import Widget
+from memphis.form.interfaces import IWidget, IDefaultWidget
 
 # fields
 from memphis.form.field import Fields

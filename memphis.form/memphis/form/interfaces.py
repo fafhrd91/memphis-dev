@@ -299,8 +299,17 @@ class IBoolTerms(ITerms):
 
 # ----[ Widgets ]------------------------------------------------------------
 
+class IDefaultWidget(zope.interface.Interface):
+    """ default widget, third party components
+    can override this adapter and return different widget """
+
+
 class IWidget(zope.interface.Interface):
     """A widget within a form"""
+
+    __fname__ = zope.interface.Attribute('Factory name')
+    __title__ = zope.interface.Attribute('Widget factory title')
+    __description__ = zope.interface.Attribute('Widget factory description')
 
     name = zope.schema.BytesLine(
         title=_('Name'),
@@ -414,22 +423,6 @@ class ISequenceWidget(IWidget):
         This method can be used by external components to get the terms
         without having to worry whether they are already created or not.
         """
-
-
-class IMultiWidget(IWidget):
-    """None Term based sequence widget base.
-
-    The multi widget is used for ITuple or IList if no other widget is defined.
-
-    Some IList or ITuple are using another specialized widget if they can
-    choose from a collection. e.g. a IList of IChoice. The base class of such
-    widget is the ISequenceWidget.
-
-    This widget can handle none collection based sequences and offers add or
-    remove values to or from the sequence. Each sequence value get rendered by
-    it's own relevant widget. e.g. IList of ITextLine or ITuple of IInt
-    """
-
 
 class ISelectWidget(ISequenceWidget):
     """Select widget with ITerms option."""
@@ -560,25 +553,17 @@ class IWidgets(IManager):
         default=True,
         required=False)
 
+    field = zope.schema.Field(
+        title=_('Field'),
+        description=_('The schema field which the widget is representing.'),
+        required=True)
+
     def update():
         """Setup widgets."""
 
     def extract():
         """Extract the values from the widgets and validate them.
         """
-
-
-class IFieldWidget(zope.interface.Interface):
-    """Offers a field attribute.
-
-    For advanced uses the widget will make decisions based on the field
-    it is rendered for.
-    """
-
-    field = zope.schema.Field(
-        title=_('Field'),
-        description=_('The schema field which the widget is representing.'),
-        required=True)
 
 
 # ----[ Actions ]------------------------------------------------------------
@@ -683,7 +668,7 @@ class IButtons(ISelectionManager):
     """Button manager."""
 
 
-class IButtonAction(IAction, IWidget, IFieldWidget):
+class IButtonAction(IAction, IWidget):
     """Button action."""
 
 
@@ -948,19 +933,3 @@ class IButtonForm(IForm):
 
 class IGroup(IWrappedForm):
     """A group of fields/widgets within a form."""
-
-
-# ----[ Events ]--------------------------------------------------------------
-
-
-class IWidgetEvent(zope.interface.Interface):
-    """A simple widget event."""
-
-    widget = zope.schema.Object(
-        title=_('Widget'),
-        description=_('The widget for which the event was created.'),
-        schema=IWidget)
-
-
-class IAfterWidgetUpdateEvent(IWidgetEvent):
-    """An event sent out after the widget was updated."""

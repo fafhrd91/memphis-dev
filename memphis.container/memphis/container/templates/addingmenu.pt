@@ -1,19 +1,24 @@
 <tal:block condition="view.factories">
   <br /><br />
-  <div>
+  <div class="z-table-container">
     <h2>Add content</h2>
     <div class="z-page-description"> 
       Select the type of item you want to add to your container.</div>
 
-    <fieldset>
-      <legend>Available items</legend>
-
-      <ul class="z-listing">
-	<li tal:repeat="factory view.factories">
-	  <a href="${view.url}+/${factory.name}/">${factory.title}</a>
-	  <div class="byline">${factory.description} &nbsp;</div>
-	</li>
-      </ul>
-    </fieldset>
+    <table class="z-table">
+      <thead>
+	<td colspan="2">Available items</td>
+      </thead>
+      <tbody>
+	<tr tal:repeat="factory view.factories"
+	    tal:attributes="class repeat['factory'].even() and
+			    'z-table-record even' or 'z-table-record odd'">
+	  <td>
+	    <a href="${view.url}+/${factory.name}/">${factory.title}</a>
+	    <div class="discreet">${factory.description} &nbsp;</div>
+	  </td>
+	</tr>
+      </tbody>
+    </table>
   </div>
 </tal:block>

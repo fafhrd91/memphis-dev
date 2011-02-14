@@ -1,8 +1,9 @@
 from zope import interface
 from pyramid import url
 from memphis import config, view, container
-from memphis.contenttype.interfaces import IContentType, IContentContainer
-from memphis.contenttype import schemas
+from memphis.contenttype.interfaces import \
+    IContentType, IContentContainer, IDCTimes, IDCDescriptive
+
 
 config.action(
     view.registerDefaultView,
@@ -15,7 +16,8 @@ class Listing(view.Pagelet):
         template = view.template('memphis.contenttype:templates/listing.pt'))
 
     def update(self):
-        self.url = url.resource_url(self.context, self.request)
+        self.url = url.resource_url(
+            container.IContained(self.context), self.request)
         self.container = container.IContainer(self.context)
         try:
             self.hasitems = self.container.keys().next()
@@ -26,17 +28,20 @@ class Listing(view.Pagelet):
         for item in self.container.values():
             c = container.IContained(item, item)
             try:
-                dc = schemas.IDublinCore(item)
+                dc = IDCDescriptive(item)
+                dctimes = IDCTimes(item)
                 yield {'name': c.__name__,
                        'title': dc.title,
-                       'modified': dc.modified,
-                       'created': dc.created,
+                       'description': dc.description,
+                       'modified': dctimes.modified,
+                       'created': dctimes.created,
                        'type': IContentType(item).title}
             except KeyError:
                 yield {'name': c.__name__,
-                       'title': 'No title',
-                       'modified': '--',
-                       'created': '--',
+                       'title': u'No title',
+                       'description': u'',
+                       'modified': u'--',
+                       'created': u'--',
                        'type': IContentType(item).title}
 
 
@@ -49,4 +54,10 @@ class ListingView(view.View):
     def update(self):
         super(ListingView, self).update()
 
-        
+        try:
+            dc = IDCDescriptive(self.context)
+            self.title = dc.title
+            self.description = dc.description
+        except:
+            self.title = 'No title'
+            self.description = ''

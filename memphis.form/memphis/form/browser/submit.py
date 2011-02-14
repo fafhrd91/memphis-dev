@@ -11,33 +11,21 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Submit Widget Implementation
-
-$Id: submit.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Submit Widget Implementation"""
 import zope.component
 import zope.interface
 
 from memphis import config, view
-
 from memphis.form import interfaces, pagelets
-from memphis.form.widget import FieldWidget
 from memphis.form.browser import button
 
 
 class SubmitWidget(button.ButtonWidget):
     """A submit button of a form."""
+    config.adapts(interfaces.IButton, None)
     zope.interface.implementsOnly(interfaces.ISubmitWidget)
+
     klass = u'submit-widget z-form-button'
-
-
-@config.adapter(interfaces.IButton, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
-def SubmitFieldWidget(field, request):
-    submit = FieldWidget(field, SubmitWidget(request))
-    submit.value = field.title
-    return submit
 
 
 config.action(

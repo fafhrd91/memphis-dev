@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Data Converters
-
-$Id: converter.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Data Converters"""
 import datetime
 import decimal
 import zope.i18n.format
@@ -33,6 +29,14 @@ _ = interfaces.MessageFactory
 
 def getLocale(request):
     return locales.getLocale(get_locale_name(request), None, None)
+
+
+@config.adapter(interfaces.IWidget)
+@zope.interface.implementer(interfaces.IDataConverter)
+def FieldWidgetDataConverter(widget):
+    """Provide a data converter based on a field widget."""
+    return zope.component.queryMultiAdapter(
+        (widget.field, widget), interfaces.IDataConverter)
 
 
 class BaseDataConverter(object):
@@ -75,14 +79,6 @@ class FieldDataConverter(BaseDataConverter):
             raise TypeError(
                 'Field %sof type ``%s`` must provide ``IFromUnicode``.' %(
                     fieldName, type(field).__name__))
-
-
-@config.adapter(interfaces.IFieldWidget)
-@zope.interface.implementer(interfaces.IDataConverter)
-def FieldWidgetDataConverter(widget):
-    """Provide a data converter based on a field widget."""
-    return zope.component.queryMultiAdapter(
-        (widget.field, widget), interfaces.IDataConverter)
 
 
 class FormatterValidationError(zope.schema.ValidationError):
@@ -335,53 +331,6 @@ class TextLinesConverter(BaseDataConverter):
         if isinstance(valueType, tuple):
             valueType = valueType[0]
         return collectionType(valueType(v) for v in value.splitlines())
-
-
-class MultiConverter(BaseDataConverter):
-    """Data converter for IMultiWidget."""
-    config.adapts(zope.schema.interfaces.ISequence, interfaces.IMultiWidget)
-
-    def toWidgetValue(self, value):
-        """Just dispatch it."""
-        if value is self.field.missing_value:
-            return []
-        # We rely on the default registered widget, this is probably a
-        # restriction for custom widgets. If so use your own MultiWidget and
-        # register your own converter which will get the right widget for the
-        # used value_type.
-        field = self.field.value_type
-        widget = zope.component.getMultiAdapter((field, self.widget.request),
-            interfaces.IFieldWidget)
-        if interfaces.IFormAware.providedBy(self.widget):
-            # form property required by objectwidget
-            widget.form = self.widget.form
-            zope.interface.alsoProvides(widget, interfaces.IFormAware)
-        converter = zope.component.getMultiAdapter((field, widget),
-            interfaces.IDataConverter)
-
-        # we always return a list of values for the widget
-        return [converter.toWidgetValue(v) for v in value]
-
-    def toFieldValue(self, value):
-        """Just dispatch it."""
-        if not len(value):
-            return self.field.missing_value
-
-        field = self.field.value_type
-        widget = zope.component.getMultiAdapter((field, self.widget.request),
-            interfaces.IFieldWidget)
-        if interfaces.IFormAware.providedBy(self.widget):
-            #form property required by objecwidget
-            widget.form = self.widget.form
-            zope.interface.alsoProvides(widget, interfaces.IFormAware)
-        converter = zope.component.getMultiAdapter((field, widget),
-            interfaces.IDataConverter)
-
-        values = [converter.toFieldValue(v) for v in value]
-
-        # convert the field values to a tuple or list
-        collectionType = self.field._type
-        return collectionType(values)
 
 
 class BoolSingleCheckboxDataConverter(BaseDataConverter):

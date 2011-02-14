@@ -104,7 +104,7 @@ class SimpleContainer(storage.BehaviorBase):
         if not name:
             raise ValueError("empty names are not allowed")
 
-        container = self.context
+        container = self.__context__
 
         old = self.get(name)
         if old and (old.oid == object.oid):
@@ -136,6 +136,6 @@ class SimpleContainer(storage.BehaviorBase):
         except StopIteration:
             raise KeyError(name)
 
-        notify(ObjectRemovedEvent(rel.__destination__, self.context, name))
+        notify(ObjectRemovedEvent(rel.__destination__, self.__context__, name))
 
         self.__relation__.remove(rel.oid)
