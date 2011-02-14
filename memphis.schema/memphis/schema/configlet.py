@@ -19,8 +19,6 @@ class SchemaManagement(object):
             setattr(ds, key, val)
 
         ttwschema = ISchema(item)
-        ttwschema.installSchema()
-        ttwschema.updateSchema()
         return container.LocationProxy(ds, self, item.oid)
 
     @property
@@ -31,8 +29,10 @@ class SchemaManagement(object):
         return [item.oid for item in self.schema.query()]
 
     def values(self):
-        return [container.LocationProxy(item, self, item.oid)
-                for item in self.schema.query()]
+        schemas = [item for item in self.schema.query()]
+        for item in schemas:
+            ISchema(storage.Item(item.oid)).installSchema()
+        return [container.LocationProxy(item, self, item.oid) for item in schemas]
 
     def items(self):
         return [(item.oid, container.LocationProxy(item, self, item.oid))

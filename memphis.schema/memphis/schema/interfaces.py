@@ -74,7 +74,7 @@ class ISchemaType(storage.ISchema):
     """ schema type """
 
 
-class ISchemaManagement(interface.Interface):
+class ISchemaManagement(container.IContainer):
     """ schema management configlet """
 
 

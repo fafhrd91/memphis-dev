@@ -38,11 +38,10 @@ class ContentType(storage.BehaviorBase):
         if self.behaviors:
             content.applyBehavior(*self.behaviors)
 
-        ds = IContent(content)
-        ds.type = self.name
+        ds = content.getDatasheet(IContent)
         if 'content.item' in data:
-            ds.title = data['content.item'].title
-            ds.description = data['content.item'].description
+            ds.__load__(data['content.item'])
+        ds.type = self.name
 
         for schId in self.schemas:
             schema = queryUtility(storage.ISchema, schId)

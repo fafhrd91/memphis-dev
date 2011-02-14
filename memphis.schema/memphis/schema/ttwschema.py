@@ -1,8 +1,8 @@
 import migrate.changeset
 
 from zope import interface, schema
-from zope.component import getUtility
 from zope.schema import getFieldNamesInOrder
+from zope.component import getUtility, queryUtility
 from zope.lifecycleevent import IObjectModifiedEvent
 
 from plone import supermodel
@@ -96,9 +96,12 @@ class Schema(storage.BehaviorBase):
         self.model = unicode(supermodel.serializeSchema(self.schema))
 
     def installSchema(self):
-        storage.registerSchema(
-            self.__context__.oid, self.schema, 
-            type=ISchemaType, title=self.title, description=self.description)
+        sch = queryUtility(ISchemaType, self.__context__.oid)
+
+        if sch is None:
+            storage.registerSchema(
+                self.__context__.oid, self.schema, 
+                type=ISchemaType, title=self.title, description=self.description)
 
 
 @config.handler(IField, IObjectModifiedEvent)
