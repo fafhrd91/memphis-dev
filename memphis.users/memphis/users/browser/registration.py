@@ -60,4 +60,4 @@ class Registration(form.Form):
 
 config.action(
     view.registerView,
-    'join.html', view.IRoot, klass=Registration)
+    'join.html', view.INavigationRoot, klass=Registration)

@@ -148,16 +148,6 @@ class IAddContentForm(interface.Interface):
     """ content ad form """
 
 
-class IAction(interface.Interface):
-    """ item action """
-
-    name = interface.Attribute('Name')
-
-    title = interface.Attribute('Title')
-
-    description = interface.Attribute('Description')
-
-
 # contained item info
 class IContainedInfo(interface.Interface):
 

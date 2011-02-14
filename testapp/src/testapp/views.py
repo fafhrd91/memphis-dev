@@ -17,17 +17,17 @@ class LayoutPage(object):
 
 
 view.registerLayout(
-    'page', context=view.IRoot,
+    'page', context=view.INavigationRoot,
     klass = LayoutPage,
     template=view.template("testapp:templates/layoutpage.pt"))
 
 view.registerLayout(
-    parent='page', context=view.IRoot,
+    parent='page', context=view.INavigationRoot,
     template=view.template("testapp:templates/layoutcontent.pt"))
 
 view.registerView(
-    'index.html', view.IRoot,
+    'index.html', view.INavigationRoot,
     template=view.template("testapp:templates/welcome.pt"))
 
 view.registerDefaultView(
-    'listing.html', view.IRoot)
+    'listing.html', view.INavigationRoot)

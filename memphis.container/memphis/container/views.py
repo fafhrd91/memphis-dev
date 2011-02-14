@@ -5,41 +5,10 @@ $Id: views.py 4729 2011-02-03 05:26:47Z nikolay $
 from pyramid import url
 from zope import interface, component
 from zope.component import getAdapters
-from zope.schema.vocabulary import SimpleVocabulary
 from memphis import view, config, form
 from memphis.container import pagelets, interfaces
 from memphis.container.form import AddContentForm
 from memphis.container.location import LocationProxy
-
-
-config.action(
-    view.registerDefaultView,
-    'listing.html', interfaces.IContainer)
-
-
-class Listing(view.Pagelet):
-    view.pagelet(
-        pagelets.IListing,
-        template = view.template('memphis.container:templates/listing.pt'))
-
-    def update(self):
-        self.url = url.resource_url(
-            interfaces.IContained(self.context), self.request)
-
-    def values(self):
-        for item in self.context.values():
-            yield interfaces.IContained(item, item)
-
-
-class ListingView(view.View):
-    view.pyramidView(
-        'listing.html', interfaces.IContainer,
-        template = view.template('memphis.container:templates/listingview.pt'))
-
-    def update(self):
-        context = self.context
-        self.title = getattr(context, 'title', context.__name__)
-        self.description = getattr(context, 'description', '')
 
 
 class AddingMenu(view.Pagelet):

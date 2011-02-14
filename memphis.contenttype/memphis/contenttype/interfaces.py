@@ -142,5 +142,6 @@ class IBehaviorType(storage.ISchema):
 
 
 # application root
-class IRoot(IContent, IContentContainer, view.IRoot, container.IContained):
+class IRoot(IContent, IContentContainer, 
+            view.INavigationRoot, container.IContained):
     """ root """

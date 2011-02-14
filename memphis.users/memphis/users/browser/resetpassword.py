@@ -133,11 +133,11 @@ class ResetPasswordTemplate(mail.MailTemplate):
 
 config.action(
     view.registerView,
-    'resetpassword.html', view.IRoot,
+    'resetpassword.html', view.INavigationRoot,
     klass = ResetPassword,
     template = view.template('memphis.users.browser:resetpassword.pt'))
 
 config.action(
     view.registerView,
-    'resetpasswordform.html', view.IRoot,
+    'resetpasswordform.html', view.INavigationRoot,
     klass = ResetPasswordForm)

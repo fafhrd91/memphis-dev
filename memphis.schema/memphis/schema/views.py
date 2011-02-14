@@ -220,7 +220,7 @@ class SchemaEdit(form.EditForm, view.View):
     description = 'Modify schema basic attributes.'
 
 
-class EditAction(container.Action):
+class EditAction(view.Action):
     config.adapts(IField, 'edit')
 
     name = 'index.html'
@@ -229,7 +229,7 @@ class EditAction(container.Action):
     weight = 20
 
 
-class PreviewAction(container.Action):
+class PreviewAction(view.Action):
     config.adapts(IField, 'preview')
 
     name = 'preview.html'
@@ -238,7 +238,7 @@ class PreviewAction(container.Action):
     weight = 10
 
 
-class MoveToSchemaAction(container.Action):
+class MoveToSchemaAction(view.Action):
     config.adapts(IField, 'schema')
 
     name = '../index.html'
@@ -247,7 +247,7 @@ class MoveToSchemaAction(container.Action):
     weight = 30
 
 
-class ViewSchemaAction(container.Action):
+class ViewSchemaAction(view.Action):
     config.adapts(ISchema, 'view')
 
     name = 'index.html'
@@ -256,7 +256,7 @@ class ViewSchemaAction(container.Action):
     weight = 10
 
 
-class FieldsAction(container.Action):
+class FieldsAction(view.Action):
     config.adapts(ISchema, 'listing')
 
     name = 'edit.html'
@@ -265,7 +265,7 @@ class FieldsAction(container.Action):
     weight = 20
 
 
-class SchemaPreviewAction(container.Action):
+class SchemaPreviewAction(view.Action):
     config.adapts(ISchema, 'preview')
 
     name = 'preview.html'

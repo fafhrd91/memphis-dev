@@ -75,7 +75,7 @@ class IBound(interface.Interface):
     __principal__ = interface.Attribute('Principal')
 
 
-class IPreferences(view.IRoot):
+class IPreferences(view.INavigationRoot):
     """ root preferences behavior """
     storage.schema('memphis.preferences')
 

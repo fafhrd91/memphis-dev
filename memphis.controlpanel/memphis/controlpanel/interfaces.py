@@ -37,7 +37,7 @@ class IConfiglet(interface.Interface):
         """ is configlet available in current site """
 
 
-class IControlPanel(view.IRoot):
+class IControlPanel(interface.Interface):
     """ root settings configlet """
 
     def addCategory(category):

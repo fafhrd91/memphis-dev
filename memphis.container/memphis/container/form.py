@@ -129,17 +129,3 @@ class AddContentForm(form.Form):
             return not interfaces.IContainerNamesContainer.providedBy(context)
         else:
             return False
-
-
-class Action(object):
-    interface.implements(interfaces.IAction)
-
-    name = ''
-    title = ''
-    description = ''
-    
-    def __init__(self, context):
-        self.context = context
-
-    def url(self, request):
-        return '%s%s'%(url.resource_url(self.context, request), self.name)

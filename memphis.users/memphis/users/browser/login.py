@@ -92,18 +92,18 @@ class LogoutForm(object):
 
 config.action(
     view.registerView,
-    'login.html', view.IRoot,
+    'login.html', view.INavigationRoot,
     klass = LoginForm,
     template=view.template("memphis.users.browser:login.pt"))
 
 config.action(
     view.registerView,
-    'login-success.html', view.IRoot,
+    'login-success.html', view.INavigationRoot,
     klass = LoginSuccess,
     template=view.template("memphis.users:browser/login-success.pt"))
 
 config.action(
     view.registerView,
-    'logout.html', view.IRoot,
+    'logout.html', view.INavigationRoot,
     klass = LogoutForm,
     template=view.template("logout.pt"))

@@ -12,14 +12,6 @@ from memphis import view, config, form
 from memphis.controlpanel.api import getControlPanel
 from memphis.controlpanel.interfaces import IConfiglet, IControlPanel
 
-try:
-    from memphis import container
-except:
-    class IAction(interface.Interface): pass
-    class Container(object):pass
-    container = Container()
-    container.IAction = IAction
-
 
 # layout
 class LayoutView(object):
@@ -30,7 +22,7 @@ class LayoutView(object):
         super(LayoutView, self).update()
 
         actions = [(action.weight, action.title, action) for name, action in 
-                   getAdapters((self.maincontext,), container.IAction)]
+                   getAdapters((self.maincontext,), view.IAction)]
         actions.sort()
         self.actions = [action for w,t,action in actions]
 

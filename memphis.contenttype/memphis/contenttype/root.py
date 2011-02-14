@@ -62,7 +62,7 @@ def getRoot():
 
 
 class Root(ContentContainer):
-    interface.implements(IRoot, view.IRoot, container.IContained)
+    interface.implements(IRoot, container.IContained)
     storage.behavior(
         'app.root',
         schema = IContent,
