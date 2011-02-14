@@ -25,7 +25,6 @@ config.action(
     view.registerDefaultView,
     'index.html', ISchema)
 
-
 config.action(
     view.registerDefaultView,
     'index.html', ISchemaManagement)
@@ -100,7 +99,7 @@ class FieldPreview(form.Form, view.View):
     @property
     def label(self):
         factory = self.context.__factory__
-        return u'%s (%s)'%(self.context.__name__, factory.title)
+        return u'%s (%s)'%(factory.title, self.context.__name__)
 
     @property
     def description(self):
@@ -220,58 +219,18 @@ class SchemaEdit(form.EditForm, view.View):
     description = 'Modify schema basic attributes.'
 
 
-class EditAction(view.Action):
-    config.adapts(IField, 'edit')
-
-    name = 'index.html'
-    title = _('Edit')
-    description = _('Field edit form')
-    weight = 20
+config.action(
+    view.registerActions,
+    ('index.html', IField, _('Edit'), _('Field edit form.'), 10),
+    ('preview.html', IField, _('Preview'), _('Field preview.'), 20),
+    ('../index.html', IField, _('Schema'), _('Return back to schema.'), 30))
 
 
-class PreviewAction(view.Action):
-    config.adapts(IField, 'preview')
-
-    name = 'preview.html'
-    title = _('Preview')
-    description = _('Field preview')
-    weight = 10
-
-
-class MoveToSchemaAction(view.Action):
-    config.adapts(IField, 'schema')
-
-    name = '../index.html'
-    title = _('View schema')
-    description = _('Return back to schema.')
-    weight = 30
-
-
-class ViewSchemaAction(view.Action):
-    config.adapts(ISchema, 'view')
-
-    name = 'index.html'
-    title = _('View')
-    description = _('View schema.')
-    weight = 10
-
-
-class FieldsAction(view.Action):
-    config.adapts(ISchema, 'listing')
-
-    name = 'edit.html'
-    title = _('Edit')
-    description = _('Modify ttw schema')
-    weight = 20
-
-
-class SchemaPreviewAction(view.Action):
-    config.adapts(ISchema, 'preview')
-
-    name = 'preview.html'
-    title = _('Preview')
-    description = _('Schema preview')
-    weight = 30
+config.action(
+    view.registerActions,
+    ('index.html', ISchema, _('View'), _('View schema.'), 10),
+    ('edit.html', ISchema, _('Edit'), _('Modify ttw schema.'), 20),
+    ('preview.html', ISchema, _('Preview'), _('Schema creaview.'), 30))
 
 
 class WidgetsManagement(form.Form, view.View):

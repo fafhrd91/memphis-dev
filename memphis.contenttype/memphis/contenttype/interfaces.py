@@ -111,9 +111,9 @@ class IContentTypeSchema(interface.Interface):
         default = (),
         required = True)
 
-    behaviorActions = schema.Dict(
+    behaviorActions = schema.List(
         title = u'Behavior actions',
-        default = {},
+        default = [],
         required = True)
 
     widgets = schema.Dict(

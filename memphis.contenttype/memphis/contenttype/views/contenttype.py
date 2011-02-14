@@ -11,40 +11,18 @@ config.action(
     view.registerDefaultView,
     'index.html', IContentTypeSchema)
 
-
-class CTViewAction(view.Action):
-    config.adapts(IContentTypeSchema, 'view')
-
-    name = 'index.html'
-    title = _('View')
-    description = _('View content type')
-    weight = 10
-
-
-class CTEditAction(view.Action):
-    config.adapts(IContentTypeSchema, 'edit')
-
-    name = 'edit.html'
-    title = _('Edit')
-    description = _('Edit content type')
-    weight = 20
-
-class CTSchemasAction(view.Action):
-    config.adapts(IContentTypeSchema, 'schemas')
-
-    name = 'schemas.html'
-    title = _('Schemas')
-    description = _('Content type schemas')
-    weight = 30
-
-
-class CTBehaviorsAction(view.Action):
-    config.adapts(IContentTypeSchema, 'behaviors')
-
-    name = 'behaviors.html'
-    title = _('Behaviors')
-    description = _('Content type behaviors')
-    weight = 40
+config.action(
+    view.registerActions,
+    ('index.html', IContentTypeSchema, 
+     _('View'), _('View content type'), 10),
+    ('edit.html', IContentTypeSchema, 
+     _('Edit'), _('Edit content type'), 20),
+    ('schemas.html', IContentTypeSchema, 
+     _('Schemas'), _('Content type schemas'), 30),
+    ('behaviors.html', IContentTypeSchema, 
+     _('Behaviors'), _('Content type behaviors'), 40),
+    ('actions.html', IContentTypeSchema, 
+     _('Actions'), _('Content type actions'), 50))
 
 
 class ContentTypeView(view.View):
@@ -237,3 +215,69 @@ class ContentTypeBehaviors(form.Form, view.View):
 
         view.addMessage(
             self.request, 'Content type behaviors have been modified.')
+
+
+class ContentTypeActions(form.Form, view.View):
+    view.pyramidView(
+        'actions.html', IContentTypeSchema,
+        template = view.template('memphis.contenttype:templates/bhactions.pt'))
+
+    def update(self):
+        super(ContentTypeActions, self).update()
+
+        self.adapters = adapters = getSiteManager().adapters
+
+        actions = []
+        for bh in ('content.item',) + self.context.behaviors:
+            behavior = storage.queryBehavior(bh)
+            if behavior is None:
+                behavior = queryUtility(IBehaviorType, bh)
+                
+            if behavior is not None:
+                for name, action in adapters.lookupAll(
+                    (behavior.spec,), view.IAction):
+                    actions.append((action, behavior))
+
+        self.behaviorActions = actions
+
+    @form.buttonAndHandler(u'Hide')
+    def modifyHandler(self, action):
+        ids = self.request.params.getall('field-id')
+
+        hidden = {}
+        for fid in ids:
+            sch, field = fid.split(':', 1)
+            hidden.setdefault(sch, []).append(field)
+
+        self.context.hiddenFields = hidden
+
+        view.addMessage(self.request, 'Hidden fields have been modified.')
+
+    def changeOrder(self, names, up=True):
+        schemas = list(self.context.schemas)
+        schemas_len = len(schemas)
+
+        for name in names:
+            idx = schemas.index(name)
+            if up:
+                new = idx - 1
+                if new < 0 or schemas[new] in names:
+                    continue
+            else:
+                new = idx + 1
+                if new >= schemas_len or schemas[new] in names:
+                    continue
+
+            del schemas[idx]
+            schemas.insert(new, name)
+
+        self.context.schemas = tuple(schemas)
+        view.addMessage(self.request, 'Schemas order has been changed.')
+
+    @form.buttonAndHandler(u'Move up')
+    def upHandler(self, action):
+        self.changeOrder(self.request.params.getall('schema-id'), True)
+
+    @form.buttonAndHandler(u'Move down')
+    def downHandler(self, action):
+        self.changeOrder(self.request.params.getall('schema-id'), False)

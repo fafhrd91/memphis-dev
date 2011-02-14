@@ -6,7 +6,7 @@ from pyramid import url
 from pyramid.config import Configurator
 
 from zope import interface
-from zope.component import getAdapters
+from zope.component import getAdapters, getSiteManager
 
 from memphis import view, config, form
 from memphis.controlpanel.api import getControlPanel
@@ -21,8 +21,10 @@ class LayoutView(object):
     def update(self):
         super(LayoutView, self).update()
 
-        actions = [(action.weight, action.title, action) for name, action in 
-                   getAdapters((self.maincontext,), view.IAction)]
+        sm = getSiteManager()
+        actions = [(action.weight, action.title, action) 
+                   for name, action in sm.adapters.lookupAll(
+                (interface.providedBy(self.maincontext),), view.IAction)]
         actions.sort()
         self.actions = [action for w,t,action in actions]
 

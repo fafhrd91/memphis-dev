@@ -14,6 +14,14 @@ config.action(
     'index.html', IContent)
 
 
+config.action(
+    view.registerActions,
+    ('index.html', IContent, 
+     _('View'), _('View content.'), 10),
+    ('edit.html', IContent, 
+     _('Edit'), _('Edit content.'), 20))
+
+
 class AddContent(form.EditForm, container.AddContentForm, view.View):
     view.pyramidView('', IContentType)
 

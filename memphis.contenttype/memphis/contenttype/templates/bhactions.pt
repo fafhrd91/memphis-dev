@@ -1,0 +1,40 @@
+<div class="z-form-standard">
+  <h1 class="z-form-label">Actions</h1>
+  <div class="z-form-description">Select content type actions.</div>
+
+  <form method="post" action="${request.url}">
+    <div class="z-table-container">
+      <table class="z-table">
+	<tbody>
+	  <tr class="z-table-category">
+	    <td>&nbsp;</td>
+	    <td>Action</td>
+	    <td>Behavior</td>
+	  </tr>
+	  <tr tal:repeat="info view.behaviorActions"
+	      tal:attributes="class repeat['info'].even() and
+			      'z-table-record even' or 'z-table-record odd'">
+	    <tal:block tal:define="action info[0]; behavior info[1]">
+	      <td>
+		<input type="checkbox" name="action-id" value="${action.name}"
+		       tal:attributes="checked 
+				       action.name in context.behaviorActions" />
+	      </td>
+	      <td>
+		${action.title}
+		<div class="discreet" tal:condition="action.description">
+		  ${action.description}
+		</div>
+	      </td>
+	      <td>
+		<div class="discreet">${behavior.title}</div>
+	      </td>
+	    </tal:block>
+	  </tr>
+	</tbody>
+      </table>
+    </div>
+
+    <tal:block content="structure pagelet:view/form-actions" />
+  </form>
+</div>

@@ -27,7 +27,7 @@
 	    <ul class="z-wizard-wizardsteps" 
 		style="font-size: 80%; margin-top: -0.8em; margin-bottom: -1em">
 	      <tal:block tal:repeat="action layout.actions">
-		<li tal:define="url action.url(request)"
+		<li tal:define="url action.url(context, request)"
 		    tal:attributes="class request.url == url and 
 				    'z-wizard-selected' or None">
 		    <a href="${url}">${action.title}</a> 
