@@ -1,12 +1,14 @@
+""" custom pyramid traversal """
 import urllib
-
 from zope import interface
 from pyramid.interfaces import ITraverser
 from pyramid.interfaces import VH_ROOT_KEY
 from pyramid.traversal import traversal_path
 
-from memphis import config, container
-from memphis.contenttype.interfaces import IRoot
+from memphis import config
+
+from location import LocationProxy
+from interfaces import IRoot, IContainer
 
 
 class ResourceTreeTraverser(object):
@@ -76,7 +78,7 @@ class ResourceTreeTraverser(object):
                             'virtual_root_path':vroot_tuple,
                             'root':root}
 
-                cont = container.IContainer(ob, None)
+                cont = IContainer(ob, None)
                 if cont is None:
                     return {'context':ob,
                             'view_name':segment,
@@ -87,8 +89,7 @@ class ResourceTreeTraverser(object):
                             'root':root}
                 else:
                     try:
-                        next = container.LocationProxy(
-                            cont[segment], ob, segment)
+                        next = LocationProxy(cont[segment], ob, segment)
                     except KeyError:
                         return {'context':ob,
                                 'view_name':segment,

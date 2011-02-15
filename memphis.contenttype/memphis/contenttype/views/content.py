@@ -2,9 +2,12 @@ import pyramid.url
 from webob.exc import HTTPFound
 
 from zope import interface
-from zope.component import getUtility, queryUtility
-from memphis import form, config, container, view, storage
+from zope.component import getUtility, queryUtility, getSiteManager
 
+from memphis import form, config, view, storage
+
+from memphis.contenttype import pagelets
+from memphis.contenttype.form import AddContentForm
 from memphis.contenttype.interfaces import \
     _, IContent, IContentType, IDCDescriptive
 
@@ -22,11 +25,11 @@ config.action(
      _('Edit'), _('Edit content.'), 20))
 
 
-class AddContent(form.EditForm, container.AddContentForm, view.View):
+class AddContent(form.EditForm, AddContentForm, view.View):
     view.pyramidView('', IContentType)
 
     fields = form.Fields()
-    validate = container.AddContentForm.validate
+    validate = AddContentForm.validate
 
     @property
     def label(self):
@@ -96,11 +99,13 @@ class EditDatasheet(form.SubForm):
 
     @property
     def label(self):
-        return self.context.__title__
+        if self.context.__id__ != 'content.item':
+            return self.context.__title__
 
     @property
     def description(self):
-        return self.context.__description__
+        if self.context.__id__ != 'content.item':
+            return self.context.__description__
 
 
 class EditContent(form.EditForm, view.View):
@@ -140,3 +145,19 @@ class ViewContent(view.View):
         dc = IDCDescriptive(self.context)
         self.title = dc.title
         self.description = dc.description
+
+
+class ContentActions(view.Pagelet):
+    view.pagelet(
+        pagelets.IContentActions,
+        template = view.template('memphis.contenttype:templates/actions.pt'))
+
+    def update(self):
+        adapters = getSiteManager().adapters
+
+        actions = []
+        for name, action in adapters.lookupAll(
+            (interface.providedBy(self.context),), view.IAction):
+            actions.append(action)
+
+        self.actions = actions

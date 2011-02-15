@@ -1,7 +1,4 @@
-""" 
-
-$Id:  2007-12-12 12:27:02Z fafhrd $
-"""
+""" tests setup """
 import sys, unittest, doctest
 import memphis.config
 from memphis.config import testing

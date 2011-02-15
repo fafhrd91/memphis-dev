@@ -1,7 +1,4 @@
-""" memphis.mail interfaces
-
-$Id: interfaces.py 11808 2011-01-31 06:54:22Z fafhrd91 $
-"""
+""" memphis.mail interfaces """
 from zope import schema, interface
 from zope.sendmail.interfaces import IMailDelivery
 from z3c.schema.email import RFC822MailAddress

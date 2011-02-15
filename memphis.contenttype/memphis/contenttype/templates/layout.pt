@@ -1,0 +1,18 @@
+<div id="z-portal-viewspace">
+  <div id="z-content">
+    <div class="z-wizard">
+      <tal:block condition="layout.title is not None">
+	<h1 class="z-content-title">${layout.title}</h1>
+	<div class="z-content-description">${layout.description}</div>
+
+	<tal:block content="structure pagelet:content-actions" />
+	<div class="z-wizard-viewspace">
+	  <tal:block content="structure view.render()" />
+	</div>
+      </tal:block>
+      <tal:block condition="layout.title is None">
+	  <tal:block content="structure view.render()" />
+      </tal:block>
+    </div>
+  </div>
+</div>

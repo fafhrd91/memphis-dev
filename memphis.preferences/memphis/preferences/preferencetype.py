@@ -1,7 +1,4 @@
-""" PreferenceGroup metaclass
-
-$Id: preferencetype.py 108141 2010-01-15 14:05:53Z fafhrd $
-"""
+""" PreferenceGroup metaclass """
 import sys
 from zope import interface
 from zope.schema import getFields

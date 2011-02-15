@@ -1,7 +1,4 @@
-"""
-
-$Id: generator.py 4667 2011-02-01 08:19:47Z nikolay $
-"""
+""" mailtemplate to mail generator """
 from email import Encoders
 from email.MIMEText import MIMEText
 from email.MIMEMultipart import MIMEMultipart

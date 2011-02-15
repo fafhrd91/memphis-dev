@@ -1,7 +1,3 @@
-""" 
-
-$Id: exceptions.py 4719 2011-02-03 01:47:46Z nikolay $
-"""
 from zope.interface import Invalid
 
 

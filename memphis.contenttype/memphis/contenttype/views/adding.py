@@ -1,20 +1,17 @@
-""" 
-
-$Id: views.py 4729 2011-02-03 05:26:47Z nikolay $
-"""
+""" adding views """
 from pyramid import url
 from zope import interface, component
 from zope.component import getAdapters
 from memphis import view, config, form
-from memphis.container import pagelets, interfaces
-from memphis.container.form import AddContentForm
-from memphis.container.location import LocationProxy
+from memphis.contenttype import pagelets, interfaces
+from memphis.contenttype.form import AddContentForm
+from memphis.contenttype.location import LocationProxy
 
 
 class AddingMenu(view.Pagelet):
     view.pagelet(
         pagelets.IAddingMenuView,
-        template = view.template('memphis.container:templates/addingmenu.pt'))
+        template = view.template('memphis.contenttype:templates/addingmenu.pt'))
 
     def update(self):
         context = self.context
@@ -74,4 +71,4 @@ class AddContentForm(AddContentForm, view.View):
 config.action(
     view.registerPagelet,
     form.IFormActionsView, interfaces.IAddContentForm,
-    template = view.template('memphis.container:templates/addformactions.pt'))
+    template = view.template('memphis.contenttype:templates/addformactions.pt'))

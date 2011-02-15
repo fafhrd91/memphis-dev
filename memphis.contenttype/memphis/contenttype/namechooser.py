@@ -1,7 +1,3 @@
-""" 
-
-$Id: namechooser.py 4729 2011-02-03 05:26:47Z nikolay $
-"""
 from zope import interface
 from memphis import config
 from interfaces import _, IContainer, INameChooser
@@ -16,16 +12,16 @@ class NameChooser(object):
         self.object = object
 
     def checkName(self, name):
-        """See memphis.container.interfaces.INameChooser
+        """See memphis.contenttype.interfaces.INameChooser
 
         We create and populate a dummy container
 
         >>> from memphis import storage
-        >>> from memphis.container.interfaces import ISimpleContainer
-        >>> container = IContainer(storage.insertItem(ISimpleContainer))
+        >>> from memphis.contenttype.interfaces import IContentContainer
+        >>> container = IContainer(storage.insertItem(IContentContainer))
 
         >>> container['foo'] = storage.insertItem()
-        >>> from memphis.container.namechooser import NameChooser
+        >>> from memphis.contenttype.namechooser import NameChooser
 
         An invalid name raises a ValueError:
 
@@ -105,15 +101,15 @@ class NameChooser(object):
 
 
     def chooseName(self, name):
-        """See memphis.container.interfaces.INameChooser
+        """See memphis.contenttype.interfaces.INameChooser
 
         The name chooser is expected to choose a name without error
 
         We create and populate a dummy container
 
         >>> from memphis import storage
-        >>> from memphis.container.interfaces import ISimpleContainer
-        >>> container = IContainer(storage.insertItem(ISimpleContainer))
+        >>> from memphis.contenttype.interfaces import IContentContainer
+        >>> container = IContainer(storage.insertItem(IContentContainer))
 
         >>> container['foobar.old'] = storage.insertItem()
 

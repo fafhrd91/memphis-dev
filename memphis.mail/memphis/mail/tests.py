@@ -1,7 +1,4 @@
-"""
-
-$Id: tests.py 11808 2011-01-31 06:54:22Z fafhrd91 $
-"""
+""" tests setup """
 import sys, unittest, doctest
 from zope.sendmail.mailer import SMTPMailer
 

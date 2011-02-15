@@ -1,0 +1,12 @@
+<tal:block tal:condition="view.actions">
+  <ul class="z-wizard-wizardsteps" 
+      style="font-size: 90%; margin-bottom: -2.35em">
+    <tal:block tal:repeat="action view.actions">
+      <li tal:define="url action.url(context, request)"
+	  tal:attributes="class request.url == url and 
+			  'z-wizard-selected' or None">
+	<a href="${url}">${action.title}</a> 
+      </li>
+    </tal:block>
+  </ul>
+</tal:block>

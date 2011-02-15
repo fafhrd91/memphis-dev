@@ -1,7 +1,4 @@
-""" Configlet implementation
-
-$Id: configlet.py 11791 2011-01-31 02:57:54Z fafhrd91 $
-"""
+""" Configlet implementation """
 from zope import interface
 from memphis import storage
 from memphis.controlpanel.interfaces import IConfiglet, IConfigletData

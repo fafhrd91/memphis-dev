@@ -1,4 +1,4 @@
-# This file is necessary to make this directory a package.
+# memphis.mail public API
 
 # mailer
 from memphis.mail.interfaces import IMailer

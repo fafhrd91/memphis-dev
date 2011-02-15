@@ -1,13 +1,15 @@
+""" ttw content types management """
 from zope import interface, event
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
-from memphis import config, controlpanel, container, storage
+from memphis import config, controlpanel, storage
+from memphis.contenttype.location import LocationProxy
 from memphis.contenttype.interfaces import \
-    IContentType, IContentTypeSchema, IContentTypesConfiglet
+    IFactory, IContentType, IContentTypeSchema, IContentTypesConfiglet
 
 
 class ContentTypeFactory(object):
-    interface.implements(container.IFactory)
+    interface.implements(IFactory)
 
     name = 'ct'
     schema = IContentTypeSchema
@@ -29,7 +31,7 @@ class ContentTypesConfiglet(object):
         ds = IContentTypeSchema(item)
         for key, val in data.items():
             setattr(ds, key, val)
-        return container.LocationProxy(ds, self, item.oid)
+        return LocationProxy(ds, self, item.oid)
 
     @property
     def schema(self):
@@ -39,11 +41,11 @@ class ContentTypesConfiglet(object):
         return [item.oid for item in self.schema.query()]
 
     def values(self):
-        return [container.LocationProxy(item, self, item.oid)
+        return [LocationProxy(item, self, item.oid)
                 for item in self.schema.query()]
 
     def items(self):
-        return [(item.oid, container.LocationProxy(item, self, item.oid))
+        return [(item.oid, LocationProxy(item, self, item.oid))
                 for item in self.schema.query()]
 
     def get(self, name, default=None):
@@ -64,7 +66,7 @@ class ContentTypesConfiglet(object):
         if item is None:
             raise KeyError(name)
 
-        return container.LocationProxy(item, self, item.oid)
+        return LocationProxy(item, self, item.oid)
 
     def __delitem__(self, name):
         pass

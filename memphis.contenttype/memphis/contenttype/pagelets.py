@@ -1,18 +1,15 @@
-""" 
-
-$Id: pagelets.py 4729 2011-02-03 05:26:47Z nikolay $
-"""
+""" content specific pagelets """
 from zope import interface
 from memphis import view
-from memphis.container.interfaces import IContained, IContainer
+from memphis.contenttype.interfaces import IContent, IContainer
+
+
+class IContentActions(interface.Interface):
+    view.pageletType('content-actions', IContent)
 
 
 class IListing(interface.Interface):
     view.pageletType("container-listing", IContainer)
-    
-
-class IActions(interface.Interface):
-    view.pageletType("container-actions", IContained)
 
 
 class IAddingView(interface.Interface):

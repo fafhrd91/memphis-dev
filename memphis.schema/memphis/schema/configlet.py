@@ -4,7 +4,8 @@ $Id:  2007-12-12 12:27:02Z fafhrd $
 """
 from zope import interface, event
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
-from memphis import config, controlpanel, container, storage
+from memphis import config, controlpanel, contenttype, storage
+from memphis.contenttype.location import LocationProxy
 
 from interfaces import ISchema, ISchemaManagement
 
@@ -19,7 +20,7 @@ class SchemaManagement(object):
             setattr(ds, key, val)
 
         ttwschema = ISchema(item)
-        return container.LocationProxy(ds, self, item.oid)
+        return LocationProxy(ds, self, item.oid)
 
     @property
     def schema(self):
@@ -32,10 +33,10 @@ class SchemaManagement(object):
         schemas = [item for item in self.schema.query()]
         for item in schemas:
             ISchema(storage.Item(item.oid)).installSchema()
-        return [container.LocationProxy(item, self, item.oid) for item in schemas]
+        return [LocationProxy(item, self, item.oid) for item in schemas]
 
     def items(self):
-        return [(item.oid, container.LocationProxy(item, self, item.oid))
+        return [(item.oid, LocationProxy(item, self, item.oid))
                 for item in self.schema.query()]
 
     def get(self, name, default=None):
@@ -71,7 +72,7 @@ config.action(
 
 class SchemaFactory(object):
     config.adapts(ISchemaManagement, 'schema')
-    interface.implements(container.IFactory)
+    interface.implements(contenttype.IFactory)
 
     name = 'schema'
     schema = ISchema

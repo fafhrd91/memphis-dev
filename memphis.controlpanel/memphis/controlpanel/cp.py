@@ -1,7 +1,4 @@
-""" Control panel
-
-$Id: cp.py 11791 2011-01-31 02:57:54Z fafhrd91 $
-"""
+""" Control panel """
 from zope import interface
 from memphis import storage, config, view
 from memphis.controlpanel import interfaces

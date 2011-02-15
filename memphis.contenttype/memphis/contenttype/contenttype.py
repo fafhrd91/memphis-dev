@@ -1,10 +1,12 @@
+""" content type desc implementation """
 from zope import interface, event
 from zope.component import getAdapters, queryUtility, getUtility
 from zope.lifecycleevent import ObjectCreatedEvent
 
-from memphis import storage, config, container
+from memphis import storage, config
 
-from interfaces import _, IContent, IContentContainer
+from interfaces import _
+from interfaces import IContent, IContentContainer, IFactoryProvider
 from interfaces import IContentType, IContentTypeSchema, ISchemaType
 
 
@@ -58,7 +60,7 @@ class ContentType(storage.BehaviorBase):
 
 
 class FactoryProvider(object):
-    interface.implements(container.IFactoryProvider)
+    interface.implements(IFactoryProvider)
     config.adapts(IContentContainer, name='memphis.contenttype')
 
     def __init__(self, container):

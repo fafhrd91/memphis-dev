@@ -7,7 +7,7 @@ from zope.lifecycleevent import IObjectModifiedEvent
 
 from plone import supermodel
 
-from memphis import config, storage, container
+from memphis import config, storage, contenttype
 from memphis.schema.interfaces import IField, ISchema, ISchemaType
 
 
@@ -16,7 +16,7 @@ class DefaultSchema(interface.Interface):
 
 
 class Schema(storage.BehaviorBase):
-    interface.implements(ISchema, container.IContainer)
+    interface.implements(ISchema, contenttype.IContainer)
     storage.behavior('memphis.schema', ISchema, schema=ISchema)
 
     def __init__(self, *args, **kw):

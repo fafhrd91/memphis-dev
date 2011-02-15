@@ -2,7 +2,7 @@ import pyramid.url
 from webob.exc import HTTPFound
 from zope.component import getMultiAdapter
 
-from memphis import form, config, container, view
+from memphis import form, config, view
 from memphis.contenttype.interfaces import \
     _, IContentTypeSchema, IContentTypesConfiglet
 

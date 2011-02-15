@@ -1,7 +1,4 @@
-""" Configlet metaclass
-
-$Id: configlettype.py 11787 2011-01-31 00:38:52Z fafhrd91 $
-"""
+""" Configlet metaclass """
 import sys
 from zope.schema import getFields
 

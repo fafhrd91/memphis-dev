@@ -7,7 +7,7 @@ from zope.component import \
     getSiteManager, getUtility, queryUtility, getMultiAdapter
 from zope.lifecycleevent import ObjectRemovedEvent
 
-from memphis import config, view, container, form
+from memphis import config, view, form
 from memphis.schema.interfaces import _
 from memphis.schema.interfaces import IField, IFieldFactory
 from memphis.schema.interfaces import ISchema, ISchemaManagement
@@ -28,6 +28,20 @@ config.action(
 config.action(
     view.registerDefaultView,
     'index.html', ISchemaManagement)
+
+
+config.action(
+    view.registerActions,
+    ('index.html', IField, _('Edit'), _('Field edit form.'), 10),
+    ('preview.html', IField, _('Preview'), _('Field preview.'), 20),
+    ('../index.html', IField, _('Schema'), _('Return back to schema.'), 30))
+
+
+config.action(
+    view.registerActions,
+    ('index.html', ISchema, _('View'), _('View schema.'), 10),
+    ('edit.html', ISchema, _('Edit'), _('Modify ttw schema.'), 20),
+    ('preview.html', ISchema, _('Preview'), _('Schema creaview.'), 30))
 
 
 class ConfigletView(form.Form, view.View):
@@ -217,20 +231,6 @@ class SchemaEdit(form.EditForm, view.View):
 
     label = 'Modify schema'
     description = 'Modify schema basic attributes.'
-
-
-config.action(
-    view.registerActions,
-    ('index.html', IField, _('Edit'), _('Field edit form.'), 10),
-    ('preview.html', IField, _('Preview'), _('Field preview.'), 20),
-    ('../index.html', IField, _('Schema'), _('Return back to schema.'), 30))
-
-
-config.action(
-    view.registerActions,
-    ('index.html', ISchema, _('View'), _('View schema.'), 10),
-    ('edit.html', ISchema, _('Edit'), _('Modify ttw schema.'), 20),
-    ('preview.html', ISchema, _('Preview'), _('Schema creaview.'), 30))
 
 
 class WidgetsManagement(form.Form, view.View):

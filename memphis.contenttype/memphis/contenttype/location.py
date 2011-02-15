@@ -1,7 +1,3 @@
-""" 
-
-$Id: location.py 4729 2011-02-03 05:26:47Z nikolay $
-"""
 from zope.interface import providedBy, implements
 from zope.interface.declarations import getObjectSpecification
 from zope.interface.declarations import ObjectSpecification

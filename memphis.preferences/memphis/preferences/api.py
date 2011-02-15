@@ -1,7 +1,4 @@
-"""
-
-$Id: api.py 11800 2011-01-31 04:36:54Z fafhrd91 $
-"""
+""" registerXXX function implementation """
 from zope import interface
 from zope.schema import getFields
 from memphis import storage, config

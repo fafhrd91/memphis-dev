@@ -1,4 +1,4 @@
-
+""" storage exceptions """
 
 class BaseException(Exception):
     """ base class for storage exceptions """

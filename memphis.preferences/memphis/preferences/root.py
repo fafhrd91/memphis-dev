@@ -1,8 +1,4 @@
-""" Root Preference
-
-$Id: root.py 106156 2009-12-02 05:51:07Z fafhrd $
-"""
-import sqlalchemy
+""" Root Preference """
 from zope import interface
 from memphis import config, storage, view
 from interfaces import _, IPreferences

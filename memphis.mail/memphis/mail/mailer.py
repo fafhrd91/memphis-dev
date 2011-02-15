@@ -1,7 +1,4 @@
-"""
-
-$Id: mailer.py 11808 2011-01-31 06:54:22Z fafhrd91 $
-"""
+""" IMailer implementation """
 import logging
 from zope import interface
 from zope.sendmail.mailer import SMTPMailer

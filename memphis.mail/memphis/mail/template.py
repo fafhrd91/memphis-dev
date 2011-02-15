@@ -1,7 +1,4 @@
-"""
-
-$Id: template.py 4708 2011-02-02 22:51:04Z nikolay $
-"""
+""" base MailTemplate class """
 import os.path
 from email.Utils import formataddr
 

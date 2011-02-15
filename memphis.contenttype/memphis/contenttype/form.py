@@ -1,7 +1,3 @@
-""" 
-
-$Id: form.py 4729 2011-02-03 05:26:47Z nikolay $
-"""
 from webob.exc import HTTPFound
 from pyramid import url
 from pyramid.exceptions import NotFound
@@ -11,7 +7,7 @@ from zope.component import getMultiAdapter
 from zope.lifecycleevent import ObjectCreatedEvent
 
 from memphis import config, view, form
-from memphis.container import interfaces
+from memphis.contenttype import interfaces
 
 _ = interfaces._
 

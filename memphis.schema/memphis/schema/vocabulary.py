@@ -1,14 +1,11 @@
-"""
-
-$Id: vocabulary.py 11486 2009-12-04 00:45:57Z bubenkoff $
-"""
+""" vocabularies """
 import re, os.path
 
 from zope import interface, component
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
-from memphis import config, container
+from memphis import config
 
 from interfaces import _, ISchema
 

@@ -1,10 +1,84 @@
 from zope import schema, interface
-from memphis import storage, container, view
+from zope.interface.common.mapping import IItemMapping
+from zope.interface.common.mapping import IReadMapping, IEnumerableMapping
+
+from memphis import storage, view
 from pyramid.i18n import TranslationStringFactory
 
 _ = TranslationStringFactory('memphis.contenttype')
 
 
+class IContained(interface.Interface):
+    """ """
+
+    __name__ = interface.Attribute('__name__')
+
+    __parent__ = interface.Attribute('__parent__')
+
+
+class IReadContainer(IItemMapping, IReadMapping, IEnumerableMapping):
+    """Readable containers that can be enumerated."""
+
+
+class IWriteContainer(interface.Interface):
+    """An interface for the write aspects of a container."""
+
+    def __setitem__(name, object):
+        """Add the given `object` to the container under the given name."""
+
+    def __delitem__(name):
+        """Delete the named object from the container."""
+
+
+class IContainer(IReadContainer, IWriteContainer):
+    """Readable and writable content container."""
+
+
+# adding
+class IEmptyNamesNotAllowed(interface.Interface):
+    """ marker interface """
+
+
+class IContainerNamesContainer(interface.Interface):
+    """Containers that always choose names for their items."""
+
+
+class IFactory(interface.Interface):
+
+    name = interface.Attribute('Factory name')
+
+    title = interface.Attribute('Title')
+
+    description = interface.Attribute('Description')
+
+    schema = interface.Attribute('Content schema')
+
+    hiddenFields = interface.Attribute('List of hidden fields')
+
+    def __call__(**kw):
+        """ create item """
+
+
+class IFactoryProvider(interface.Interface):
+    """ IFactory provider """
+
+    def __iter__():
+        """ factories iterator """
+
+    def get(name, default=None):
+        """ get factory by name """
+
+
+class INameChooser(interface.Interface):
+    """ adapter for (container, object) """
+
+    def checkName(name):
+        """ check name """
+
+    def chooseName(name):
+        """ choose name """
+
+# dublin core
 class IDCDescriptive(interface.Interface):
     """Basic descriptive meta-data properties"""
 
@@ -35,6 +109,7 @@ class IDCTimes(interface.Interface):
         )
 
 
+# content system
 class IContent(IDCDescriptive, IDCTimes):
     """ behavior interface for content types """
 
@@ -69,7 +144,11 @@ class IContent(IDCDescriptive, IDCTimes):
         required = False)
 
 
-class IContentContainer(container.ISimpleContainer):
+class IContentContained(IContained):
+    """ content contained """
+
+
+class IContentContainer(IContainer):
     """ container for content """
 
 
@@ -122,14 +201,14 @@ class IContentTypeSchema(interface.Interface):
         required = True)
 
 
-class IContentType(container.IFactory):
+class IContentType(IFactory):
     """ content type """
 
     def __call__(**datasheets):
         """ create content """
 
 
-class IContentTypesConfiglet(container.IContainer):
+class IContentTypesConfiglet(IContainer):
     """ configlet """
 
     
@@ -142,6 +221,10 @@ class IBehaviorType(storage.ISchema):
 
 
 # application root
-class IRoot(IContent, IContentContainer, 
-            view.INavigationRoot, container.IContained):
+class IRoot(IContent, IContentContainer, IContained, view.INavigationRoot):
     """ root """
+
+
+# add form
+class IAddContentForm(interface.Interface):
+    """ content ad form """

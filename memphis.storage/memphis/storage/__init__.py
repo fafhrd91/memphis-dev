@@ -1,4 +1,4 @@
-# This file is necessary to make this directory a package.
+# memphis.storage public API
 
 from memphis import config
 from memphis.storage.item import Item

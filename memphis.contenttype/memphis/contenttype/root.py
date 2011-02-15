@@ -32,25 +32,24 @@ Also root behavior can't be dropped
 Contained
 
     >>> IContained(item)
-    <memphis.container.root.ContainedRoot ...>
+    <memphis.contenttype.root.ContainedRoot ...>
 
-$Id: root.py 11777 2011-01-30 07:41:52Z fafhrd91 $
 """
 from zope import interface, event
 from zope.lifecycleevent import ObjectCreatedEvent
 
-from memphis import storage, config, view, container
-from memphis.container.simple import ISimpleContainerRelation
+from memphis import storage, config, view
 
-from container import ContentContainer
-from interfaces import IRoot, IContent
+from interfaces import IRoot, IContent, IContained
+from location import LocationProxy
+from container import ContentContainer, IContentContainerRelation
 
 
 def getRoot():
     behavior = storage.getBehavior(IRoot)
     try:
         oid = behavior.getBehaviorOIDs().next()
-        return storage.getItem(oid)
+        return LocationProxy(storage.getItem(oid), None, '')
     except StopIteration:
         item = storage.insertItem(IRoot)
         dc = IContent(item)
@@ -58,15 +57,15 @@ def getRoot():
         dc.description = u'Default memphis site.'
 
         event.notify(ObjectCreatedEvent(item))
-        return item
+        return LocationProxy(item, None, '')
 
 
 class Root(ContentContainer):
-    interface.implements(IRoot, container.IContained)
+    interface.implements(IRoot, IContained)
     storage.behavior(
         'app.root',
         schema = IContent,
-        relation = ISimpleContainerRelation,
+        relation = IContentContainerRelation,
         title = u'Application root',
         description = u'Smiple implementation for Application Root concept')
 

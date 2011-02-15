@@ -1,4 +1,4 @@
-<tal:block i18n:domain="z3ext.authentication">
+<tal:block i18n:domain="memphis.users">
   <h1 i18n:translate="">Login successful!</h1>
 
   <p style="font-size: 150%" i18n:translate="">
@@ -7,3 +7,5 @@
   </p>
   <a href="." i18n:translate="">Back to the main page.</a>
 </tal:block>
+<br />
+<br />

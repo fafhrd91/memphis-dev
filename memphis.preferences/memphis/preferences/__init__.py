@@ -1,4 +1,4 @@
-# This file is necessary to make this directory a package.
+# memphis.preferences public API
 
 from memphis import config
 from memphis.preferences.api import registerCategory

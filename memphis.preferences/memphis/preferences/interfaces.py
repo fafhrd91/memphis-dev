@@ -1,8 +1,4 @@
-
-""" memphis.preferences interfaces
-
-$Id: interfaces.py 11800 2011-01-31 04:36:54Z fafhrd91 $
-"""
+""" memphis.preferences interfaces """
 from zope import schema, interface
 from pyramid.i18n import TranslationStringFactory
 

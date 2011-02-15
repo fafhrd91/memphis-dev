@@ -17,8 +17,20 @@ def tearDown(test):
 
 def test_suite():
     return unittest.TestSuite((
+            #doctest.DocFileSuite(
+            #    './README.txt',
+            #    setUp=setUp, tearDown=tearDown,
+            #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             doctest.DocFileSuite(
-                './README.txt',
+                './container.txt',
+                setUp=setUp, tearDown=tearDown,
+                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            doctest.DocTestSuite(
+                'memphis.contenttype.location',
+                setUp=setUp, tearDown=tearDown,
+                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            doctest.DocTestSuite(
+                'memphis.contenttype.namechooser',
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             ))

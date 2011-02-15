@@ -1,8 +1,4 @@
-"""
-
-$Id: preference.py 102668 2009-08-11 10:27:43Z fafhrd $
-"""
-import sqlalchemy
+""" Preference implementation """
 from zope import interface
 from memphis import storage
 

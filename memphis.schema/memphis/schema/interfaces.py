@@ -1,6 +1,6 @@
 from zope import interface, schema
 from pyramid.i18n import TranslationStringFactory
-from memphis import storage, container
+from memphis import storage, contenttype
 
 _ = TranslationStringFactory('memphis.schema')
 
@@ -74,11 +74,11 @@ class ISchemaType(storage.ISchema):
     """ schema type """
 
 
-class ISchemaManagement(container.IContainer):
+class ISchemaManagement(contenttype.IContainer):
     """ schema management configlet """
 
 
-class IFieldFactory(container.IFactory):
+class IFieldFactory(contenttype.IFactory):
     """ field factory """
 
     field = interface.Attribute('Field class')

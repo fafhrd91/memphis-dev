@@ -1,12 +1,6 @@
-<h1 class="z-content-title">${view.title}</h1>
-<div class="z-content-description">${view.description}</div>
+<h1>Contents</h1>
+<br />
+<tal:block content="structure pagelet:container-listing" />
 
 <br />
-<div class="z-wizard-viewspace">
-  <h1>Contents</h1>
-  <br />
-  <tal:block content="structure pagelet:container-listing" />
-
-  <br />
-  <tal:block content="structure pagelet:container-addingmenu" />
-</div>
+<tal:block content="structure pagelet:container-addingmenu" />
