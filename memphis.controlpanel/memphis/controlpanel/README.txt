@@ -156,6 +156,7 @@ System registers `/setting/*traverse` pyramid rout and register default
 view for controlpanel:
 
     >>> from memphis import view
+    >>> from webob.multidict import MultiDict
     >>> from pyramid.testing import DummyRequest
 
     >>> print view.renderView('index.html', cp, DummyRequest())
@@ -168,7 +169,8 @@ view for controlpanel:
 
 System automaticly generate 'index.html' form based on configlet schema:
 
-    >>> print view.renderView('index.html', configlet, DummyRequest())
+    >>> print view.renderView('index.html', configlet,
+    ...                       DummyRequest(params=MultiDict()))
     200 OK
     ...
     <form action="http://example.com" name="configlet" id="configlet" method="post" enctype="multipart/form-data">
@@ -179,9 +181,10 @@ System automaticly generate 'index.html' form based on configlet schema:
 
     >>> resp = view.renderView(
     ...     'index.html', configlet,
-    ...     DummyRequest(params={'configlet.buttons.apply': u'Apply',
-    ...                          'configlet.widgets.title': u'TTW modified',
-    ...                          'configlet.widgets.showNavigation': "true"}))
+    ...     DummyRequest(
+    ...         params=MultiDict({'configlet.buttons.apply': u'Apply',
+    ...                           'configlet.widgets.title': u'TTW modified',
+    ...                           'configlet.widgets.showNavigation': "true"})))
 
     >>> configlet.title, configlet.showNavigation
     (u'TTW modified', True)

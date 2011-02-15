@@ -7,17 +7,17 @@ Register behavior with zcml directive.
    >>> from zope import interface, component
    >>> from zope.component.eventtesting import getEvents, clearEvents
 
-   >>> from memphis import storage, container
-   >>> from memphis.container import IContained, IContainer, ISimpleContainer
+   >>> from memphis import storage, contenttype
+   >>> from memphis.contenttype import IContained, IContainer, IContentContainer
 
 
 Create container
 ----------------
 
    >>> itemCont = storage.insertItem()
-   >>> itemCont.applyBehavior(ISimpleContainer)
+   >>> itemCont.applyBehavior(IContentContainer)
 
-   >>> ISimpleContainer.providedBy(itemCont)
+   >>> IContentContainer.providedBy(itemCont)
    True
 
    >>> IContainer.providedBy(itemCont)
