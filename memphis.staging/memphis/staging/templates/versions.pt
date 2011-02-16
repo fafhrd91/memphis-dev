@@ -1,0 +1,26 @@
+<h2 class="z-form-title">Versions</h2>
+<div class="z-form-description">Content versions.</div>
+
+<br />
+<div class="z-table-container">
+  <table class="z-table">
+    <thead>
+      <th></th>
+      <th>Version</th>
+      <th>Working</th>
+      <th>Date</th>
+      <th>Comment</th>
+    </thead>
+    <tbody>
+      <tr tal:repeat="version view.staging.listVersions()"
+	  tal:attributes="class repeat['version'].even() and
+			  'z-table-record even' or 'z-table-record odd'">
+	<td></td>
+	<td>${version.version}</td>
+	<td tal:content="version.working and 'Yes' or None"></td>
+	<td>${version.date}</td>
+	<td>${version.comment}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

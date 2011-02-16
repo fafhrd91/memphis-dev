@@ -14,13 +14,6 @@ class LayoutView(object):
     def update(self):
         super(LayoutView, self).update()
 
-        sm = getSiteManager()
-        actions = [(action.weight, action.title, action) 
-                   for name, action in sm.adapters.lookupAll(
-                (interface.providedBy(self.maincontext),), view.IAction)]
-        actions.sort()
-        self.actions = [action for w,t,action in actions]
-
         dc = IDCDescriptive(self.maincontext, None)
         if dc is not None:
             self.title = dc.title

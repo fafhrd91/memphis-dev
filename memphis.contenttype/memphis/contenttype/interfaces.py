@@ -1,3 +1,4 @@
+import pytz, datetime
 from zope import schema, interface
 from zope.interface.common.mapping import IItemMapping
 from zope.interface.common.mapping import IReadMapping, IEnumerableMapping
@@ -78,7 +79,8 @@ class INameChooser(interface.Interface):
     def chooseName(name):
         """ choose name """
 
-# dublin core
+
+# basic dublin core
 class IDCDescriptive(interface.Interface):
     """Basic descriptive meta-data properties"""
 
@@ -99,13 +101,17 @@ class IDCTimes(interface.Interface):
 
     created = schema.Datetime(
         title = u'Creation Date',
-        description = u"The date and time that an object is created."
+        description = u"The date and time that an object is created.",
+        default = datetime.datetime.now(pytz.utc),
+        required = False
         )
 
     modified = schema.Datetime(
         title = u'Modification Date',
         description = u"The date and time that the object "\
             "was last modified in a meaningful way.",
+        default = datetime.datetime.now(pytz.utc),
+        required = False
         )
 
 

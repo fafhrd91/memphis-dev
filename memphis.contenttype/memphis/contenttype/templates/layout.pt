@@ -1,4 +1,4 @@
-<div id="z-portal-viewspace">
+<div id="z-portal-viewspace" style="font-size: 110%">
   <div id="z-content">
     <div class="z-wizard">
       <tal:block condition="layout.title is not None">

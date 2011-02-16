@@ -11,6 +11,8 @@ from memphis.storage.hooks import setSession
 from memphis.storage.hooks import getSession
 from memphis.storage.hooks import setMetadata
 from memphis.storage.hooks import getMetadata
+
+# storage registry api
 from memphis.storage.registry import getSchema
 from memphis.storage.registry import getBehavior
 from memphis.storage.registry import getRelation
@@ -20,11 +22,17 @@ from memphis.storage.registry import registerSchema
 from memphis.storage.registry import registerBehavior
 from memphis.storage.registry import registerRelation
 
+# base behavior classes
 from memphis.storage.behavior import BehaviorBase
 from memphis.storage.behavior import BehaviorFactoryBase
 from memphis.storage.interfaces import IBehavior
 
+# column generations
 from memphis.storage.table import mapFieldToColumns
+
+# schema/behavior wrappers
+from memphis.storage.interfaces import ISchemaWrapper
+from memphis.storage.interfaces import IBehaviorWrapper
 
 # exceptions
 from memphis.storage.exceptions import BehaviorException

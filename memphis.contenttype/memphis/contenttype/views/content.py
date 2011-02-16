@@ -116,13 +116,14 @@ class EditContent(form.EditForm, view.View):
     label = 'Modify content'
 
     def listWrappedForms(self):
-        ct = IContentType(self.context)
+        context = self.context
+        ct = IContentType(context)
 
         forms = []
         for schId in ('content.item',) + ct.schemas:
             schema = queryUtility(storage.ISchema, schId)
             if schema is not None:
-                ds = schema.getDatasheet(self.context.oid)
+                ds = context.getDatasheet(schId)
                 form = EditDatasheet(ds, self.request, self)
                 if schId == 'content.item':
                     form.hidden = 'type', 'modified', 'created'
@@ -155,9 +156,6 @@ class ContentActions(view.Pagelet):
     def update(self):
         adapters = getSiteManager().adapters
 
-        actions = []
-        for name, action in adapters.lookupAll(
-            (interface.providedBy(self.context),), view.IAction):
-            actions.append(action)
-
-        self.actions = actions
+        self.actions = [action for name, action in adapters.lookupAll(
+                (interface.providedBy(self.context),), view.IAction)]
+        self.actions.sort(key = lambda a: a.weight)

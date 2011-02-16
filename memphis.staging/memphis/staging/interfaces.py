@@ -1,4 +1,9 @@
 from zope import schema, interface
+from memphis import storage
+
+
+class IVersionItem(interface.Interface):
+    """ version item behavior """
 
 
 class IVersionsRelation(interface.Interface):
@@ -19,12 +24,22 @@ class IVersionsRelation(interface.Interface):
         default = u'',
         required = False)
 
+    date = schema.Datetime(
+        title = u'Checkin datetime',
+        required = False)
 
-class IStagingBehavior(interface.Interface):
+
+class IStagingBehavior(storage.ISchemaWrapper):
     """ staging behavior """
+
+    def getWorkingCopy():
+        """ get working cope """
 
     def checkin():
         """ checking working copy """
+
+    def checkout(version):
+        """ create working copy from version """
 
     def listVersions():
         """ list available versions """

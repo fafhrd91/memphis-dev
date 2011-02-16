@@ -240,7 +240,6 @@ Remove schema
     []
 
 
-
 Wrapping schema adapter call
 ----------------------------
 
@@ -268,3 +267,8 @@ from ISchemaWrapper interface::
     >>> ds
     <memphis.storage.datasheet.Datasheet<schema> ...>
 
+    >>> ds = item.getDatasheet(IMySchema)
+    schema wrapper
+
+    >>> ds
+    <memphis.storage.datasheet.Datasheet<schema> ...>

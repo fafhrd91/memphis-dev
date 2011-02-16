@@ -119,8 +119,7 @@ class Behavior(object):
     def getItemBehaviors(self, oid):
         return [r[0] for r in getSession().query(
                 SQLBehavior.name).filter(
-                SQLBehavior.oid==oid).order_by(
-                sqlalchemy.sql.expression.desc(SQLBehavior.inst_id))]
+                SQLBehavior.oid==oid).order_by(SQLBehavior.inst_id)]
 
 
 class SQLBehavior(object):

@@ -112,6 +112,7 @@ class IBehaviorBase(interface.Interface):
     oid = interface.Attribute('Storage item oid')
 
 
+# wrappers
 class ISchemaWrapper(interface.Interface):
 
     def wrapSchema(schema, item):

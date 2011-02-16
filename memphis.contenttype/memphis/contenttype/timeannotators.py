@@ -11,13 +11,13 @@ from memphis.contenttype.interfaces import IContent, IDCTimes
 def ModifiedAnnotator(object, event=None):
     dc = IDCTimes(object, None)
     if dc is not None:
-        dc.modified = datetime.now(pytz.utc)
+        dc.modified = datetime.now()
 
 
-@config.handler(IContent, IObjectModifiedEvent)
+@config.handler(IContent, IObjectCreatedEvent)
 def CreatedAnnotator(object, event=None):
     dc = IDCTimes(object, None)
     if dc is not None:
-        now = datetime.now(pytz.utc)
+        now = datetime.now()
         dc.created = now
         dc.modified = now

@@ -176,6 +176,9 @@ class Item(object):
     def getDatasheet(self, name, apply=False):
         sch = getSchema(name)
         if apply or (sch.name in Schema.getItemSchemas(self.oid)):
+            wrapper = ISchemaWrapper(self, None)
+            if wrapper is not None:
+                return wrapper.wrapSchema(sch, self)
             return sch(self)
         else:
             raise KeyError(name)

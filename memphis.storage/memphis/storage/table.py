@@ -11,13 +11,15 @@ from memphis.storage.exceptions import StorageException
 class FieldMapper(object):
     interface.implements(ISchemaFieldMapper)
 
-    def __init__(self, type):
+    def __init__(self, type, *args, **kwargs):
         self.type = type
+        self.args = args
+        self.kwargs = kwargs
 
     def __call__(self, field):
         return (
             sqlalchemy.Column(
-                field.__name__, self.type, 
+                field.__name__, self.type(*self.args, **self.kwargs), 
                 default=copy.copy(field.default)),)
 
 
@@ -43,7 +45,8 @@ config.action(
 
 config.action(
     config.registerAdapter,
-    FieldMapper(sqlalchemy.DateTime), (schema.interfaces.IDatetime,))
+    FieldMapper(sqlalchemy.DateTime, timezone=True),
+    (schema.interfaces.IDatetime,))
 
 config.action(
     config.registerAdapter,

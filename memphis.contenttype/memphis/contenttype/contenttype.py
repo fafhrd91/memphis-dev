@@ -40,19 +40,21 @@ class ContentType(storage.BehaviorBase):
         if self.behaviors:
             content.applyBehavior(*self.behaviors)
 
+        for schId in self.schemas:
+            schema = queryUtility(storage.ISchema, schId)
+            if schema is None:
+                continue
+            content.applySchema(schema.spec)
+            #schema.apply(content.oid)
+
         ds = content.getDatasheet(IContent)
         if 'content.item' in data:
             ds.__load__(data['content.item'])
         ds.type = self.name
 
         for schId in self.schemas:
-            schema = queryUtility(storage.ISchema, schId)
-            if schema is None:
-                continue
-            #content.applySchema(schema.spec)
-            schema.apply(content.oid)
             if schId in data:
-                ds = schema.getDatasheet(content.oid)
+                ds = content.getDatasheet(schId)
                 ds.__load__(data[schId])
 
         event.notify(ObjectCreatedEvent(content))
