@@ -338,3 +338,19 @@ from IBehaviorWrapper interface::
 
     >>> list(interface.providedBy(item))
     [<InterfaceClass memphis.storage.TESTS.IWrapper>, <InterfaceClass memphis.storage.TESTS.IBehavior1>]
+
+
+Item removing
+-------------
+
+When item is removed it should not leave artifacts in a system::
+
+    >>> bh = storage.getBehavior(IWrapper)
+    >>> bh.getItemBehaviors(item.oid)
+    [u'wrapper', u'behavior1']
+
+    >>> item.remove()
+
+    >>> bh.getItemBehaviors(item.oid)
+    []
+

@@ -98,7 +98,10 @@ class Item(object):
 
     @classmethod
     def getItem(cls, oid):
-        return getSession().query(Item).filter(Item.oid == oid).first()
+        item = getSession().query(Item).filter(Item.oid == oid).first()
+        if item is None:
+            raise KeyError(oid)
+        return item
 
     @classmethod
     def listItems(cls, type):
@@ -128,6 +131,25 @@ class Item(object):
     @property
     def schemas(self):
         return Schema.getItemSchemas(self.oid)
+
+    def remove(self):
+        # fixme: it too explicite, it do a lot of db queries
+        # this method has to be simplier 
+
+        self.type = ''
+
+        # first remove behavior, because behavior can remove some of schemas
+        behaviors = self.behaviors
+        while behaviors:
+            self.removeBehavior(behaviors[0])
+            behaviors = self.behaviors
+
+        for schId in self.schemas:
+            self.removeSchema(schId)
+
+        session = getSession()
+        session.delete(self)
+        session.flush()
 
     def getReferences(self, type=None):
         return Relation.getItemReferences(self.oid, type)

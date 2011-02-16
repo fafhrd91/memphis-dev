@@ -272,3 +272,19 @@ from ISchemaWrapper interface::
 
     >>> ds
     <memphis.storage.datasheet.Datasheet<schema> ...>
+
+
+Item removing
+-------------
+
+When item is removed it should not leave artifacts in a system::
+
+    >>> sch = storage.getSchema(IMySchema)
+    >>> sch.getItemSchemas(item.oid)
+    [u'schema']
+
+    >>> item.remove()
+
+    >>> sch.getItemSchemas(item.oid)
+    []
+

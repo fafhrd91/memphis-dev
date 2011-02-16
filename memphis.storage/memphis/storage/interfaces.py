@@ -10,6 +10,12 @@ class IItem(interface.Interface):
 
     schemas = interface.Attribute('Applied schemas types')
 
+    def insertItem(type=''):
+        """ insert item and apply primary behavior """
+
+    def remove():
+        """ remove item, cleanup behavior and schemas """
+
     def applySchema(type):
         """ apply schema to item """
 

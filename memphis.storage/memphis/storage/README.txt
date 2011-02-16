@@ -7,14 +7,22 @@ concept - Data component. Access to data and behavior is done
 in ZCA way. Data component consists with three primitives - schemas,
 behaviors, relations.
 
-  Schema is besicly sqlalchemy table with additional infomration.
+  This three primitives are composed by `Item` object. But item itself
+doesn't provide any functionality. This item is nothing more than point of
+composition of actual data and implementation. Item just provides
+api for composing data and behaviors, as `applySchema`, `applyBehavior`.
+
+  Schema is besicly sqlalchemy table with additional information.
 But schema defined as zope interface with zope schema fields, each
 field defines column in table. its possible to use any model with
 memphis storage, there is only one restriction, it should have
 oid foring key to items table. Actual record in db table is called
-datasheet.
+datasheet. Also it possible to create custom mapper from schema field
+to table columns, for example wysiwyg field can be stored in two columns
+- `text` and `text format`. Also schemas are used for CRUD forms and
+for data introspection.
 
-  Behavior is actual python code that do somthing, it is stateless,
+  Behavior is actual python code that do something, it is stateless,
 but it can uses schemas and relations to store additional information.
 
   Relations is just many to many relations between any data components.
@@ -28,9 +36,13 @@ happens at runtime. Basicly schema/behavior are only strings in
 'schema' and 'behavior' db tables, at runtime memphis searches
 named behavior and use it as adapter, same for schema.
 
-From python point of view storage item implements schemas and behaviors
-interfaces. And to get behavior or schema you have to adapt
-storage item.
+From python point of view storage item only provides schemas and behaviors
+interfaces. But to get behavior or schema you have to adapt
+storage item. Storage layer enforces to use contract to get data or
+behavior, and you can't bypass this by directly inspecting item object,
+because item doesn't contain any data or implementaion. Go get actual
+implementation or schema data you have to adapt item to behavior interface
+or to schema interface or in case of schema you also can use Item.getDatasheet.
 
 All premitives can be constructed at startup or during runtime. But
 runtime creation usefull mostly for schema only.
@@ -39,14 +51,13 @@ runtime creation usefull mostly for schema only.
 Setup storage
 =============
 
-Before we can use storage we have to configure it. It requires
-database engine and sqlalchemy session. Let' configure storage with 
-in-memory sqlite database::
-
     >>> from memphis import config, storage
     >>> from memphis.storage import interfaces
 
-Before do any configuration we should begin configuration procedure::
+Before we can use storage we have to configure it. It requires
+database engine and sqlalchemy session. Let' configure storage with 
+in-memory sqlite database. Before do any configuration we should start
+configuration procedure::
 
     >>> config.begin()
 
@@ -83,7 +94,7 @@ This should be done during application initialization::
 For each transaction in your application you should set storage session.
 For example if you use pyramid and pyramid_sqla, add INewRequest handler::
 
-    # from pyramid_sqla
+    # import pyramid_sqla
     #
     # @component.adapter(INewRequest)
     # def newRequestHandler(event):
@@ -102,6 +113,18 @@ That's it. Now we can use storage::
 
     >>> item
     <memphis.storage.item.Item object at ...>
+
+This item is nothing more than point of composition of actual data and
+implementation code. So by default it doesn't do anything except it provides
+api for data/behavior composition.
+
+And you can remove item::
+
+    >>> item.remove()
+    >>> storage.getItem(item.oid) is None
+    Traceback (most recent call last):
+    ...
+    KeyError: '...'
 
 
 Schema
