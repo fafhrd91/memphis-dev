@@ -59,7 +59,7 @@ class ISchema(interface.Interface):
 
     schema = interface.Attribute('Schema')
 
-    def create(data):
+    def __call__(item):
         """ create datasheet """
 
 
@@ -94,6 +94,9 @@ class IBehavior(interface.Interface):
     def __call__(item):
         """ create behavior for item """
 
+    def getBehaviorOIDs():
+        """ list all oids for this behavior """
+
 
 class IBehaviorBase(interface.Interface):
     """ base behavior """
@@ -109,6 +112,19 @@ class IBehaviorBase(interface.Interface):
     oid = interface.Attribute('Storage item oid')
 
 
+class ISchemaWrapper(interface.Interface):
+
+    def wrapSchema(schema, item):
+        """ wrap schema adapter """
+
+
+class IBehaviorWrapper(interface.Interface):
+
+    def wrapBehavior(behavior, item):
+        """ wrap behavior adapter """
+
+
+# events
 class IBehaviorAppliedEvent(IObjectEvent):
     """ Behavior applied event """
 

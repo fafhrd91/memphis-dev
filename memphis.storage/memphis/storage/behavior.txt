@@ -241,7 +241,7 @@ Behavior interface should inherit from base behavior::
     ...     def __init__(self, item):
     ...         self.item = item
 
-    >>> _ = storage.registerBehavior(u'behavior1', IBehavior1, Behavior1)
+    >>> storage.registerBehavior(u'behavior1', IBehavior1, Behavior1)
     >>> item = storage.insertItem(IBehavior1)
 
 Item provided both interfaces because IBehavior1 inherited from IBehavior::
@@ -304,3 +304,34 @@ or
 
     >>> tuple(Behavior.getItemBehaviors(item.oid))
     (u'behavior', u'behavior1')
+
+
+Wrapping behavior adapter call
+------------------------------
+
+It is possible to intercept behavior adaptation. Wrapper behavior has
+to implement `wrapBehavior` method, and wrapper interface has to be inherited
+from IBehaviorWrapper interface::
+
+    >>> class IWrapper(interfaces.IBehaviorWrapper):
+    ...     pass
+
+    >>> class Wrapper(storage.BehaviorBase):
+    ...     
+    ...     def wrapBehavior(self, behavior, item):
+    ...         print 'adaptation wrapper'
+    ...         return behavior(item)
+
+    >>> storage.registerBehavior(u'wrapper', IWrapper, Wrapper)
+
+    >>> item = storage.insertItem(IBehavior1)
+    >>> item.applyBehavior(IWrapper)
+
+    >>> IWrapper.providedBy(item)
+    True
+
+    >>> bh = IBehavior1(item)
+    adaptation wrapper
+
+    >>> isinstance(bh, Behavior1)
+    True

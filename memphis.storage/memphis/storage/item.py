@@ -19,7 +19,11 @@ from memphis.storage.exceptions import BehaviorException
 from memphis.storage.registry import getSchema, querySchema
 from memphis.storage.registry import getBehavior, queryBehavior
 
+from memphis.storage.interfaces import ISchemaWrapper, IBehaviorWrapper
+
 _marker = object()
+
+from zope.interface.adapter import AdapterRegistry
 
 
 class ItemSpecification(ObjectSpecificationDescriptor):
@@ -34,17 +38,18 @@ class ItemSpecification(ObjectSpecificationDescriptor):
             return cached
 
         provided = []
-        cache = {}
+        bhreg = AdapterRegistry()
         for behavior in inst.behaviors:
             behavior = queryBehavior(behavior)
             if behavior is not None:
-                cache[behavior.spec] = behavior
+                bhreg.register((), behavior.spec, '', behavior)
                 provided.append(behavior.spec)
 
+        schreg = AdapterRegistry()
         for schId in inst.schemas:
             sch = querySchema(schId)
-            if sch is not None and sch.spec not in cache:
-                cache[sch.spec] = sch
+            if sch is not None and sch.spec not in provided:
+                schreg.register((), sch.spec, '', sch)
                 provided.append(sch.spec)
 
         if provided:
@@ -53,7 +58,8 @@ class ItemSpecification(ObjectSpecificationDescriptor):
             spec = None
 
         inst._v__providedBy = spec
-        inst._v__providedByCache = cache
+        inst._v__bhCache = bhreg
+        inst._v__schCache = schreg
 
         return spec
 
@@ -74,20 +80,21 @@ class Item(object):
         # first try find directly applied behavior
         provided = self.__providedBy__
 
-        # check cache
-        callable = self._v__providedByCache.get(spec)
-        if callable is not None:
-            return callable(self)
+        # lookup for behavior
+        bh = self._v__bhCache.lookup((), spec)
+        if bh is not None:
+            wrapper = self._v__bhCache.lookup((), IBehaviorWrapper)
+            if wrapper is not None:
+                return wrapper(self).wrapBehavior(bh, self)
+            return bh(self)
 
-        # probably item implements more specific behavior than `spec`
-        behavior = queryBehavior((provided,), spec)
-        if behavior is not None:
-            return behavior(self)
-
-        # check schema
-        schema = querySchema(spec)
-        if schema is not None:
-            return schema(self)
+        # lookup for schema
+        sch = self._v__schCache.lookup((), spec)
+        if sch is not None:
+            wrapper = self._v__bhCache.lookup((), ISchemaWrapper)
+            if wrapper is not None:
+                return wrapper(self).wrapSchema(sch, self)
+            return sch(self)
 
     @classmethod
     def getItem(cls, oid):
@@ -132,7 +139,6 @@ class Item(object):
         for behavior in args:
             if hasattr(self, '_v__providedBy'):
                 del self._v__providedBy
-                del self._v__providedByCache
 
             behavior = getBehavior(behavior)
             behavior.apply(self)
@@ -140,13 +146,11 @@ class Item(object):
 
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
-            del self._v__providedByCache
 
     def removeBehavior(self, *args):
         for behavior in args:
             if hasattr(self, '_v__providedBy'):
                 del self._v__providedBy
-                del self._v__providedByCache
 
             behavior = getBehavior(behavior)
 
@@ -158,19 +162,16 @@ class Item(object):
 
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
-            del self._v__providedByCache
 
     def applySchema(self, type):
         getSchema(type).apply(self.oid)
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
-            del self._v__providedByCache
 
     def removeSchema(self, type):
         getSchema(type).remove(self.oid)
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
-            del self._v__providedByCache
 
     def getDatasheet(self, name, apply=False):
         sch = getSchema(name)

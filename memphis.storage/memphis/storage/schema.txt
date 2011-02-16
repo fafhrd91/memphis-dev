@@ -239,3 +239,32 @@ Remove schema
     >>> item.schemas
     []
 
+
+
+Wrapping schema adapter call
+----------------------------
+
+It is possible to intercept schema adaptation. Wrapper behavior has
+to implement `wrapSchema` method, and wrapper interface has to be inherited
+from ISchemaWrapper interface::
+
+    >>> class IWrapper(interfaces.ISchemaWrapper):
+    ...     pass
+
+    >>> class Wrapper(storage.BehaviorBase):
+    ...     
+    ...     def wrapSchema(self, sch, item):
+    ...         print 'schema wrapper'
+    ...         return sch(item)
+
+    >>> storage.registerBehavior(u'wrapper', IWrapper, Wrapper)
+
+    >>> item = storage.insertItem(IWrapper)
+    >>> item.applySchema(IMySchema)
+
+    >>> ds = IMySchema(item)
+    schema wrapper
+
+    >>> ds
+    <memphis.storage.datasheet.Datasheet<schema> ...>
+

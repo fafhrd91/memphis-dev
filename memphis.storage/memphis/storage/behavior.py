@@ -2,7 +2,8 @@ import sqlalchemy
 from zope import interface
 from zope.schema import getFields
 from memphis.storage.hooks import getSession
-from memphis.storage.interfaces import IBehavior, IBehaviorBase
+from memphis.storage.interfaces import \
+    IBehavior, IBehaviorBase, IBehaviorWrapper, ISchemaWrapper
 from memphis.storage.exceptions import StorageException
 
 
@@ -40,6 +41,8 @@ class Behavior(object):
         self.schema = schema
         self.factory = factory
         self.relation = relation
+        self.iswrapper = spec.isOrExtends(IBehaviorWrapper) or \
+            spec.isOrExtends(ISchemaWrapper)
 
         if type(factory) is type and issubclass(factory, BehaviorBase):
             factory.__behavior__ = self
@@ -64,8 +67,11 @@ class Behavior(object):
         if ob is not None:
             raise StorageException('Behavior already applied: %s'%self.name)
 
-        num = len(self.getItemBehaviors(oid)) + 1
-        session.add(SQLBehavior(oid, self.name, num))
+        if self.iswrapper:
+            session.add(SQLBehavior(oid, self.name, -1))
+        else:
+            num = len(self.getItemBehaviors(oid)) + 1
+            session.add(SQLBehavior(oid, self.name, num))
         session.flush()
 
         # apply schema
