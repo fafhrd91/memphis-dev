@@ -11,6 +11,8 @@ from memphis.contenttype.interfaces import IFactoryProvider
 
 # forms
 from memphis.contenttype.form import AddContentForm
+from memphis.contenttype.interfaces import IAddContentForm
+from memphis.contenttype.interfaces import IEditContentForm
 
 # location
 from memphis.contenttype.location import LocationProxy

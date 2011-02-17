@@ -33,10 +33,12 @@ class Authentication(object):
 
     def getUser(self, id):
         if id and id.startswith('memphis-'):
-            user = storage.getItem(id[8:])
-            if user is not None:
+            try:
+                user = storage.getItem(id[8:])
                 user.id = id
                 return user
+            except:
+                pass
 
     def getUserByLogin(self, login):
         sch = storage.getSchema(IUserInfo)

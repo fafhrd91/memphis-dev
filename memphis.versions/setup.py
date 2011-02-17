@@ -1,4 +1,4 @@
-""" Setup for memphis.contenttype package
+""" Setup for memphis.versions package
 
 $Id: setup.py 11635 2011-01-18 07:03:08Z fafhrd91 $
 """
@@ -11,14 +11,14 @@ def read(*rnames):
 version='0'
 
 
-setup(name='memphis.staging',
+setup(name='memphis.versions',
       version=version,
       description="",
       long_description=(
           'Detailed Documentation\n' +
           '======================\n'
           + '\n\n' +
-          read('memphis', 'staging', 'README.txt')
+          read('memphis', 'versions', 'README.txt')
           + '\n\n' +
           read('CHANGES.txt')
           ),
@@ -32,7 +32,7 @@ setup(name='memphis.staging',
         'Topic :: Internet :: WWW/HTTP :: WSGI'],
       author='Nikolay Kim',
       author_email='fafhrd91@gmail.com',
-      url='http://pypi.python.org/pypi/memphis.staging/',
+      url='http://pypi.python.org/pypi/memphis.versions/',
       license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
       packages=find_packages(),
       namespace_packages=['memphis'],
@@ -52,6 +52,6 @@ setup(name='memphis.staging',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['include = memphis.staging']
+        'memphis': ['include = memphis.versions']
         }
       )

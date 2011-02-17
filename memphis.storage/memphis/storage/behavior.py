@@ -18,8 +18,14 @@ class BehaviorBase(object):
         self.__context__ = context
         self.__relation__ = relation
         if self.__behavior__.schema:
-            self.__datasheet__ = context.getDatasheet(self.__behavior__.schema)
-
+            if self.__wrapper__:
+                from registry import getSchema
+                self.__datasheet__ = getSchema(
+                    self.__behavior__.schema).getDatasheet(self.__context__.oid)
+            else:
+                self.__datasheet__ = self.__context__.getDatasheet(
+                    self.__behavior__.schema)
+                
     @property
     def oid(self):
         return self.__context__.oid
@@ -46,6 +52,7 @@ class Behavior(object):
 
         if type(factory) is type and issubclass(factory, BehaviorBase):
             factory.__behavior__ = self
+            factory.__wrapper__ = self.iswrapper
 
             if schema is not None:
                 for f_id in getFields(schema):

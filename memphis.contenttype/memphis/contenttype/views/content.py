@@ -9,7 +9,7 @@ from memphis import form, config, view, storage
 from memphis.contenttype import pagelets
 from memphis.contenttype.form import AddContentForm
 from memphis.contenttype.interfaces import \
-    _, IContent, IContentType, IDCDescriptive
+    _, IContent, IContentType, IDCDescriptive, IAddContentForm, IEditContentForm
 
 
 config.action(
@@ -26,6 +26,7 @@ config.action(
 
 
 class AddContent(form.EditForm, AddContentForm, view.View):
+    interface.implements(IAddContentForm)
     view.pyramidView('', IContentType)
 
     fields = form.Fields()
@@ -109,6 +110,7 @@ class EditDatasheet(form.SubForm):
 
 
 class EditContent(form.EditForm, view.View):
+    interface.implements(IEditContentForm)
     view.pyramidView('edit.html', IContent)
 
     fields = form.Fields()
@@ -121,9 +123,9 @@ class EditContent(form.EditForm, view.View):
 
         forms = []
         for schId in ('content.item',) + ct.schemas:
-            schema = queryUtility(storage.ISchema, schId)
+            schema = storage.querySchema(schId)
             if schema is not None:
-                ds = context.getDatasheet(schId)
+                ds = context.getDatasheet(schId, True)
                 form = EditDatasheet(ds, self.request, self)
                 if schId == 'content.item':
                     form.hidden = 'type', 'modified', 'created'
@@ -134,6 +136,7 @@ class EditContent(form.EditForm, view.View):
                 form.update()
                 forms.append((schId, form))
 
+        forms.extend(super(EditContent, self).listWrappedForms())
         return forms
 
 

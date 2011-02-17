@@ -19,7 +19,7 @@ requires = [
     'memphis.contenttype',
     'memphis.mail',
     'memphis.preferences',
-    'memphis.staging',
+    'memphis.versions',
     ]
 
 setup(name='testapp',

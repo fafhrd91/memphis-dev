@@ -14,23 +14,35 @@ class IVersionsRelation(interface.Interface):
         default = 0,
         required = True)
 
-    working = schema.Bool(
-        title = u'Working copy',
-        default = False,
-        required = True)
 
-    comment = schema.Text(
-        title = u'Version comment',
-        default = u'',
+class IVersionsSchema(interface.Interface):
+    """ versions schema """
+
+    proxy = schema.TextLine(
+        title = u'Proxy oid',
         required = False)
 
     date = schema.Datetime(
         title = u'Checkin datetime',
         required = False)
 
+    version = schema.Int(
+        title = u'Version',
+        required = True)
 
-class IStagingBehavior(storage.ISchemaWrapper):
-    """ staging behavior """
+    comment = schema.TextLine(
+        title = u'Modification note',
+        default = u'',
+        required = False)
+
+    commit = schema.Bool(
+        title = u'Create new version',
+        default = False,
+        required = False)
+
+
+class IVersionsBehavior(storage.ISchemaWrapper):
+    """ versions behavior """
 
     def getWorkingCopy():
         """ get working cope """

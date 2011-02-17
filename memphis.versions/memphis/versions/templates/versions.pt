@@ -9,19 +9,15 @@
       <th>Version</th>
       <th>Date</th>
       <th>Comment</th>
-      <td></td>
     </thead>
     <tbody>
-      <tr tal:repeat="version view.staging.listVersions()"
+      <tr tal:repeat="version view.versions.listVersions()"
 	  tal:attributes="class repeat['version'].even() and
 			  'z-table-record even' or 'z-table-record odd'">
 	<td></td>
 	<td>${version.version}</td>
 	<td>${version.date}</td>
 	<td>${version.comment}</td>
-	<td>
-	  <tal:block condition="version.working">&lt;== working copy</tal:block>
-	</td>
       </tr>
     </tbody>
   </table>

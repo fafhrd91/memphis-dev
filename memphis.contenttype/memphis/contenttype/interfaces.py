@@ -231,6 +231,10 @@ class IRoot(IContent, IContentContainer, IContained, view.INavigationRoot):
     """ root """
 
 
-# add form
+# content forms
 class IAddContentForm(interface.Interface):
-    """ content ad form """
+    """ content add form """
+
+
+class IEditContentForm(interface.Interface):
+    """ content edit form """
