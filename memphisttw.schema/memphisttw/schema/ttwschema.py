@@ -8,7 +8,7 @@ from zope.lifecycleevent import IObjectModifiedEvent
 from plone import supermodel
 
 from memphis import config, storage, contenttype
-from memphis.schema.interfaces import IField, ISchema, ISchemaType
+from memphisttw.schema.interfaces import IField, ISchema, ISchemaType
 
 
 class DefaultSchema(interface.Interface):

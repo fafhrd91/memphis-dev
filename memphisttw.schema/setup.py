@@ -7,7 +7,7 @@ def read(*rnames):
 version='0'
 
 
-setup(name='memphis.schema',
+setup(name='memphisttw.schema',
       version=version,
       description="",
       long_description=(
@@ -28,10 +28,10 @@ setup(name='memphis.schema',
         'Topic :: Internet :: WWW/HTTP :: WSGI'],
       author='Nikolay Kim',
       author_email='fafhrd91@gmail.com',
-      url='http://pypi.python.org/pypi/memphis.schema/',
+      url='http://pypi.python.org/pypi/memphisttw.schema/',
       license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
       packages=find_packages(),
-      namespace_packages=['memphis'],
+      namespace_packages=['memphisttw'],
       install_requires = ['setuptools',
                           'sqlalchemy',
                           'sqlalchemy_migrate',
@@ -51,6 +51,6 @@ setup(name='memphis.schema',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['include = memphis.schema']
+        'memphis': ['include = memphisttw.schema']
         }
       )

@@ -5,9 +5,9 @@ from z3c.schema.email.interfaces import IRFC822MailAddress
 from z3c.schema.baseurl.interfaces import IBaseURL
 
 from memphis import config
-from memphis.schema.interfaces import \
+from memphisttw.schema.interfaces import \
     _, ISchema, IChoice, IChoiceList,IFieldFactory
-from memphis.schema.fields import Choice, ChoiceList, List, URL, EMail
+from memphisttw.schema.fields import Choice, ChoiceList, List, URL, EMail
 
 
 class FieldFactory(object):
@@ -43,7 +43,7 @@ class FieldFactory(object):
     def wrapSchema(self, sch, field, hfields):
         wschema = InterfaceClass(sch.__name__, (interface.Interface,),
                                  __doc__ = sch.__doc__,
-                                 __module__ = 'memphis.schema.schemas')
+                                 __module__ = 'memphisttw.schema.schemas')
 
         for name, fld in schema.getFieldsInOrder(sch):
             if name in self.skipFields or name in hfields:

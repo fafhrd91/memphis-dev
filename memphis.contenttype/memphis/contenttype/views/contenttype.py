@@ -1,7 +1,8 @@
 import pyramid.url
 from zope import interface
 from zope.component import getSiteManager, queryUtility, getUtilitiesFor
-from memphis import form, config, view, storage, schema
+from memphis import form, config, view, storage
+from memphisttw import schema
 from memphis.contenttype.interfaces import _
 from memphis.contenttype.interfaces import ISchemaType, IBehaviorType
 from memphis.contenttype.interfaces import IContent, IContentTypeSchema

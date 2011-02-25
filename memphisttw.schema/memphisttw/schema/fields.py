@@ -9,7 +9,7 @@ from memphis import config
 from memphis.form.browser.checkbox import CheckBoxWidget
 from memphis.form.browser.select import MultiSelectWidget
 
-from memphis.schema import interfaces
+from memphisttw.schema import interfaces
 
 
 # Choice

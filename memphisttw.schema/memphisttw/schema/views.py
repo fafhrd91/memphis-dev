@@ -8,10 +8,10 @@ from zope.component import \
 from zope.lifecycleevent import ObjectRemovedEvent
 
 from memphis import config, view, form
-from memphis.schema.interfaces import _
-from memphis.schema.interfaces import IField, IFieldFactory
-from memphis.schema.interfaces import ISchema, ISchemaManagement
-from memphis.schema.interfaces import IWidgetsManagement
+from memphisttw.schema.interfaces import _
+from memphisttw.schema.interfaces import IField, IFieldFactory
+from memphisttw.schema.interfaces import ISchema, ISchemaManagement
+from memphisttw.schema.interfaces import IWidgetsManagement
 
 import pagelets, ttwschema
 from configlet import SchemaFactory
@@ -47,7 +47,7 @@ config.action(
 class ConfigletView(form.Form, view.View):
     view.pyramidView(
         'index.html', ISchemaManagement,
-        template = view.template('memphis.schema:templates/configlet.pt'))
+        template = view.template('memphisttw.schema:templates/configlet.pt'))
 
     @form.buttonAndHandler(u'Remove', name='remove')
     def removeHandler(self, action):
@@ -157,7 +157,7 @@ class SchemaPreview(form.Form, view.View):
 class SchemaView(form.Form, view.View):
     view.pyramidView(
         'index.html', ISchema,
-        template = view.template('memphis.schema:templates/schemaview.pt'))
+        template = view.template('memphisttw.schema:templates/schemaview.pt'))
 
     @form.buttonAndHandler(u'Remove', name='remove')
     def removeHandler(self, action):
@@ -236,7 +236,7 @@ class SchemaEdit(form.EditForm, view.View):
 class WidgetsManagement(form.Form, view.View):
     view.pyramidView(
         'index.html', IWidgetsManagement,
-        template = view.template('memphis.schema:templates/widgets.pt'))
+        template = view.template('memphisttw.schema:templates/widgets.pt'))
 
     def update(self):
         super(WidgetsManagement, self).update()

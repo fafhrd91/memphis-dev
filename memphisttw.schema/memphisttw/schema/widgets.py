@@ -4,7 +4,7 @@ from zope.component import getUtility, getMultiAdapter, queryMultiAdapter
 from pyramid.interfaces import IRequest
 
 from memphis import form, config, controlpanel
-from memphis.schema.interfaces import IFieldFactory, IWidgetsManagement
+from memphisttw.schema.interfaces import IFieldFactory, IWidgetsManagement
 
 
 class WidgetsManagement(object):

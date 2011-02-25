@@ -112,24 +112,24 @@ from fields import EMail, Choice, ChoiceList, URL, List
 URLHandler = exportimport.BaseHandler(URL)
 config.action(
     config.registerUtility,
-    URLHandler, name="memphis.schema.fields.URL")
+    URLHandler, name="memphisttw.schema.fields.URL")
 
 ChoiceHandler = exportimport.ChoiceHandler(Choice)
 config.action(
     config.registerUtility,
-    ChoiceHandler, name="memphis.schema.fields.Choice")
+    ChoiceHandler, name="memphisttw.schema.fields.Choice")
 
 ChoiceListHandler = exportimport.BaseHandler(ChoiceList)
 config.action(
     config.registerUtility,
-    ChoiceListHandler, name="memphis.schema.fields.ChoiceList")
+    ChoiceListHandler, name="memphisttw.schema.fields.ChoiceList")
 
 EMailHandler = exportimport.BaseHandler(EMail)
 config.action(
     config.registerUtility,
-    EMailHandler, name="memphis.schema.fields.EMail")
+    EMailHandler, name="memphisttw.schema.fields.EMail")
 
 ListHandler = exportimport.BaseHandler(List)
 config.action(
     config.registerUtility,
-    ChoiceListHandler, name="memphis.schema.fields.List")
+    ChoiceListHandler, name="memphisttw.schema.fields.List")

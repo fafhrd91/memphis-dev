@@ -14,14 +14,14 @@ from zope.schema import \
 from zope.schema.interfaces import ValidationError
 
 # additional fields
-from memphis.schema.fields import Choice, URL, EMail
+from memphisttw.schema.fields import Choice, URL, EMail
 
 # 
-from memphis.schema.interfaces import ISchema
-from memphis.schema.interfaces import ISchemaManagement
-from memphis.schema.interfaces import ISchemaType
-from memphis.schema.interfaces import IFieldFactory
+from memphisttw.schema.interfaces import ISchema
+from memphisttw.schema.interfaces import ISchemaManagement
+from memphisttw.schema.interfaces import ISchemaType
+from memphisttw.schema.interfaces import IFieldFactory
 
 # pagelets
-from memphis.schema.pagelets import ISchemaView
-from memphis.schema.pagelets import IAddFieldView
+from memphisttw.schema.pagelets import ISchemaView
+from memphisttw.schema.pagelets import IAddFieldView
