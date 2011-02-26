@@ -34,6 +34,9 @@ from memphis.storage.table import mapFieldToColumns
 from memphis.storage.interfaces import ISchemaWrapper
 from memphis.storage.interfaces import IBehaviorWrapper
 
+# schema field mapper
+from memphis.storage.interfaces import ISchemaFieldMapper
+
 # exceptions
 from memphis.storage.exceptions import BehaviorException
 from memphis.storage.exceptions import BehaviorNotFound
