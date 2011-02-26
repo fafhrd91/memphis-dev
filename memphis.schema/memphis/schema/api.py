@@ -30,9 +30,12 @@ def getFieldInfos():
 def registerField(name, field, title='', description=''):
     def _registerField(name, field, title, description):
         info = FieldInformation(name, field, title, description)
-        config.registerAdapter(info, (IFieldMarker,), IFieldInformation, name)
         config.registerAdapter(
-            info.getInfo, (interface.implementedBy(field),), IFieldInformation)
+            info, (IFieldMarker,), 
+            IFieldInformation, name, configContext=None)
+        config.registerAdapter(
+            info.getInfo, (interface.implementedBy(field),), 
+            IFieldInformation, configContext=None)
 
     frame = sys._getframe(1)
 

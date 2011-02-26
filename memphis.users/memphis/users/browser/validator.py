@@ -1,10 +1,6 @@
-"""
-
-$Id: validator.py 11798 2011-01-31 04:14:24Z fafhrd91 $
-"""
+""" custom validators """
 from zope import interface
 from memphis import config, form
-from memphis.form import interfaces
 from memphis.users.interfaces import _
 
 from interfaces import IPrincipalPasswordForm, IPersonalPasswordForm
@@ -12,7 +8,7 @@ from schemas import CurrentPassword, PasswordFormError, CurrentPasswordError
 
 
 class PasswordFormValidator(object):
-    config.adapts(IPrincipalPasswordForm)
+    config.adapts(IPrincipalPasswordForm, name='password.validation')
     interface.implements(form.IFormValidator)
 
     def __init__(self, form):

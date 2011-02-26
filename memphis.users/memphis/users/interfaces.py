@@ -118,6 +118,7 @@ class IPasswordPreference(interface.Interface):
     """ password preference """
 
 
+# ttw profile
 class IUserProfileConfiglet(interface.Interface):
     """ ttw profile configlet """
 
@@ -125,3 +126,16 @@ class IUserProfileConfiglet(interface.Interface):
         title = u'User profile schema',
         vocabulary = 'memphis.ttw-schemas',
         required = False)
+
+
+# site registration
+class IRegistrationForm(interface.Interface):
+    """ registration form """
+
+    principal = interface.Attribute('Principal object')
+
+    def create(data):
+        """ create principal """
+
+    def setPrincipal(principal):
+        """ set newly created principal """

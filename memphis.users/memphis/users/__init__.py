@@ -1,1 +1,3 @@
-# This file is necessary to make this directory a package.
+
+# registration
+from memphis.users.interfaces import IRegistrationForm

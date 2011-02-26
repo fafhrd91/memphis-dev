@@ -27,6 +27,9 @@ class EditVersionContent(form.SubForm, view.Pagelet):
     fields = form.Fields(IVersionsSchema).omit('proxy', 'date', 'version')
     fields['commit'].widgetFactory = 'singlecheckbox'
 
+    def isAvailable(self):
+        return self.parentForm.mode == form.IInputMode
+
     def getContent(self):
         return IVersionsSchema(self.context)
 

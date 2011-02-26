@@ -20,6 +20,7 @@ requires = [
     'memphis.mail',
     'memphis.preferences',
     'memphis.versions',
+    'memphis.schema',
     ]
 
 setup(name='testapp',
