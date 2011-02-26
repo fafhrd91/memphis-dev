@@ -1,6 +1,7 @@
 """ Plain Text Renderer """
 import cgi
 from zope import interface
+from memphis import config
 from interfaces import _, IRenderer
 
 
@@ -14,6 +15,7 @@ class PlainTextRenderer(object):
     &nbsp;test text3
     """
     interface.implements(IRenderer)
+    config.utility(IRenderer, name='source.plain')
 
     title = _("Plain Text")
     description = _("Formatted plain Text Source")

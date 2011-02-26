@@ -1,6 +1,7 @@
 """ RichText field interfaces """
 from zope import schema, interface
 from zope.schema.interfaces import IField
+from zope.component.interfaces import IObjectEvent
 from pyramid.i18n import TranslationStringFactory
 
 _ = TranslationStringFactory('memphis.schema')
@@ -11,14 +12,16 @@ class IRichText(IField):
 
     default_format = schema.Choice(
         title = u'Default format',
-        default = u"source.plaintext",
-        vocabulary = u'richtext-renderers',
-        required = False)
+        default = "source.plain",
+        #vocabulary = u'richtext-renderers',
+        values = ["source.plain"],
+        required = True)
 
 
-class IRichTextDataModified(IObjectEvent):
+class IRichTextData(interface.Interface):
 
-    data = interface.Attribute('IRichTextData object')
+    text = interface.Attribute('Text')
+    format = interface.Attribute('Format')
 
 
 class IRichTextWidget(interface.Interface):
@@ -32,5 +35,5 @@ class IRenderer(interface.Interface):
 
     description = interface.Attribute('Description')
 
-    def render(text):
+    def render(request, text):
         """ render source text to html """

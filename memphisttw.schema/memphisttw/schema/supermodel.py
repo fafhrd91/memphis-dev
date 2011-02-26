@@ -132,4 +132,13 @@ config.action(
 ListHandler = exportimport.BaseHandler(List)
 config.action(
     config.registerUtility,
-    ChoiceListHandler, name="memphisttw.schema.fields.List")
+    ListHandler, name="memphisttw.schema.fields.List")
+
+
+# RichText
+from memphis.schema.richtext.field import RichText
+
+RichTextHandler = exportimport.BaseHandler(RichText)
+config.action(
+    config.registerUtility,
+    RichTextHandler, name="memphis.schema.richtext.field.RichText")

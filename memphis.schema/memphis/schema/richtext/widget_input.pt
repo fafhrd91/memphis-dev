@@ -1,0 +1,33 @@
+<textarea
+   id="" name="" class="" cols="" rows=""
+   tabindex="" disabled="" readonly="" accesskey=""
+   tal:attributes="id context.id;
+                   name context.name;
+                   class context.klass;
+                   style context.style;
+                   title context.title;
+                   lang context.lang;
+                   onclick context.onclick;
+                   ondblclick context.ondblclick;
+                   onmousedown context.onmousedown;
+                   onmouseup context.onmouseup;
+                   onmouseover context.onmouseover;
+                   onmousemove context.onmousemove;
+                   onmouseout context.onmouseout;
+                   onkeypress context.onkeypress;
+                   onkeydown context.onkeydown;
+                   onkeyup context.onkeyup;
+                   disabled context.disabled;
+                   tabindex context.tabindex;
+                   onfocus context.onfocus;
+                   onblur context.onblur;
+                   onchange context.onchange;
+                   cols context.cols;
+                   rows context.rows;
+                   readonly context.readonly;
+                   accesskey context.accesskey;
+                   onselect context.onselect"
+   tal:content="context.getValue()" />
+
+<div tal:define="context context.format_widget"
+     tal:content="structure pagelet:form-widget" />

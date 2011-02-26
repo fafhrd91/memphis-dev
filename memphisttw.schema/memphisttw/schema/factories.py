@@ -5,6 +5,8 @@ from z3c.schema.email.interfaces import IRFC822MailAddress
 from z3c.schema.baseurl.interfaces import IBaseURL
 
 from memphis import config
+from memphis.schema import RichText
+from memphis.schema.richtext.interfaces import IRichText
 from memphisttw.schema.interfaces import \
     _, ISchema, IChoice, IChoiceList,IFieldFactory
 from memphisttw.schema.fields import Choice, ChoiceList, List, URL, EMail
@@ -269,3 +271,17 @@ config.action(
 config.action(
     config.registerAdapter, 
     ChoiceList.getFactory, (IChoiceList,))
+
+
+# RichText
+RichText = FieldFactory(
+    'richtext', RichText, IRichText,
+    title = _("RichText"),
+    description = _("RichText field."),
+    hiddenFields = ('default', 'missing_value',))
+
+config.action(
+    config.registerAdapter, RichText.getFactory, (ISchema,), name=RichText.name)
+
+config.action(
+    config.registerAdapter, RichText.getFactory,(IRichText,))

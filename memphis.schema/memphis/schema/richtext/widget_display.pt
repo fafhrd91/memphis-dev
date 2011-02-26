@@ -1,0 +1,18 @@
+<span id="" class=""
+      tal:attributes="id context.id;
+                      class context.klass;
+                      title context.title;
+                      lang context.lang;
+                      onclick context.onclick;
+                      ondblclick context.ondblclick;
+                      onmousedown context.onmousedown;
+                      onmouseup context.onmouseup;
+                      onmouseover context.onmouseover;
+                      onmousemove context.onmousemove;
+                      onmouseout context.onmouseout;
+                      onkeypress context.onkeypress;
+                      onkeydown context.onkeydown;
+                      onkeyup context.onkeyup">
+  <tal:block condition="context.value" 
+	     content="structure context.value.render(request)" />
+</span>

@@ -82,12 +82,3 @@ class IFieldFactory(contenttype.IFactory):
     """ field factory """
 
     field = interface.Attribute('Field class')
-
-
-# Widgets management configlet
-class IWidgetsManagement(interface.Interface):
-    """ widget management configlet """
-
-    data = schema.Dict(
-        title = u'Mapping data',
-        required = True)

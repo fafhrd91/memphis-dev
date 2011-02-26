@@ -4,6 +4,8 @@ from docutils.writers.html4css1 import Writer
 from docutils.writers.html4css1 import HTMLTranslator
 
 from zope import interface
+from memphis import config
+
 from interfaces import _, IRenderer
 
 
@@ -17,6 +19,7 @@ class Translator(HTMLTranslator):
 
 class ReStructuredTextRenderer(object):
     interface.implements(IRenderer)
+    config.utility(IRenderer, name='source.rest')
 
     title = _("ReStructured Text (ReST)")
     description = _("ReStructured Text (ReST) Source")

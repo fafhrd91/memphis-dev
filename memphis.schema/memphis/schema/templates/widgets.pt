@@ -1,0 +1,45 @@
+<div class="z-cp-frame">
+  <h1 class="z-form-label">Widgets</h1>
+  <div class="z-form-description">Widgets management configlet.</div>
+
+  <form method="post" action="${request.url}">
+    <div class="z-table-container">
+      <table class="z-table">
+	<tbody tal:define="ids request.params.getall('field-id');
+			   url request.resource_url(context)">
+	  <tr class="z-table-category">
+	    <td></td>
+	    <td>Fields</td>
+	    <td>Widget</td>
+	  </tr>
+	  <tr tal:repeat="field view.fields"
+	      tal:attributes="class repeat['field'].even() and
+			      'z-table-record even' or 'z-table-record
+			      odd'">
+	    <td></td>
+	    <td><h4>${field.title}</h4>
+	      <div class="discreet">${field.description}</div></td>
+	    <td tal:define="widgets view.getWidgets(field);
+			    default widgets[0]; widgets widgets[1]">
+	      <select tal:condition="widgets" 
+		      tal:define="dflt view.getDefault(field)"
+		      tal:attributes="name 'field.%s'%field.name">
+		<option value="__default__">
+		  ${default.__title__} (default)</option>
+		<option tal:attributes="value wg.__fname__;
+					selected wg.__fname__ == dflt"
+			tal:repeat="wg widgets">
+		  ${wg.__title__}
+		</option>
+	      </select>
+	      <tal:block condition="not widgets">
+		${default.__title__}
+	      </tal:block>
+	    </td>
+	  </tr>
+	</tbody>
+      </table>
+    </div>
+    <tal:block content="structure pagelet:view/form-actions" />
+  </form>
+</div>

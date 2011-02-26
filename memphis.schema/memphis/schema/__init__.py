@@ -12,3 +12,9 @@ from zope.schema import \
     getFields, getFieldsInOrder, getFieldNames, getFieldNamesInOrder, \
     getValidationErrors, getSchemaValidationErrors
 from zope.schema.interfaces import ValidationError
+
+# field registration
+from memphis.schema.api import registerField
+
+# RichText field
+from memphis.schema.richtext.field import RichText
