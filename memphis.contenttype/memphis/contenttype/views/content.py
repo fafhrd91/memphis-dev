@@ -40,7 +40,7 @@ class AddContent(form.EditForm, AddContentForm, view.View):
     def description(self):
         return self.context.description
 
-    def listWrappedForms(self):
+    def listInlineForms(self):
         ct = IContentType(self.context)
 
         forms = []
@@ -61,6 +61,8 @@ class AddContent(form.EditForm, AddContentForm, view.View):
                 forms.append((schId, form))
 
         self.datasheets = datasheets
+
+        forms.extend(super(AddContent, self).listInlineForms())
         return forms
 
     @form.buttonAndHandler(_(u'Add'), name='apply')
@@ -117,7 +119,7 @@ class EditContent(form.EditForm, view.View):
 
     label = 'Modify content'
 
-    def listWrappedForms(self):
+    def listInlineForms(self):
         context = self.context
         ct = IContentType(context)
 
@@ -126,29 +128,36 @@ class EditContent(form.EditForm, view.View):
             schema = storage.querySchema(schId)
             if schema is not None:
                 ds = context.getDatasheet(schId, True)
-                form = EditDatasheet(ds, self.request, self)
+                eform = EditDatasheet(ds, self.request, self)
+                eform.mode = self.mode
+                if eform.mode == form.IDisplayMode:
+                    interface.directlyProvides(eform, form.IDisplayForm)
                 if schId == 'content.item':
-                    form.hidden = 'type', 'modified', 'created'
+                    eform.hidden = 'type', 'modified', 'created'
                 if schId in ct.hiddenFields:
-                    form.hidden = ct.hiddenFields[schId]
+                    eform.hidden = ct.hiddenFields[schId]
                 if schId in ct.widgets:
-                    form.widgetFactories = ct.widgets[schId]
-                form.update()
-                forms.append((schId, form))
+                    eform.widgetFactories = ct.widgets[schId]
+                eform.update()
+                forms.append((schId, eform))
 
-        forms.extend(super(EditContent, self).listWrappedForms())
+        forms.extend(super(EditContent, self).listInlineForms())
         return forms
 
 
-class ViewContent(view.View):
-    view.pyramidView(
-        'index.html', IContent,
-        template = view.template('memphis.contenttype:templates/content.pt'))
+class ViewContent(EditContent):
+    interface.implements(form.IDisplayForm)
+    view.pyramidView('index.html', IContent)
+
+    mode = form.IDisplayMode
+    ignoreRequest = True
 
     def update(self):
         dc = IDCDescriptive(self.context)
-        self.title = dc.title
+        self.label = dc.title
         self.description = dc.description
+
+        super(ViewContent, self).update()
 
 
 class ContentActions(view.Pagelet):
