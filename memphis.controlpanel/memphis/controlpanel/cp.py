@@ -37,6 +37,7 @@ def registerControlPanel():
 
 config.action(registerControlPanel)
 
+
 registerCategory(
     "default", interfaces.IDefaultCategory,
     _(u"Basic configuration"))

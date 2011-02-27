@@ -11,9 +11,8 @@ class RichText(schema.Text):
     interface.implements(IRichText)
 
     _type = None
-    default_format = 'source.plaintext'
 
-    def __init__(self, default_format='source.plaintext', **kw):
+    def __init__(self, default_format='source.plain', **kw):
         super(RichText, self).__init__(**kw)
 
         self.default_format = default_format
@@ -50,14 +49,14 @@ class RichText(schema.Text):
 class RichTextData(object):
     interface.implements(IRichTextData)
 
-    def __init__(self, text=u'', format='source.plaintext'):
+    def __init__(self, text=u'', format='source.plain'):
         self.format = format
         self.text = unicode(text)
 
     def render(self, request):
         renderer = queryUtility(IRenderer, name=self.format)
         if renderer is None:
-            renderer = getUtility(IRenderer, name=u"source.plaintext")
+            renderer = getUtility(IRenderer, name=u"source.plain")
 
         return renderer.render(request, self.text)
 

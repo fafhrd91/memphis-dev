@@ -7,6 +7,8 @@ from memphis import storage, config
 from memphis.controlpanel import configlet, configlettype
 from memphis.controlpanel.interfaces import IControlPanel, IConfigletData
 
+# tests only
+immediately = False
 
 def getControlPanel(*args):
     return getUtility(IControlPanel)
@@ -21,7 +23,7 @@ def registerCategory(name, marker=None, title='', description='',):
 
         getUtility(IControlPanel).addCategory(category)
 
-    if config.getContext() is None:
+    if immediately:
         _register(name, marker, title, description)
 
     # add config action
@@ -36,8 +38,7 @@ def registerCategory(name, marker=None, title='', description='',):
     del frame
 
 
-def registerConfiglet(name=None, schema=None, klass=None,
-                      title='', description=''):
+def registerConfiglet(name=None,schema=None,klass=None,title='',description=''):
     if '.' in name:
         category, name = name.split('.', 1)
     else:
@@ -71,7 +72,7 @@ def registerConfiglet(name=None, schema=None, klass=None,
         inst.__behavior__ = storage.getBehavior(schema)
 
     # add config action
-    if config.getContext() is None:
+    if immediately:
         _register(name, category, schema, klass, title, description)
 
     frame = sys._getframe(1)
