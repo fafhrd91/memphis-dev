@@ -115,7 +115,8 @@ class BehaviorGrokker(martian.ClassGrokker):
             iface = list(interface.implementedBy(klass))[0]
 
         registry.registerBehavior(
-            name, iface, klass, relation, schema, type, t, d, configContext, info)
+            name, iface, klass, 
+            relation, schema, type, t, d, configContext, info)
         return True
 
 

@@ -155,17 +155,12 @@ def registerBehavior(name, spec, factory, relation=None, schema=None,
     elif isinstance(type, InterfaceClass):
         type = (type,)
 
-    if configContext is None:
-        _register(name, spec, factory, 
-                  relation, schema, type, title, description)
-    else:
-        config.addAction(
-            configContext,
-            ('memphis.storage:registerBehavior', name),
-            callable= _register,
-            args=(name, spec, factory, relation, schema, type, 
-                  title, description),
-            info=info)
+    config.addAction(
+        configContext,
+        ('memphis.storage:registerBehavior', name),
+        callable= _register,
+        args=(name, spec, factory, relation, schema, type, title, description),
+        info=info)
 
 
 @config.cleanup

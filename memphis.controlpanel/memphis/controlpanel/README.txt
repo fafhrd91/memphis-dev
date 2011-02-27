@@ -13,7 +13,7 @@ Configlet
 Each configlet has to be part os category, but this is required only
 for UI::
 
-    >>> cat = controlpanel.registerCategory('testcategory')
+    >>> controlpanel.registerCategory('testcategory')
 
     >>> cp = controlpanel.getControlPanel()
     >>> cp
@@ -21,9 +21,6 @@ for UI::
 
     >>> cp['testcategory']
     Category <testcategory>
-    
-    >>> cp['testcategory'] is cat
-    True
 
     >>> cp['unknown']
     Traceback (most recent call last):
@@ -32,7 +29,7 @@ for UI::
 
 Can't register same category:
 
-    >>> cat = controlpanel.registerCategory('testcategory')
+    >>> controlpanel.registerCategory('testcategory')
     Traceback (most recent call last):
     ...
     KeyError: 'testcategory'
@@ -47,7 +44,7 @@ You can apply marker interface to category:
     >>> class IMyCategory(interface.Interface):
     ...     pass
 
-    >>> cat = controlpanel.registerCategory('mycategory', IMyCategory)
+    >>> controlpanel.registerCategory('mycategory', IMyCategory)
     >>> IMyCategory.providedBy(cp['mycategory'])
     True
 
@@ -81,8 +78,10 @@ by ``.`` and you have to set category::
     ...
     ValueError: Category name is required.
 
-    >>> configlet = controlpanel.registerConfiglet(
+    >>> controlpanel.registerConfiglet(
     ...     'mycategory.coolconfiglet', IMyConfiglet, MyConfiglet)
+
+    >>> configlet = cp['mycategory']['coolconfiglet']
 
     >>> configlet
     <memphis.controlpanel.configlettype.Configlet<coolconfiglet> ...>

@@ -280,11 +280,11 @@ Item removing
 When item is removed it should not leave artifacts in a system::
 
     >>> sch = storage.getSchema(IMySchema)
-    >>> sch.getItemSchemas(item.oid)
+    >>> item.schemas
     [u'schema']
 
     >>> item.remove()
 
-    >>> sch.getItemSchemas(item.oid)
+    >>> item.schemas
     []
 

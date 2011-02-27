@@ -54,7 +54,7 @@ class Cache(object):
     def setDatasheet(self, oid, klass, ds):
         Cache.datasheets[(oid, klass)] = ds
 
-    def delItem(self, oid, klass):
+    def delDatasheet(self, oid, klass):
         key = (oid, klass)
         if key in Cache.datasheets:
             del Cache.datasheets[key]

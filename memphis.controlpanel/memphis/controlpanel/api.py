@@ -21,6 +21,9 @@ def registerCategory(name, marker=None, title='', description='',):
 
         getUtility(IControlPanel).addCategory(category)
 
+    if config.getContext() is None:
+        _register(name, marker, title, description)
+
     # add config action
     frame = sys._getframe(1)
 
@@ -68,6 +71,9 @@ def registerConfiglet(name=None, schema=None, klass=None,
         inst.__behavior__ = storage.getBehavior(schema)
 
     # add config action
+    if config.getContext() is None:
+        _register(name, category, schema, klass, title, description)
+
     frame = sys._getframe(1)
 
     config.action.store.set(
