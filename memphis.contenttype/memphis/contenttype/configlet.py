@@ -2,7 +2,7 @@
 from zope import interface, event
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
-from memphis import config, controlpanel, storage
+from memphis import controlpanel, storage
 from memphis.contenttype.location import LocationProxy
 from memphis.contenttype.interfaces import \
     IFactory, IContentType, IContentTypeSchema, IContentTypesConfiglet
@@ -72,8 +72,7 @@ class ContentTypesConfiglet(object):
         pass
 
 
-config.action(
-    controlpanel.registerConfiglet,
+controlpanel.registerConfiglet(
     'system.contenttypes', IContentTypesConfiglet, 
     klass = ContentTypesConfiglet,
     title = 'Content types',

@@ -85,9 +85,7 @@ class FactoryProvider(object):
 @config.adapter(IContent)
 @interface.implementer(IContentType)
 def getContentType(item):
-    content = IContent(item)
-    
-    schema = storage.getSchema(IContentTypeSchema)
-    item = schema.query(schema.Type.oid == content.type).first()
-    if item is not None:
-        return IContentType(storage.getItem(item.oid))
+    try:
+        return IContentType(storage.getItem(IContent(item).type), None)
+    except KeyError:
+        pass

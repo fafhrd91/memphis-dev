@@ -37,25 +37,21 @@ def registerControlPanel():
 
 config.action(registerControlPanel)
 
-config.action(
-    registerCategory,
+registerCategory(
     "default", interfaces.IDefaultCategory,
     _(u"Basic configuration"))
 
-config.action(
-    registerCategory,
+registerCategory(
     "system", interfaces.ISystemCategory,
     _(u"System configuration"),
     _(u"This area allows you to configure system."))
 
-config.action(
-    registerCategory,
+registerCategory(
     "ui", interfaces.IUICategory,
     _(u"User interface configuration"),
     _(u"This area allows you to configure portal look&amp;feel."))
 
-config.action(
-    registerCategory,
+registerCategory(
     "principals", interfaces.IPrincipalsCategory,
     _("Principals management"),
     _("Portal principals management panel."))

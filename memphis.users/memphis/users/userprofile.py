@@ -1,9 +1,8 @@
-from memphis import config, controlpanel
-
+from memphis import controlpanel
 from interfaces import _, IUserProfileConfiglet
 
-config.action(
-    controlpanel.registerConfiglet,
+
+controlpanel.registerConfiglet(
     name='principals.profile',
     schema=IUserProfileConfiglet,
     title = _('User profile'),

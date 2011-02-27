@@ -63,8 +63,7 @@ class SchemaManagement(object):
         return item
 
 
-config.action(
-    controlpanel.registerConfiglet,
+controlpanel.registerConfiglet(
     'system.schemas', ISchemaManagement, SchemaManagement,
     title = u'Schemas',
     description = u'TTW Schemas management configlet.')

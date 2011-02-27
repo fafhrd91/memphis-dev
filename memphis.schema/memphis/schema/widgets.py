@@ -35,8 +35,7 @@ def getDefaultWidget(field, request):
     return getMultiAdapter((field, request), form.IWidget)
 
 
-config.action(
-    controlpanel.registerConfiglet,
+controlpanel.registerConfiglet(
     'system.widgets', IWidgetsManagement, WidgetsManagement,
     title = u'Widgets',
     description = u'Widgets management configlet.')

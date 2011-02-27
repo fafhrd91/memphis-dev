@@ -212,7 +212,6 @@ class PasswordTool(object):
         return 100.0
 
 
-config.action(
-    controlpanel.registerConfiglet,
+controlpanel.registerConfiglet(
     'principals.password', IPasswordTool, PasswordTool,
     _("Password tool"), _("Password managing/generating configuration."))

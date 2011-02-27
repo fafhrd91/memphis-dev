@@ -25,6 +25,12 @@ class BehaviorFactory(object):
 class Configlet(object):
     interface.implements(IConfiglet)
 
+    # __oid__ is item for configlet, this is optimization
+    # memphis.storage can cache Item.getItem call, 
+    # but Behavior.getBehaivorOIDs is not cacheable.
+    # __oid__ for configlet is never changing
+    __oid__ = None
+
     @property
     def __name__(self):
         return self.__id__
@@ -32,10 +38,12 @@ class Configlet(object):
     @property
     def __item__(self):
         try:
-            oid = self.__behavior__.getBehaviorOIDs().next()
-            item = storage.getItem(oid)
+            if self.__oid__ is None:
+                self.__oid__ = self.__behavior__.getBehaviorOIDs().next()
+            item = storage.getItem(self.__oid__)
         except StopIteration:
             item = storage.insertItem(self.__behavior__.name)
+            self.__oid__ = item.oid
 
         return item
 

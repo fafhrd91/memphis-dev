@@ -2,7 +2,8 @@
 import logging
 from zope import interface
 from zope.sendmail.mailer import SMTPMailer
-from memphis import config, controlpanel
+
+from memphis import controlpanel
 from memphis.mail.interfaces import _, IMailer
 
 logger = logging.getLogger('memphis.mail')
@@ -34,7 +35,6 @@ class Mailer(object):
             logger.exception(str(err))
 
 
-config.action(
-    controlpanel.registerConfiglet,
+controlpanel.registerConfiglet(
     'system.mail', IMailer, Mailer,
     _('Mail settings'), _('Configure portal mail settings.'))
