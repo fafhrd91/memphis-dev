@@ -16,8 +16,13 @@ from memphis.contenttype import root
 my_session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
 
 
-def newRequest(request):
+def newRequest(ev):
     storage.setSession(pyramid_sqla.get_session())
+    ev.request.add_finished_callback(endRequest)
+
+
+def endRequest(request):
+    storage.endSession()
 
 
 def main(global_config, **settings):

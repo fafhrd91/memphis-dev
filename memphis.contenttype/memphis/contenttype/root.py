@@ -45,13 +45,19 @@ from location import LocationProxy
 from container import ContentContainer, IContentContainerRelation
 
 
+rootOID = None
+
 def getRoot():
+    global rootOID
+
     behavior = storage.getBehavior(IRoot)
     try:
-        oid = behavior.getBehaviorOIDs().next()
-        return LocationProxy(storage.getItem(oid), None, '')
+        if rootOID is None:
+            rootOID = behavior.getBehaviorOIDs().next()
+        return LocationProxy(storage.getItem(rootOID), None, '')
     except StopIteration:
         item = storage.insertItem(IRoot)
+        rootOID = item.oid
         dc = IContent(item)
         dc.title = u'Site'
         dc.description = u'Default memphis site.'
