@@ -2,6 +2,7 @@ import sqlalchemy
 from zope import interface, schema
 from zope.schema import getFieldsInOrder
 
+import hooks
 from hooks import getSession
 from table import buildTable
 from datasheet import DatasheetType
@@ -47,21 +48,34 @@ class Schema(object):
         ob = session.query(self.Type).filter(self.Type.oid == oid).first()
         if ob is not None:
             session.delete(ob)
+            hooks.cache.delDatasheet(oid, self.Type)
+
         session.flush()
 
     def __call__(self, item):
         return self.getDatasheet(item.oid)
 
-    def getDatasheet(self, oid):
+    def getDatasheet(self, oid, create=True):
         klass = self.Type
+
+        ds = hooks.cache.getDatasheet(oid, klass)
+        if ds is not None:
+            return ds
+
         session = getSession()
         ds = session.query(klass).filter(klass.oid == oid).first()
         if ds is None:
-            ds = klass(oid)
-            session.add(ds)
-            session.flush()
+            if create:
+                ds = klass(oid)
+                session.add(ds)
+                session.flush()
+            else:
+                return None
 
-        return session.query(klass).filter(klass.oid == oid).first()
+        #ds = session.query(klass).filter(klass.oid == oid).first()
+        hooks.cache.setDatasheet(oid, klass, ds)
+
+        return ds
 
     def getSchemaOIDs(self):
         for r in getSession().query(SQLSchema.oid).filter(
@@ -74,11 +88,6 @@ class Schema(object):
             return session.query(self.Type).filter(*args)
         else:
             return session.query(self.Type)
-
-    @classmethod
-    def getItemSchemas(cls, oid):
-        return [r[0] for r in getSession().query(
-                SQLSchema.name).filter(SQLSchema.oid==oid)]
 
     def _buildDatasheetType(self):
         columns = [

@@ -9,6 +9,7 @@ from memphis.storage.interfaces import ISchema
 from memphis.storage.relation import Relation
 from memphis.storage.hooks import setSession
 from memphis.storage.hooks import getSession
+from memphis.storage.hooks import endSession
 from memphis.storage.hooks import setMetadata
 from memphis.storage.hooks import getMetadata
 

@@ -137,7 +137,7 @@ def registerBehavior(name, spec, factory, relation=None, schema=None,
                      type = None, title='', description = '', 
                      configContext=None, info=''):
 
-    def _register(name, spec, factory, relation, schema, type, title,description):
+    def _register(name,spec,factory,relation,schema,type,title,description):
         # check relation
         if relation:
             getRelation(relation)
@@ -155,12 +155,17 @@ def registerBehavior(name, spec, factory, relation=None, schema=None,
     elif isinstance(type, InterfaceClass):
         type = (type,)
 
-    config.addAction(
-        configContext,
-        ('memphis.storage:registerBehavior', name),
-        callable= _register,
-        args=(name, spec, factory, relation, schema, type, title, description),
-        info=info)
+    if configContext is None:
+        _register(name, spec, factory, 
+                  relation, schema, type, title, description)
+    else:
+        config.addAction(
+            configContext,
+            ('memphis.storage:registerBehavior', name),
+            callable= _register,
+            args=(name, spec, factory, relation, schema, type, 
+                  title, description),
+            info=info)
 
 
 @config.cleanup

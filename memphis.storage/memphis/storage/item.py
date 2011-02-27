@@ -7,8 +7,8 @@ from zope.interface.declarations import ObjectSpecificationDescriptor
 
 from memphis.storage import hooks
 from memphis.storage.hooks import getSession
-from memphis.storage.schema import Schema
-from memphis.storage.behavior import Behavior
+from memphis.storage.schema import SQLSchema
+from memphis.storage.behavior import SQLBehavior
 from memphis.storage.relation import Relation
 
 from memphis.storage.interfaces import IItem
@@ -98,9 +98,14 @@ class Item(object):
 
     @classmethod
     def getItem(cls, oid):
-        item = getSession().query(Item).filter(Item.oid == oid).first()
+        item = hooks.cache.getItem(oid)
+        if item is hooks.UNSET:
+            item = getSession().query(Item).filter(Item.oid == oid).first()
+            hooks.cache.setItem(oid, item)
+
         if item is None:
             raise KeyError(oid)
+
         return item
 
     @classmethod
@@ -124,13 +129,31 @@ class Item(object):
 
         return Item.getItem(oid)
 
+    _v_schemas = None
+    _v_behaviors = None
+
     @property
     def behaviors(self):
-        return Behavior.getItemBehaviors(self.oid)
+        if self._v_behaviors is not None:
+            return self._v_behaviors
+
+        behaviors = [r[0] for r in getSession().query(
+                SQLBehavior.name).filter(
+                SQLBehavior.oid==self.oid).order_by(SQLBehavior.inst_id)]
+
+        self._v_behaviors = behaviors
+        return behaviors
 
     @property
     def schemas(self):
-        return Schema.getItemSchemas(self.oid)
+        if self._v_schemas is not None:
+            return self._v_schemas
+
+        schemas = [r[0] for r in getSession().query(
+                SQLSchema.name).filter(SQLSchema.oid == self.oid)]
+
+        self._v_schemas = schemas
+        return schemas
 
     def remove(self):
         # fixme: it too explicite, it do a lot of db queries
@@ -147,6 +170,7 @@ class Item(object):
         for schId in self.schemas:
             self.removeSchema(schId)
 
+        hooks.cache.delItem(self.oid)
         session = getSession()
         session.delete(self)
         session.flush()
@@ -169,6 +193,9 @@ class Item(object):
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
 
+        if self._v_behaviors is not None:
+            del self._v_behaviors
+
     def removeBehavior(self, *args):
         for behavior in args:
             if hasattr(self, '_v__providedBy'):
@@ -185,19 +212,28 @@ class Item(object):
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
 
+        if self._v_behaviors is not None:
+            del self._v_behaviors
+
     def applySchema(self, type):
         getSchema(type).apply(self.oid)
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
+
+        if self._v_schemas is not None:
+            del self._v_schemas
 
     def removeSchema(self, type):
         getSchema(type).remove(self.oid)
         if hasattr(self, '_v__providedBy'):
             del self._v__providedBy
 
+        if self._v_schemas is not None:
+            del self._v_schemas
+
     def getDatasheet(self, name, apply=False):
         sch = getSchema(name)
-        if apply or (sch.name in Schema.getItemSchemas(self.oid)):
+        if apply or (sch.name in self.schemas):
             wrapper = ISchemaWrapper(self, None)
             if wrapper is not None:
                 return wrapper.wrapSchema(sch, self)
