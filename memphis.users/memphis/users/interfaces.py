@@ -129,6 +129,28 @@ class IUserProfileConfiglet(interface.Interface):
 
 
 # site registration
+class ISiteRegistration(interface.Interface):
+    """ registration settings """
+
+    public = schema.Bool(
+        title = u'Public',
+        description = u'Member registration is public.',
+        required = False,
+        default = True)
+
+    invitation = schema.Bool(
+        title = u'Invitation',
+        description = u'Use invitation system for member registration.',
+        required = False,
+        default = False)
+
+    emailauth = schema.Bool(
+        title = u'Authorization',
+        description = u'Enable email member authorization.',
+        required = False,
+        default = False)
+
+
 class IRegistrationForm(interface.Interface):
     """ registration form """
 
