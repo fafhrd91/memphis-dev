@@ -2,22 +2,45 @@ from zope import interface
 from zope.component.interfaces import IObjectEvent, ObjectEvent
 
 
+class IType(interface.Interface):
+    """ type information """
+
+    type = interface.Attribute('Primary behavior')
+
+    factory = interface.Attribute('Content factory')
+
+    behaviors = interface.Attribute('Behaviors')
+    
+    schemas = interface.Attribute('Schemas')
+
+    def create(**data):
+        """ create new content item """
+    
+    def applyBehavior(*args):
+        """ apply behaviors """
+    
+    def removeBehavior(*args):
+        """ remove behaviors """
+    
+    def applySchema(sch):
+        """ apply schema """
+    
+    def removeSchema(sch):
+        """ remove schema """
+
+
 class IItem(interface.Interface):
+    """ """
+
+    __type__ = interface.Attribute('IType object')
 
     oid = interface.Attribute('OID')
-
-    behaviors = interface.Attribute('Item behaviors')
-
-    schemas = interface.Attribute('Applied schemas types')
 
     def insertItem(type=''):
         """ insert item and apply primary behavior """
 
     def remove():
         """ remove item, cleanup behavior and schemas """
-
-    def applySchema(type):
-        """ apply schema to item """
 
     def getDatasheet(type):
         """ datasheet """
