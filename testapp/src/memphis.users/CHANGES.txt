@@ -1,0 +1,42 @@
+=======
+CHANGES
+=======
+
+0.6 (Unreleased)
+----------------
+
+- Use colander instead of zope.schema
+
+- Added TinyMCE widget
+
+- Use resource library api
+
+
+0.4 (2011-06-20)
+----------------
+
+- Added getContext api method to form.
+
+
+0.3 (2011-06-19)
+----------------
+
+- Removed Form.ignoreContext attribute,
+  instead of ignoreContext return None from getContent() method
+
+- Removed Form.ignoreRequest attribute,
+  instead of ignoreRequest return empty dict from getRequestParams() method
+
+- Added zope support
+
+
+0.2 (2011-06-03)
+----------------
+
+- config.action is not required for view.registerPagelet call
+
+
+0.1 (2011-05-30)
+----------------
+
+- Initial release

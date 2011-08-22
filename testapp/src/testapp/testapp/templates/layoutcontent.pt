@@ -1,0 +1,4 @@
+<div class="content">
+  <tal:block content="structure view.renderMessages()" />
+  <tal tal:content="structure content" />
+</div>
