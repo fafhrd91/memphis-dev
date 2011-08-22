@@ -19,4 +19,5 @@ src/memphis.app
 src/memphis.config
 src/memphis.form
 src/memphis.view
-
+src/memphis.mail
+src/memphis.users
