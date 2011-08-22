@@ -1,0 +1,17 @@
+=======
+CHANGES
+=======
+
+
+0.2 (2011-06-20)
+----------------
+
+- Fix QuickInstallerTool support.
+
+- Fix registerIn support.
+
+
+0.1 (2011-06-19)
+----------------
+
+- Initial release

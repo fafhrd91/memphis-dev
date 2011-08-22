@@ -1,0 +1,240 @@
+=========
+Behaviors
+=========
+
+Behavior is stateless, it can get item's datasheet to do any persistent
+tasks.
+
+    >>> from zope import interface, schema, component
+    >>> from zope.component.eventtesting import getEvents
+    >>> from memphis import content
+    >>> from memphis.content import interfaces
+
+
+Define behavior
+---------------
+
+It requiers behavior interface::
+
+    >>> class IBase(interface.Interface):
+    ...     pass
+
+    >>> class IBehavior(IBase):
+    ...     """ test behavior """
+
+    >>> class IBehaviorSchema(interface.Interface):
+    ...     """ schema """
+    ...     
+    ...     title = schema.TextLine(
+    ...         title = u'Title')
+    ...     
+    ...     description = schema.TextLine(
+    ...         title = u'Description')
+
+
+Now let's define behavior implementation::
+
+    >>> class Behavior(object):
+    ...     interface.implements(IBehavior)
+    ...     
+    ...     def __init__(self, item):
+    ...         self.item = item
+
+
+To make this bahavior availble for the system, you have to register
+it with `registerBehavior` method. You'll get exception on getting
+unregistered behavior::
+
+    >>> content.getBehavior(IBehavior)
+    Traceback (most recent call last):
+    ...
+    BehaviorNotFound: (<InterfaceClass memphis.content.TESTS.IBehavior>, None)
+
+let's also create schema::
+
+    >>> content.registerSchema(u'behavior', IBehaviorSchema)
+
+behavior registration::
+
+    >>> content.registerBehavior(
+    ...     u'behavior', IBehavior, Behavior, schema=IBehaviorSchema)
+    >>> bh = content.getBehavior(IBehavior)
+
+First parameter is behavior name, second is behavior interface and
+third parameter is behavior factory.
+
+    >>> bh is content.getBehavior(IBehavior)
+    True
+
+    >>> bh is content.queryBehavior(IBehavior)
+    True
+
+Typed behaviors
+
+    >>> class ICustomBehaviorType(interfaces.IBehavior):
+    ...     pass
+
+    >>> class ICustomBehavior(interface.Interface):
+    ...     pass
+
+    >>> class CustomBehavior(object):
+    ...     interface.implements(ICustomBehavior)
+    ...     
+    ...     def __init__(self, item):
+    ...         self.item = item
+
+    >>> content.registerBehavior(
+    ...     u'custombehavior', ICustomBehavior, CustomBehavior,
+    ...     type = ICustomBehaviorType)
+
+    >>> component.getUtility(
+    ...     ICustomBehaviorType, 'custombehavior') is \
+    ...    content.getBehavior(ICustomBehavior)
+    True
+
+
+Apply behavior to content
+-------------------------
+
+Behavior can be applied only to content type::
+
+    >>> ct = content.registerType('mytype')
+    >>> reGrok()
+
+    >>> item = ct.create()
+
+    >>> IBehavior.providedBy(item)
+    False
+
+    >>> ct.applyBehavior(IBehavior)
+    >>> IBehavior.providedBy(item)
+    True
+
+    >>> isinstance(IBehavior(item), Behavior)
+    True
+
+    >>> list(ct.behaviors)
+    ['content.instance', u'behavior']
+
+If there is schema assign to behavior, it has to be applied as well::
+
+    >>> list(ct.schemas)
+    ['content.instance', u'behavior']
+
+    >>> item.getDatasheet(IBehaviorSchema)
+    <memphis.content...Datasheet<behavior> ...>
+
+    #>>> ct.removeBehavior(u'behavior')
+    #Traceback (most recent call last):
+    #...
+    #BehaviorException: Can't remove primary behavior.
+
+You can't apply behavior several times::
+
+    >>> ct.applyBehavior(IBehavior)
+    Traceback (most recent call last):
+    ...
+    BehaviorException: <InterfaceClass memphis.content.TESTS.IBehavior>
+
+Also you get `IBehaviorAppliedEvent` event::
+
+    #>>> ev = getEvents()[-1]
+    #>>> ev
+    #<memphis.storage.interfaces.BehaviorAppliedEvent ...>
+    #>>> ev.object == item
+    #True
+
+
+Remove behavior
+---------------
+
+To remove behavior call `removeBehavior` method with name as first parameter::
+
+    >>> ct = content.registerType('mytype2', IBehavior)
+    >>> reGrok()
+
+    >>> ct.applyBehavior(ICustomBehavior)
+    >>> item = ct.create()
+
+    >>> ICustomBehavior.providedBy(item)
+    True
+
+    >>> ct.removeBehavior(ICustomBehavior)
+    >>> ICustomBehavior.providedBy(item)
+    False
+
+You can remove not applied behavior::
+
+    >>> ct.removeBehavior(ICustomBehavior)
+    Traceback (most recent call last):
+    ...
+    BehaviorException: Behavior is not applied: custombehavior
+
+    >>> ct.removeBehavior('behavior')
+    Traceback (most recent call last):
+    ...
+    BehaviorException: Can't remove primary behavior
+
+And event::
+
+    #>>> ev = getEvents()[-1]
+    #>>> ev
+    #<memphis.storage.interfaces.BehaviorRemovedEvent ...>
+    #>>> ev.object == item
+    #True
+
+
+Behavior inheritance
+--------------------
+
+Behavior interface should inherit from base behavior::
+
+    >>> class IBehavior1(IBehavior):
+    ...     pass
+
+    >>> class Behavior1(object):
+    ...     def __init__(self, item):
+    ...         self.item = item
+
+    >>> content.registerBehavior(u'behavior1', IBehavior1, Behavior1)
+
+    >>> ct = content.registerType('mytype1', 'behavior1')
+    >>> reGrok()
+
+    >>> item = ct.create()
+
+Item provided both interfaces because IBehavior1 inherited from IBehavior::
+
+    >>> IBehavior1.providedBy(item)
+    True
+
+    >>> IBehavior.providedBy(item)
+    True
+
+    >>> IBase.providedBy(item)
+    True
+
+And adapter is Behavior1, because it is more specific::
+
+    >>> isinstance(IBehavior1(item), Behavior1)
+    True
+
+    >>> isinstance(IBehavior(item), Behavior1)
+    True
+
+    >>> isinstance(IBase(item), Behavior1)
+    True
+
+
+But if `item` implements both behaviors directly, adapting to to
+`IBehavior` should return `Behavior` adapter::
+
+    >>> ct.applyBehavior(IBehavior)
+    >>> isinstance(IBehavior(item), Behavior)
+    True
+
+
+More specific behavior still available::
+
+    >>> isinstance(IBehavior1(item), Behavior1)
+    True

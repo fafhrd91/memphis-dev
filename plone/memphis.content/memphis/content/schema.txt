@@ -1,0 +1,211 @@
+==================
+Schema & Datasheet
+==================
+
+Schema is just schema definition, it doesn't contain bahavior.
+
+    >>> from zope import interface, schema, component
+    >>> from memphis import content, config
+    >>> from memphis.content import interfaces
+
+
+Define schema
+-------------
+
+Let's create schema
+
+    >>> class IBase(interface.Interface):
+    ...     name = schema.TextLine(
+    ...         title = u'Name',
+    ...         required = False)
+
+    >>> class IMySchema(IBase):
+    ...     """ test schema """
+    ...     
+    ...     title = schema.TextLine(
+    ...         title = u'Title',
+    ...         default = u'No value')
+    ...     
+    ...     description = schema.TextLine(
+    ...         title = u'Description',
+    ...         required = False)
+    ...     
+    ...     number = schema.Decimal(
+    ...         title = u'Number')
+
+
+Now we have to create new `Schema` object and register schema::
+
+    >>> content.registerSchema(u'schema', IMySchema)
+
+First parameter is schema name, second is schema spec. To get schema
+object use `memphis.content.getSchema` function::
+
+    >>> sch = content.getSchema(IMySchema)
+
+or
+
+    >>> sch is content.querySchema(IMySchema)
+    True
+
+We can query for less specific schema interface::
+
+    >>> sch is content.querySchema(IBase)
+    True
+
+    >>> class IUnknown(IBase):
+    ...     pass
+    >>> content.getSchema(IUnknown)
+    Traceback (most recent call last):
+    ...
+    SchemaNotFound: <InterfaceClass memphis.content.TESTS.IUnknown>
+
+Typed schemas
+
+    >>> class ISchemaType(interface.Interface):
+    ...     pass
+
+    >>> class ISuperSchema(interface.Interface):
+    ...     content.schema('superschema', type=ISchemaType)
+    ...     
+    ...     title = schema.TextLine(title = u'Title')
+
+    >>> reGrok()
+
+    >>> component.getUtility(
+    ...     ISchemaType, 'superschema') is content.getSchema(ISuperSchema)
+    True
+    
+
+Apply schema
+------------
+
+Schema can be applied only to TypeInformation object. Let's create one.
+
+    >>> ct = content.registerType('mytype')
+    >>> reGrok()
+
+    >>> item = ct.create()
+    >>> print IMySchema.providedBy(item)
+    False
+
+Apply schema with `applySchema` method::
+
+    >>> ct.applySchema(IMySchema)
+    >>> ct.schemas
+    ['content.instance', u'schema']
+
+You can apply schema multiple times::
+
+    >>> ct.applySchema(IMySchema)
+    >>> ct.schemas
+    ['content.instance', u'schema']
+
+    >>> IMySchema.providedBy(item)
+    True
+
+
+Datasheet
+---------
+
+Adapt to schema interface or use `getDatasheet` method to get datasheet::
+
+    >>> item.getDatasheet(IMySchema).__schema__ is IMySchema
+    True
+
+    >>> IMySchema(item).__schema__ is IMySchema
+    True
+
+Also it's possible to use less specific interface::
+
+    >>> item.getDatasheet(IBase).__schema__ is IMySchema
+    True
+
+    >>> IBase(item).__schema__ is IMySchema
+    True
+
+even if less specific schema is registered as well.
+
+    >>> content.registerSchema(u'base', IBase)
+
+    >>> IBase(item).__schema__ is IMySchema
+    True
+
+`getDatasheet` method has limitation. it is not possible to
+get less specific schema like this:
+
+    >>> item.getDatasheet(IBase)
+    Traceback (most recent call last):
+    ...
+    KeyError: <InterfaceClass memphis.content.TESTS.IBase>
+
+
+Attribute modification
+
+    >>> ds = item.getDatasheet(IMySchema)
+    
+    >>> ds.title = u'New title'
+    >>> ds.title
+    u'New title'
+
+    >>> ds = item.getDatasheet(IMySchema)
+    >>> ds.title
+    u'New title'
+
+    >>> IBase(item).title
+    u'New title'
+
+
+Datasheet can be constructed as stadalone object. So it's possible to
+create datasheet use it in `UI` to modify values and then construct item
+with prepopulated data::
+
+    >>> ds = sch.Type(None)
+    >>> ds.title = u'test'
+
+    >>> ds1 = sch.Type(None)
+    >>> ds1.__load__(ds)
+    >>> ds.title
+    u'test'
+
+If schema is not applied or is not registered, you can't get datasheet
+for it::
+
+    >>> item.getDatasheet(IUnknown)
+    Traceback (most recent call last):
+    ...
+    SchemaNotFound: <InterfaceClass memphis.content.TESTS.IUnknown>
+
+    >>> class IMySchema2(IMySchema):
+    ...     """ test schema """
+
+    >>> content.registerSchema('schema2', IMySchema2)
+    >>> item.getDatasheet(IMySchema2)
+    Traceback (most recent call last):
+    ...
+    KeyError: <InterfaceClass memphis.content.TESTS.IMySchema2>
+
+
+Remove schema
+-------------
+
+    >>> IMySchema(item)
+    <memphis.content.datasheet.Datasheet<schema> ...>
+
+    >>> ct.removeSchema(IMySchema)
+
+    >>> IMySchema.providedBy(item)
+    False
+
+    >>> ct.removeSchema(IMySchema)
+    Traceback (most recent call last):
+    ...
+    KeyError: <InterfaceClass memphis.content.TESTS.IMySchema>
+
+    >>> item.getDatasheet(IMySchema)
+    Traceback (most recent call last):
+    ...
+    KeyError: <InterfaceClass memphis.content.TESTS.IMySchema>
+
+    >>> ct.schemas
+    ['content.instance']
